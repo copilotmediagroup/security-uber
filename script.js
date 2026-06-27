@@ -1,8 +1,8 @@
 
 const CP_DEV_CACHE_BUST = '2026-06-27T02-10-v4010';
 const BUILD = {
-  version: '4.0.1',
-  label: 'v4.0.1 AGENCY JOB BOARD'
+  version: '4.0.2',
+  label: 'v4.0.2 CLIENT APPROVAL CENTER'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -31,6 +31,9 @@ const state = {
   activeAgencyId: '',
   guardSignups: [],
   clientSignups: [],
+  clientApprovalSearch: '',
+  clientApprovalTab: 'pending',
+  selectedClientApprovalId: '',
   properties: [],
   patrolRequests: [],
   proofItems: [],
@@ -11718,8 +11721,185 @@ function v401Notes(job={}){return job.request_notes||job.instructions||job.notes
 function v401SearchText(job={}){return [job.job_number,job.id,job.client_name,job.property_label,job.property_address,job.city,job.state,job.patrol_type,job.priority,job.current_status,job.request_notes,job.instructions,job.notes,job.accepted_agency_name,job.assigned_guard_name].filter(Boolean).join(' ').toLowerCase();}
 function v401Counts(){const declined=v401DeclinedSet();const rows=marketplaceJobRows().map(j=>({status:marketplaceJobStatus(j),owner:v401Owner(j),declined:declined.has(String(j.id||''))}));return{total:rows.length,available:rows.filter(j=>['open_marketplace','pending_marketplace','marketplace_open'].includes(j.status)&&j.owner==='open'&&!j.declined).length,acceptedMine:rows.filter(j=>j.owner==='mine').length,declined:rows.filter(j=>j.declined).length,lockedOther:rows.filter(j=>j.owner==='other').length,open:rows.filter(j=>['open_marketplace','pending_marketplace','marketplace_open'].includes(j.status)).length,accepted:rows.filter(j=>['agency_accepted','guard_assigned','assigned','accepted','in_progress','proof_uploaded','completed'].includes(j.status)).length,events:(state.jobEvents||[]).length};}
 function v401Rows(){const declined=v401DeclinedSet();const q=String(state.agencyJobBoardSearch||'').trim().toLowerCase();const tab=state.agencyJobBoardTab||(isAgencyAdmin()?'available':'all');return marketplaceJobRows().sort((a,b)=>new Date(b.requested_at||b.created_at||0)-new Date(a.requested_at||a.created_at||0)).map(j=>({...j,_status:marketplaceJobStatus(j),_owner:v401Owner(j),_declined:declined.has(String(j.id||''))})).filter(j=>{if(q&&!v401SearchText(j).includes(q))return false;if(isAgencyAdmin()){const open=['open_marketplace','pending_marketplace','marketplace_open'].includes(j._status)&&j._owner==='open';if(tab==='available')return open&&!j._declined;if(tab==='accepted')return j._owner==='mine';if(tab==='declined')return j._declined;if(tab==='locked')return j._owner==='other';return true;}if(tab==='open')return ['open_marketplace','pending_marketplace','marketplace_open'].includes(j._status);if(tab==='accepted')return ['agency_accepted','guard_assigned','assigned','accepted','in_progress','proof_uploaded','completed'].includes(j._status);return true;});}
-function v401Detail(job){if(!job||!job.id)return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Job Detail</h2><p>Select a job to review the full request before accepting.</p></div></div><div class="empty">No marketplace job selected.</div></section></aside>`;const status=marketplaceJobStatus(job),owner=v401Owner(job),open=['open_marketplace','pending_marketplace','marketplace_open'].includes(status),declined=v401DeclinedSet().has(String(job.id||'')),canAccept=isAgencyAdmin()&&v401AgencyApproved()&&open&&owner==='open',canDecline=canAccept&&!declined,agency=job.accepted_agency_name||(owner==='mine'?v401ActiveAgencyRecord()?.agency_name:'')||'Not accepted yet';return `<aside class="dashboard-right"><section class="panel panel-pad marketplace-job-detail"><div class="panel-head"><div><h2>Job Detail</h2><p>Source of truth: marketplace_jobs</p></div>${displayStatusChip(status)}</div><div class="detail-grid"><span>Job Number</span><strong>${esc(job.job_number||job.id)}</strong><span>Property</span><strong>${esc(job.property_label||propertyLabel(job)||'Property')}</strong><span>Address</span><strong>${esc(v401Address(job))}</strong><span>Service Type</span><strong>${esc(v401Service(job))}</strong><span>Urgency</span><strong>${esc(statusText(job.priority||'normal'))}</strong><span>Requested</span><strong>${esc(fmtDate(job.requested_at||job.created_at))}</strong><span>Accepted Agency</span><strong>${esc(agency)}</strong></div><div class="note-box"><strong>Client request notes</strong><p>${esc(v401Notes(job))}</p></div><div class="button-row">${canAccept?`<button class="primary-button" data-action="agency-accept-job" data-job-id="${esc(job.id)}">Accept Job</button>`:''}${canDecline?`<button class="ghost-button" data-action="agency-decline-job-v401" data-job-id="${esc(job.id)}">Decline</button>`:''}${declined?`<span class="workflow-stage-chip red"><b>Declined By Your Agency</b><small>Hidden from available jobs</small></span>`:''}${owner==='other'?`<span class="workflow-stage-chip amber"><b>Locked</b><small>Accepted by another agency</small></span>`:''}${owner==='mine'?`<button class="ghost-button" data-view="dispatch-board">Open Dispatch</button>`:''}</div></section><section class="panel panel-pad"><div class="panel-head"><div><h2>Lifecycle Rule</h2><p>This board does not invent status. It reads marketplace_jobs.current_status.</p></div></div><div class="priority-list">${priorityRow('Client job request','Source',1,'#2f83ff','data-foundation')}${priorityRow('Agency accept locks ownership',owner==='mine'?'Mine':owner==='other'?'Locked':'Open',owner==='open'?0:1,'#37dc72','marketplace-jobs')}${priorityRow('Next build assigns agency guard','v4.0.2',job.assigned_guard_id?1:0,'#b05cff','dispatch-board')}</div></section></aside>`;}
+function v401Detail(job){if(!job||!job.id)return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Job Detail</h2><p>Select a job to review the full request before accepting.</p></div></div><div class="empty">No marketplace job selected.</div></section></aside>`;const status=marketplaceJobStatus(job),owner=v401Owner(job),open=['open_marketplace','pending_marketplace','marketplace_open'].includes(status),declined=v401DeclinedSet().has(String(job.id||'')),canAccept=isAgencyAdmin()&&v401AgencyApproved()&&open&&owner==='open',canDecline=canAccept&&!declined,agency=job.accepted_agency_name||(owner==='mine'?v401ActiveAgencyRecord()?.agency_name:'')||'Not accepted yet';return `<aside class="dashboard-right"><section class="panel panel-pad marketplace-job-detail"><div class="panel-head"><div><h2>Job Detail</h2><p>Source of truth: marketplace_jobs</p></div>${displayStatusChip(status)}</div><div class="detail-grid"><span>Job Number</span><strong>${esc(job.job_number||job.id)}</strong><span>Property</span><strong>${esc(job.property_label||propertyLabel(job)||'Property')}</strong><span>Address</span><strong>${esc(v401Address(job))}</strong><span>Service Type</span><strong>${esc(v401Service(job))}</strong><span>Urgency</span><strong>${esc(statusText(job.priority||'normal'))}</strong><span>Requested</span><strong>${esc(fmtDate(job.requested_at||job.created_at))}</strong><span>Accepted Agency</span><strong>${esc(agency)}</strong></div><div class="note-box"><strong>Client request notes</strong><p>${esc(v401Notes(job))}</p></div><div class="button-row">${canAccept?`<button class="primary-button" data-action="agency-accept-job" data-job-id="${esc(job.id)}">Accept Job</button>`:''}${canDecline?`<button class="ghost-button" data-action="agency-decline-job-v401" data-job-id="${esc(job.id)}">Decline</button>`:''}${declined?`<span class="workflow-stage-chip red"><b>Declined By Your Agency</b><small>Hidden from available jobs</small></span>`:''}${owner==='other'?`<span class="workflow-stage-chip amber"><b>Locked</b><small>Accepted by another agency</small></span>`:''}${owner==='mine'?`<button class="ghost-button" data-view="dispatch-board">Open Dispatch</button>`:''}</div></section><section class="panel panel-pad"><div class="panel-head"><div><h2>Lifecycle Rule</h2><p>This board does not invent status. It reads marketplace_jobs.current_status.</p></div></div><div class="priority-list">${priorityRow('Client job request','Source',1,'#2f83ff','data-foundation')}${priorityRow('Agency accept locks ownership',owner==='mine'?'Mine':owner==='other'?'Locked':'Open',owner==='open'?0:1,'#37dc72','marketplace-jobs')}${priorityRow('Next build assigns agency guard','v4.0.3',job.assigned_guard_id?1:0,'#b05cff','dispatch-board')}</div></section></aside>`;}
 function marketplaceJobsView(){const counts=v401Counts();const rows=v401Rows();const selected=rows.find(j=>String(j.id||'')===String(state.selectedMarketplaceJobId||''))||rows[0]||marketplaceJobRows()[0]||null;if(selected&&String(state.selectedMarketplaceJobId||'')!==String(selected.id||''))state.selectedMarketplaceJobId=selected.id||'';const approved=!isAgencyAdmin()||v401AgencyApproved();const agency=v401ActiveAgencyRecord();const tabs=isAgencyAdmin()?[["available","Available",counts.available],["accepted","Accepted By Us",counts.acceptedMine],["declined","Declined",counts.declined],["locked","Locked",counts.lockedOther],["all","All",counts.total]]:[["all","All",counts.total],["open","Open",counts.open],["accepted","Accepted",counts.accepted]];const title=isAgencyAdmin()?'Agency Job Board':'Marketplace Jobs';const subtitle=isAgencyAdmin()?'Approved agencies can review open client jobs, accept work, or decline jobs they do not want.':'Platform view of every marketplace job connected to the global job record.';return `<div class="dashboard marketplace-jobs-view agency-job-board-view"><header class="dashboard-header"><div class="title-block"><h1>${esc(title)}</h1><p>${esc(subtitle)}</p></div><div class="header-actions"><span class="system-pill"><i></i>${esc(roleLabel(activeMarketplaceRole()))}</span><button class="ghost-button" data-action="marketplace-jobs-refresh-v401">Refresh</button></div></header>${isAgencyAdmin()&&!approved?`<section class="workflow-finished-panel warning"><strong>Agency verification required</strong><p>${esc(agency?.agency_name||'Your agency')} must be approved by Platform Admin before accepting marketplace jobs.</p></section>`:''}<section class="kpi-row">${kpiCard('◈',isAgencyAdmin()?'Available':'Open Jobs',isAgencyAdmin()?counts.available:counts.open,'Open marketplace jobs','#2f83ff')}${kpiCard('✓',isAgencyAdmin()?'Accepted By Us':'Accepted',isAgencyAdmin()?counts.acceptedMine:counts.accepted,'Locked to an agency','#37dc72')}${kpiCard('−',isAgencyAdmin()?'Declined':'Locked Other',isAgencyAdmin()?counts.declined:counts.lockedOther,'Agency responses','#ff5973')}${kpiCard('☰','Job Events',counts.events,'Global audit trail','#ffb53d')}</section><section class="dashboard-grid"><div class="dashboard-left"><section class="panel panel-pad"><div class="panel-head"><div><h2>${isAgencyAdmin()?'Open Marketplace Work':'All Marketplace Work'}</h2><p>Property, address, request notes, urgency, service type, and status stay attached to the same job.</p></div></div><div class="button-row job-board-tabs">${tabs.map(t=>`<button class="ghost-button ${state.agencyJobBoardTab===t[0]?'active':''}" data-job-board-tab-v401="${esc(t[0])}">${esc(t[1])} <b>${esc(t[2])}</b></button>`).join('')}</div><div class="filters-row"><input data-agency-job-search-v401 value="${esc(state.agencyJobBoardSearch||'')}" placeholder="Search job number, property, city, service, notes..." /></div><div class="client-request-history-table agency-job-table"><div class="client-request-history-head"><span>Job</span><span>Property / Address</span><span>Service</span><span>Urgency</span><span>Status</span><span>Action</span></div>${rows.length?rows.map(j=>{const status=marketplaceJobStatus(j),owner=v401Owner(j),open=['open_marketplace','pending_marketplace','marketplace_open'].includes(status),declined=v401DeclinedSet().has(String(j.id||'')),canAccept=isAgencyAdmin()&&approved&&open&&owner==='open';return `<div class="client-request-history-row ${String(state.selectedMarketplaceJobId)===String(j.id)?'selected':''}"><span><strong>${esc(j.job_number||j.id)}</strong><small>${esc(j.client_name||'Client request')}</small></span><span><strong>${esc(j.property_label||propertyLabel(j)||'Property')}</strong><small>${esc(v401Address(j))}</small></span><span>${esc(v401Service(j))}</span><span>${esc(statusText(j.priority||'normal'))}</span><span>${declined?workflowStageChip('rejected','Declined'):displayStatusChip(status)}</span><span class="button-row"><button class="ghost-button" data-action="view-marketplace-job-v401" data-job-id="${esc(j.id)}">View</button>${canAccept&&!declined?`<button class="primary-button" data-action="agency-accept-job" data-job-id="${esc(j.id)}">Accept</button><button class="ghost-button" data-action="agency-decline-job-v401" data-job-id="${esc(j.id)}">Decline</button>`:''}${owner==='mine'?`<button class="ghost-button" data-view="dispatch-board">Dispatch</button>`:''}</span></div>`}).join(''):'<div class="empty">No jobs match this view. New client requests will appear here after the marketplace SQL is installed.</div>'}</div></section></div>${v401Detail(selected)}</section></div>`;}
 
 document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||b.disabled||b.dataset.busy==='1')return;try{if(b.dataset.jobBoardTabV401){state.agencyJobBoardTab=b.dataset.jobBoardTabV401||'available';state.selectedMarketplaceJobId='';render();return;}if(b.dataset.action==='view-marketplace-job-v401'){state.selectedMarketplaceJobId=b.dataset.jobId||'';render();return;}if(b.dataset.action==='marketplace-jobs-refresh-v401'){await loadData();render();toast('Marketplace jobs refreshed.','success');return;}if(b.dataset.action==='agency-decline-job-v401'){const jobId=b.dataset.jobId||'';try{await supabase.rpc('cp_agency_decline_marketplace_job',{p_job_id:jobId,p_response_notes:''});}catch(err){v401SaveDecline(jobId);state.agencyJobBoardTab='available';render();toast('Decline saved locally. Run v4.0.1 SQL patch to persist declines in Supabase.','error');return;}v401SaveDecline(jobId);await loadData();state.agencyJobBoardTab='available';state.selectedMarketplaceJobId='';render();toast('Job declined and removed from Available.','success');return;}}catch(err){toast(friendly(err));}});
 document.addEventListener('input',e=>{const i=e.target;if(i&&i.hasAttribute('data-agency-job-search-v401')){state.agencyJobBoardSearch=i.value||'';state.selectedMarketplaceJobId='';render();}});
+
+
+/* v4.0.2 Client Approval Center override */
+try {
+  [['platform_admin','agency-approvals'], ['admin','guard-approvals']].forEach(([role, after]) => {
+    const nav = NAV[role] || [];
+    if (!nav.some(item => item[0] === 'client-approvals')) {
+      const idx = nav.findIndex(item => item[0] === after);
+      const item = ['client-approvals', '◌', 'Client Approvals'];
+      if (idx >= 0) nav.splice(idx + 1, 0, item); else nav.splice(2, 0, item);
+    }
+  });
+} catch {}
+
+function v402ClientSignupStatus(row = {}) {
+  return String(row.status || row.approval_status || 'pending').toLowerCase() || 'pending';
+}
+function v402PendingClientApprovals() {
+  return (state.clientSignups || []).filter(c => ['pending','new','requested','prospect',''].includes(v402ClientSignupStatus(c)));
+}
+function navBadge(view) {
+  if (view === 'messages') return unreadMessagesCount();
+  if (view === 'notifications') return unreadNotificationsCount();
+  if (view === 'pending-dispatch') return pendingRequests().length;
+  if (view === 'guard-approvals') return guardApprovals().length;
+  if (view === 'client-approvals') return v402PendingClientApprovals().length;
+  if (view === 'proof-review') return proofWaiting().length;
+  if (view === 'completed' && state.role === 'guard') return guardCompletedJobsForFilter('today').length;
+  return '';
+}
+function v402ClientApprovalRows() {
+  const q = String(state.clientApprovalSearch || '').trim().toLowerCase();
+  const tab = state.clientApprovalTab || 'pending';
+  let rows = (state.clientSignups || []).map((c, idx) => ({ ...c, _idx: idx, _status: v402ClientSignupStatus(c) }));
+  if (tab === 'pending') rows = rows.filter(c => ['pending','new','requested','prospect',''].includes(c._status));
+  if (tab === 'approved') rows = rows.filter(c => c._status === 'approved');
+  if (tab === 'rejected') rows = rows.filter(c => c._status === 'rejected');
+  if (q) rows = rows.filter(c => [c.name, c.display_name, c.full_name, c.email, c.phone, c.notes, c.id].filter(Boolean).join(' ').toLowerCase().includes(q));
+  return rows.sort((a,b) => new Date(b.created_at || b.updated_at || 0) - new Date(a.created_at || a.updated_at || 0));
+}
+function v402ClientApprovalCounts() {
+  const rows = state.clientSignups || [];
+  return {
+    pending: rows.filter(c => ['pending','new','requested','prospect',''].includes(v402ClientSignupStatus(c))).length,
+    approved: rows.filter(c => v402ClientSignupStatus(c) === 'approved').length,
+    rejected: rows.filter(c => v402ClientSignupStatus(c) === 'rejected').length,
+    active: (state.clients || []).filter(c => String(c.status || 'active').toLowerCase() === 'active').length
+  };
+}
+function v402ClientApprovalName(c = {}) { return c.business_name || c.company_name || c.name || c.display_name || c.full_name || c.email || 'Client Applicant'; }
+function v402ClientApprovalSelected() {
+  const rows = v402ClientApprovalRows();
+  const any = (state.clientSignups || []);
+  let row = rows.find(c => String(c.id || '') === String(state.selectedClientApprovalId || '')) || rows[0] || any[0] || null;
+  if (row && String(row.id || '') !== String(state.selectedClientApprovalId || '')) state.selectedClientApprovalId = row.id || '';
+  return row;
+}
+function v402ClientApprovalStatusChip(row = {}) {
+  const status = v402ClientSignupStatus(row);
+  if (status === 'approved') return workflowStageChip('published', 'Client active');
+  if (status === 'rejected') return workflowStageChip('rejected', 'Application locked');
+  return workflowStageChip('pending_dispatch', 'Needs platform review');
+}
+function v402ClientApprovalTabs() {
+  const c = v402ClientApprovalCounts();
+  const tabs = [['pending','Pending',c.pending], ['approved','Approved',c.approved], ['rejected','Rejected',c.rejected], ['all','All',(state.clientSignups || []).length]];
+  return `<div class="button-row job-board-tabs client-approval-tabs">${tabs.map(t => `<button class="ghost-button ${state.clientApprovalTab === t[0] ? 'active' : ''}" data-client-approval-tab-v402="${esc(t[0])}">${esc(t[1])} <b>${esc(t[2])}</b></button>`).join('')}</div>`;
+}
+function v402ClientApprovalRow(c = {}) {
+  const status = v402ClientSignupStatus(c);
+  const pending = ['pending','new','requested','prospect',''].includes(status);
+  return `<div class="client-request-history-row ${String(state.selectedClientApprovalId || '') === String(c.id || '') ? 'selected' : ''}">
+    <span><strong>${esc(v402ClientApprovalName(c))}</strong><small>${esc(c.id || 'new client')}</small></span>
+    <span><strong>${esc(c.email || '')}</strong><small>${esc(c.phone || 'No phone listed')}</small></span>
+    <span>${v402ClientApprovalStatusChip(c)}</span>
+    <span>${esc(fmtDate(c.created_at || c.updated_at))}</span>
+    <span class="button-row"><button class="ghost-button" data-action="view-client-approval-v402" data-client-approval-id="${esc(c.id)}">View</button>${pending ? `<button class="primary-button" data-action="approve-client-v402" data-client-approval-id="${esc(c.id)}">Accept Client</button><button class="ghost-button" data-action="reject-client-v402" data-client-approval-id="${esc(c.id)}">Reject</button>` : `<button class="ghost-button" data-view="clients">Clients</button>`}</span>
+  </div>`;
+}
+function v402ClientApprovalDetail(row = null) {
+  if (!row) return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Client Detail</h2><p>Select a client application.</p></div></div><div class="empty">No client application selected.</div></section></aside>`;
+  const pending = ['pending','new','requested','prospect',''].includes(v402ClientSignupStatus(row));
+  const activeClient = (state.clients || []).find(c => String(c.email || '').toLowerCase() === String(row.email || '').toLowerCase());
+  return `<aside class="dashboard-right"><section class="panel panel-pad client-approval-detail"><div class="panel-head"><div><h2>Client Application</h2><p>Platform Admin approval gate</p></div>${v402ClientApprovalStatusChip(row)}</div>
+    <div class="detail-grid"><span>Name</span><strong>${esc(v402ClientApprovalName(row))}</strong><span>Email</span><strong>${esc(row.email || '—')}</strong><span>Phone</span><strong>${esc(row.phone || '—')}</strong><span>Submitted</span><strong>${esc(fmtDate(row.created_at || row.updated_at))}</strong><span>Active Client</span><strong>${esc(activeClient ? 'Yes' : 'Not yet')}</strong></div>
+    <div class="note-box"><strong>Client notes</strong><p>${esc(row.notes || 'No notes were submitted by this client.')}</p></div>
+    <div class="workflow-finished-panel blue"><strong>Marketplace rule</strong><p>Clients can request patrols only after Platform Admin approval creates/activates their client profile.</p></div>
+    <div class="button-row">${pending ? `<button class="primary-button" data-action="approve-client-v402" data-client-approval-id="${esc(row.id)}">Accept Client</button><button class="ghost-button" data-action="reject-client-v402" data-client-approval-id="${esc(row.id)}">Reject Client</button>` : ''}<button class="ghost-button" data-view="clients">Open Active Clients</button></div>
+  </section></aside>`;
+}
+function clientApprovalsCenterView() {
+  const counts = v402ClientApprovalCounts();
+  const rows = v402ClientApprovalRows();
+  const selected = v402ClientApprovalSelected();
+  return `<div class="dashboard client-approval-center"><header class="dashboard-header"><div class="title-block"><h1>Client Approval Center</h1><p>Review client signups before they can enter the marketplace and create patrol jobs.</p></div><div class="header-actions"><span class="system-pill"><i></i>Platform Admin</span><button class="ghost-button" data-action="client-approvals-refresh-v402">Refresh</button></div></header>
+  <section class="kpi-row">${kpiCard('⏳','Pending Clients',counts.pending,'Need platform approval','#ffb53d')}${kpiCard('✓','Approved Signups',counts.approved,'Accepted applications','#37dc72')}${kpiCard('−','Rejected',counts.rejected,'Locked applications','#ff5973')}${kpiCard('◌','Active Clients',counts.active,'Can create requests','#2f83ff')}</section>
+  <section class="dashboard-grid"><div class="dashboard-left"><section class="panel panel-pad"><div class="panel-head"><div><h2>Client Applications</h2><p>Accepting a client creates/activates the client record and unlocks the client portal login.</p></div></div>${v402ClientApprovalTabs()}<div class="filters-row"><input data-client-approval-search-v402 value="${esc(state.clientApprovalSearch || '')}" placeholder="Search name, email, phone, notes..." /></div><div class="client-request-history-table client-approval-table"><div class="client-request-history-head"><span>Client</span><span>Contact</span><span>Status</span><span>Submitted</span><span>Actions</span></div>${rows.length ? rows.map(v402ClientApprovalRow).join('') : '<div class="empty">No client applications match this view.</div>'}</div></section></div>${v402ClientApprovalDetail(selected)}</section></div>`;
+}
+async function v402ApproveClient(id = '') {
+  if (!id) throw new Error('Client approval record missing.');
+  const row = (state.clientSignups || []).find(c => String(c.id || '') === String(id)) || {};
+  if (v402ClientSignupStatus(row) === 'approved') { toast('Client is already approved.', 'success'); return; }
+  await supabase.rpc('cp_approve_client_signup', { p_signup_id: id });
+  saveWorkflowActionLock('client-signup', id, { status: 'approved', finished_at: new Date().toISOString() });
+  await loadData();
+  state.view = 'client-approvals';
+  state.clientApprovalTab = 'pending';
+  state.selectedClientApprovalId = '';
+  render();
+  toast('Client approved and moved to active Clients.', 'success');
+}
+async function v402RejectClient(id = '') {
+  if (!id) throw new Error('Client approval record missing.');
+  const row = (state.clientSignups || []).find(c => String(c.id || '') === String(id)) || {};
+  if (v402ClientSignupStatus(row) === 'rejected') { toast('Client is already rejected.', 'success'); return; }
+  await supabase.rpc('cp_reject_client_signup', { p_signup_id: id });
+  saveWorkflowActionLock('client-signup', id, { status: 'rejected', finished_at: new Date().toISOString() });
+  await loadData();
+  state.view = 'client-approvals';
+  state.clientApprovalTab = 'rejected';
+  state.selectedClientApprovalId = id;
+  render();
+  toast('Client application rejected and locked.', 'success');
+}
+function renderRoleView() {
+  if (state.view === 'data-foundation') return dataFoundationView();
+  if (state.view === 'agency-approvals') return agencyApprovalsView();
+  if (state.view === 'client-approvals') return clientApprovalsCenterView();
+  if (state.view === 'marketplace-jobs') return marketplaceJobsView();
+  if (state.role === 'admin') {
+    if (state.view === 'dashboard') return isAgencyAdmin() ? marketplaceJobsView() : dataFoundationView();
+    if (state.view === 'dispatch-board') return dispatchBoardView();
+    if (state.view === 'live-gps') return dispatchLiveGpsView();
+    if (state.view === 'pending-dispatch') return pendingDispatchView();
+    if (state.view === 'scheduled-queue') return scheduledQueueView();
+    if (state.view === 'guards') return guardsCommandCenterView();
+    if (state.view === 'guard-approvals') return guardApprovalsCommandCenterView();
+    if (state.view === 'clients') return adminClientsCommandCenterView();
+    if (state.view === 'activity-log') return activityLogCommandCenterView();
+    if (state.view === 'proof-review') return proofReviewCommandCenterView();
+    if (state.view === 'report-builder') return reportBuilderCommandCenterView();
+    if (state.view === 'report-archive') return reportArchiveCommandCenterView();
+  }
+  if (state.role === 'guard') {
+    if (state.view === 'dashboard') return guardDashboardMockup302();
+    if (state.view === 'active-job') return guardActiveJobWorkflowView();
+    if (state.view === 'completed') return guardCompletedJobsView();
+    if (state.view === 'route-gps') return guardRouteGpsLiveView();
+    if (state.view === 'upload-proof') return proofUploadView();
+  }
+  if (state.role === 'client') {
+    if (state.view === 'dashboard') return clientDashboardView();
+    if (state.view === 'properties') return clientPropertiesView();
+    if (state.view === 'patrol-requests') return clientPatrolRequestsView();
+    if (state.view === 'reports') return clientReportsView();
+  }
+  if (state.view === 'messages') return messagesView();
+  if (state.view === 'notifications') return notificationsView();
+  if (state.view === 'settings') return settingsView();
+  return state.role === 'admin' ? adminDashboard() : compactDashboard(state.role);
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button');
+  if (!b || b.disabled || b.dataset.busy === '1') return;
+  try {
+    if (b.dataset.clientApprovalTabV402) { state.clientApprovalTab = b.dataset.clientApprovalTabV402 || 'pending'; state.selectedClientApprovalId = ''; render(); return; }
+    if (b.dataset.action === 'view-client-approval-v402') { state.selectedClientApprovalId = b.dataset.clientApprovalId || ''; render(); return; }
+    if (b.dataset.action === 'client-approvals-refresh-v402') { await loadData(); render(); toast('Client approvals refreshed.', 'success'); return; }
+    if (b.dataset.action === 'approve-client-v402') { setActionButtonBusy(b, 'Approving...'); await v402ApproveClient(b.dataset.clientApprovalId || ''); return; }
+    if (b.dataset.action === 'reject-client-v402') { setActionButtonBusy(b, 'Rejecting...'); await v402RejectClient(b.dataset.clientApprovalId || ''); return; }
+  } catch (err) { toast(friendly(err)); }
+  finally { if (b.dataset.action === 'approve-client-v402' || b.dataset.action === 'reject-client-v402') clearActionButtonBusy(b); }
+});
+document.addEventListener('input', e => {
+  const i = e.target;
+  if (i && i.hasAttribute('data-client-approval-search-v402')) { state.clientApprovalSearch = i.value || ''; state.selectedClientApprovalId = ''; render(); }
+});

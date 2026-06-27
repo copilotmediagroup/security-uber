@@ -13255,3 +13255,19 @@ button.is-busy {
   border-color: rgba(255,181,61,.35);
   background: rgba(92,55,8,.25);
 }
+
+
+/* v4.0.2 Client Approval Center */
+.client-approval-center .dashboard-grid { grid-template-columns: minmax(0, 1fr) 380px; }
+.client-approval-tabs .ghost-button.active,
+.job-board-tabs .ghost-button.active { border-color: rgba(88, 174, 255, .62); background: rgba(46, 125, 255, .22); color: #fff; }
+.client-approval-table .client-request-history-head { grid-template-columns: 1.1fr 1.1fr .9fr .8fr 1.25fr; }
+.client-approval-table .client-request-history-row { grid-template-columns: 1.1fr 1.1fr .9fr .8fr 1.25fr; }
+.client-approval-table .client-request-history-row.selected { outline: 1px solid rgba(79, 165, 255, .48); background: rgba(46, 125, 255, .10); }
+.client-approval-detail .detail-grid { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 10px 14px; border: 1px solid rgba(113,169,232,.12); border-radius: 10px; padding: 14px; background: rgba(8,22,38,.42); }
+.client-approval-detail .detail-grid span { color: var(--muted); font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
+.client-approval-detail .detail-grid strong { min-width: 0; overflow-wrap: anywhere; }
+.note-box { margin-top: 14px; border: 1px solid rgba(113,169,232,.13); border-radius: 10px; padding: 14px; background: rgba(8,22,38,.42); }
+.note-box strong { display: block; margin-bottom: 7px; }
+.note-box p { margin: 0; color: var(--muted); line-height: 1.55; }
+@media (max-width: 1180px) { .client-approval-center .dashboard-grid { grid-template-columns: 1fr; } }

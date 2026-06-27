@@ -1,35 +1,28 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.1",
-  "buildName": "AGENCY JOB BOARD",
-  "type": "marketplace-agency-job-board",
+  "version": "4.0.2",
+  "buildName": "CLIENT APPROVAL CENTER",
+  "type": "marketplace-client-approval-center",
   "sql_required": true,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Built on the separate v4 marketplace foundation using the new Supabase project",
-    "Added v4.0.1 Agency Job Board for approved licensed/certified agency admins",
-    "Added Available, Accepted By Us, Declined, Locked, and All job board tabs",
-    "Added job detail panel showing property, address/city, client notes, urgency, service type, requested time, ownership, and status",
-    "Added agency decline flow using marketplace_job_claims and job_events when the v4.0.1 SQL patch is run",
-    "Accepted jobs still lock through cp_agency_accept_marketplace_job and marketplace_jobs.accepted_agency_id",
-    "Kept marketplace_jobs.current_status as the source of truth for job lifecycle status",
+    "Built on v4.0.1 Agency Job Board and the separate v4 marketplace foundation",
+    "Added Platform Admin Client Approval Center sidebar tab",
+    "Added pending, approved, rejected, and all client application tabs",
+    "Added client application detail rail with contact info, notes, submitted date, and active-client state",
+    "Added Accept Client and Reject Client actions for Platform Admin",
+    "Accept Client activates/creates the client record and unlocks client portal login",
+    "Client approval sets role and marketplace_role to client so v4 marketplace routing is clear",
+    "Client approvals no longer hide only inside the legacy Clients page",
+    "Kept marketplace_jobs as the source of truth for future client patrol requests",
     "No payments, Stripe, subscriptions, bidding, rankings, or auto-matching added",
-    "Converted v3 app into a separate v4 marketplace foundation package using the new Supabase project",
-    "Added platform_admin and agency_admin marketplace roles while preserving client and guard roles",
-    "Added agency signup flow for licensed/certified security agencies",
-    "Added Platform Admin Agency Verification Center UI",
-    "Added Marketplace Jobs board UI for global open/accepted jobs",
-    "Added Marketplace Data Foundation dashboard to explain and verify the global backbone",
-    "Added marketplace_jobs table as the main source of truth for client request, agency acceptance, guard assignment, proof, reports, and future payments",
-    "Added job_events table as the global audit/timeline trail",
-    "Added agencies, agency_members, agency_service_areas, and marketplace_job_claims tables",
-    "Added indexes for job status, agency ownership, client, property, guard, proof, reports, and audit events",
-    "Added RPCs for platform admin bootstrap, agency signup, agency approval/rejection, client marketplace request creation, agency job acceptance, agency guard assignment, and global app data loading",
-    "Preserved v3.0.77 Recent Reports thumbnail fix, v3.0.76 Recent Reports polish, v3.0.75 audit trail UI, and v3.0.74 dashboard/report/proof sync"
+    "Preserved v4.0.1 agency available/accepted/declined job board flow",
+    "Preserved v4.0.0 marketplace data foundation"
   ],
   "sql_files": [
     "RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql",
     "RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql",
-    "RUN_AFTER_V401_AGENCY_JOB_BOARD.sql"
+    "RUN_AFTER_V401_AGENCY_JOB_BOARD.sql",
+    "RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql"
   ]
 }

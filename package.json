@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-agency-job-board",
-  "version": "4.0.1",
+  "name": "co-pilot-security-marketplace-client-approval-center",
+  "version": "4.0.2",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.1 agency job board with approved-agency open jobs, accept/decline flow, and locked marketplace job ownership.",
+  "description": "Co Pilot Security Marketplace v4.0.2 client approval center with Platform Admin client review, accept/reject workflow, and active client unlock.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

@@ -19,6 +19,7 @@ const files = [
   'RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql',
   'RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql',
   'RUN_AFTER_V401_AGENCY_JOB_BOARD.sql',
+  'RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql',
   'RUN_IF_NEEDED_OPTIONAL_SQL_PATCHES_V1312_TO_V1322.sql'
 ];
 
@@ -34,4 +35,4 @@ for (const file of files) {
   }
 }
 
-console.log(`Co Pilot Security Marketplace v4.0.1 agency job board build complete. Copied ${count} files to dist/.`);
+console.log(`Co Pilot Security Marketplace v4.0.2 client approval center build complete. Copied ${count} files to dist/.`);

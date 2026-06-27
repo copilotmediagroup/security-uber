@@ -1,27 +1,28 @@
 Co Pilot Security Marketplace
-Version: 4.0.1
-Build Name: AGENCY JOB BOARD
+Version: 4.0.2
+Build Name: CLIENT APPROVAL CENTER
 Date: 2026-06-27
 
 Summary:
-- Builds on v4.0.0 marketplace data foundation.
-- Adds a cleaner Agency Job Board for approved licensed/certified security agencies.
-- Approved Agency Admins can review open client marketplace jobs.
-- Agency Admins can accept available jobs and lock them to their agency.
-- Agency Admins can decline jobs they do not want; declined jobs are removed from Available.
-- Job rows show property, address/city, client request notes, urgency, service type, status, and requested time.
-- Job detail panel keeps the lifecycle tied to marketplace_jobs.current_status.
-- Platform Admin can still see all marketplace jobs.
+- Builds on v4.0.1 Agency Job Board.
+- Adds a Platform Admin Client Approval Center.
+- Platform Admin can see pending, approved, rejected, and all client signups.
+- Platform Admin can accept client applications and move them into active Clients.
+- Platform Admin can reject client applications and lock them as rejected.
+- Client approval uses the v4 marketplace role model and sets approved clients to marketplace_role = client.
+- Active Clients remain separate from pending client applications.
+- Keeps the marketplace job lifecycle tied to marketplace_jobs after clients are approved and create requests.
 - No payments, Stripe, subscriptions, bidding, rankings, or closest-agency auto-matching added.
 
 Badge:
-v4.0.1 AGENCY JOB BOARD
+v4.0.2 CLIENT APPROVAL CENTER
 
 SQL:
 For a brand-new Supabase project, run:
 1. RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql
 2. RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql
 3. RUN_AFTER_V401_AGENCY_JOB_BOARD.sql
+4. RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql
 
-If v4.0.0 SQL was already run, only run:
-RUN_AFTER_V401_AGENCY_JOB_BOARD.sql
+If v4.0.0 and v4.0.1 SQL were already run, only run:
+RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql

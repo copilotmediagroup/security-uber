@@ -1,4 +1,4 @@
-# Co Pilot Security Marketplace v4.0.1 — Agency Job Board
+# Co Pilot Security Marketplace v4.0.2 — Client Approval Center
 
 This package continues the separate Uber-style / marketplace version of Co Pilot Security.
 
@@ -17,18 +17,22 @@ Run these in the Supabase SQL editor in this order:
 1. `RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql`
 2. `RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql`
 3. `RUN_AFTER_V401_AGENCY_JOB_BOARD.sql`
+4. `RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql`
 
-If v4.0.0 SQL was already run, only run:
+## If v4.0.0 and v4.0.1 SQL were already run
+Run only:
 
-`RUN_AFTER_V401_AGENCY_JOB_BOARD.sql`
+`RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql`
 
-## What v4.0.1 adds
-- Agency Job Board for approved licensed/certified agencies.
-- Available / Accepted By Us / Declined / Locked / All tabs.
-- Job detail panel before acceptance.
-- Job rows show property, address/city, client notes, urgency, service type, requested time, and status.
-- Agency decline RPC: `cp_agency_decline_marketplace_job`.
-- Decline records into `marketplace_job_claims` and `job_events` without changing the global open job status.
+## What v4.0.2 adds
+- Platform Admin Client Approval Center
+- Sidebar tab: Client Approvals
+- Pending / Approved / Rejected / All client application tabs
+- Accept Client action
+- Reject Client action
+- Active Clients remain separate from pending applications
+- Approved clients are activated with `marketplace_role = client`
+- Client signups are no longer hidden only inside the legacy Clients page
 
 ## What is intentionally not included yet
 - payments
@@ -37,3 +41,5 @@ If v4.0.0 SQL was already run, only run:
 - client reviews
 - agency rankings
 - bidding/price competition
+
+Those come after marketplace approvals, agency job acceptance, dispatch, and client status are proven.
