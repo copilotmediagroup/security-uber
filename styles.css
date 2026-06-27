@@ -15015,3 +15015,50 @@ button.is-busy {
   .cp436-priority-alert { grid-template-columns:1fr; }
   .cp436-priority-alert-stats { width:100%; }
 }
+
+
+/* v4.0.37 Priority Response card cleanup: compact + no pricing */
+.cp437-priority-alert,
+.cp436-priority-alert.cp437-priority-alert {
+  min-height: 72px !important;
+  padding: 12px 14px !important;
+  gap: 10px !important;
+  margin-bottom: 12px !important;
+  grid-template-columns: minmax(0,1fr) auto !important;
+}
+.cp437-priority-alert .cp436-priority-badge { min-height: 18px !important; padding: 0 7px !important; font-size: 8.5px !important; }
+.cp437-priority-alert h2 { margin: 5px 0 2px !important; font-size: 16px !important; line-height: 1.05 !important; }
+.cp437-priority-alert p { font-size: 11px !important; line-height: 1.3 !important; max-width: 620px !important; }
+.cp437-priority-alert-stats {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 10px !important;
+  min-width: 130px !important;
+}
+.cp437-priority-alert-stats div { display: grid !important; gap: 1px !important; justify-items: center !important; min-width: 44px !important; }
+.cp437-priority-alert-stats strong { font-size: 16px !important; line-height: 1 !important; }
+.cp437-priority-alert-stats small { font-size: 8px !important; letter-spacing: .08em !important; line-height: 1.1 !important; }
+.cp436-priority-row {
+  min-height: 64px !important;
+  align-items: center !important;
+  box-shadow: inset 2px 0 0 #ff8a3d !important;
+}
+.cp436-priority-row .cp436-priority-badge,
+.cp437-priority-cell .cp436-priority-badge {
+  min-height: 18px !important;
+  padding: 0 7px !important;
+  font-size: 8px !important;
+  letter-spacing: .08em !important;
+}
+.cp437-priority-cell { gap: 3px !important; }
+.cp437-priority-cell small { color:#ffc98d !important; font-size:10px !important; line-height:1.15 !important; }
+.cp436-priority-accept { min-height: 34px !important; height: 34px !important; padding: 0 11px !important; border-radius: 8px !important; }
+.cp436-agency-job-table .client-request-history-head span:nth-child(4)::after { content:'' !important; }
+.cp436-marketplace-view .client-request-history-head span:nth-child(4) { font-size:0 !important; }
+.cp436-marketplace-view .client-request-history-head span:nth-child(4)::before { content:'Priority'; font-size:10px; }
+.cp436-priority-detail-banner p { font-size: 11px !important; }
+@media (max-width: 980px) {
+  .cp437-priority-alert { grid-template-columns:1fr !important; }
+  .cp437-priority-alert-stats { width:100% !important; justify-content:flex-start !important; }
+}

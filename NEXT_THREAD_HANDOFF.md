@@ -5,7 +5,7 @@ We are building **Co Pilot Security Marketplace**, the Uber-style marketplace ve
 Current repo: **security-uber**
 
 Current latest working package:
-**v4.0.36 PRIORITY RESPONSE MARKETPLACE FLOW**
+**v4.0.37 PRIORITY RESPONSE CARD CLEANUP + NO PRICING**
 
 Supabase:
 `https://nmfvxozbptcvyaenvkxl.supabase.co`
@@ -26,7 +26,7 @@ Latest additions:
 - Agency Job Board pins/highlights Priority Response jobs with premium payout language.
 - Platform Admin sees Priority Response alert counts and priority map markers.
 - Guard Active Job shows Priority Response assignment badge.
-- No new SQL required for v4.0.36.
+- No new SQL required for v4.0.37.
 
 Preserved from previous builds:
 - v4.0.35 final portal QA lock.
@@ -43,3 +43,7 @@ Next likely build:
 **v4.0.37 MARKETPLACE PRICING + PLATFORM FEE DISPLAY**
 
 That should formalize client price, agency payout, and Co Pilot platform fee across standard and Priority Response jobs.
+
+
+## v4.0.37 note
+Priority Response cards were tightened and all pricing/payout language was removed until pricing, platform fees, and agency payouts are finalized. No new SQL required.

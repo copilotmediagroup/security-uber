@@ -1,17 +1,15 @@
 Co Pilot Security Marketplace
-Version: 4.0.36
-Build Name: PRIORITY RESPONSE MARKETPLACE FLOW
+Version: 4.0.37
+Build Name: PRIORITY RESPONSE CARD CLEANUP + NO PRICING
 Package: GITHUB READY / LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Adds Priority Response as a premium marketplace request class.
-- Client sees safety acknowledgement that Co Pilot is not a replacement for 911.
-- Priority requests enter the same marketplace_jobs backbone using urgent priority/on-demand flow.
-- Agency Job Board pins and visually highlights Priority Response jobs.
-- Platform Admin gets Priority Response live alert visibility.
-- Platform map uses a pulsing priority marker and orange priority routes only during active movement.
-- Guard Active Job shows Priority Response assignment badge when assigned.
+- Tightens the Priority Response card layout on the Agency Job Board.
+- Removes client price, agency payout, and premium payout language from Priority Response screens for now.
+- Keeps Priority Response pinned and visually distinct without showing pricing.
+- Keeps the 911 safety language, marketplace job flow, priority map markers, and guard/admin/agency visibility.
+- Preserves v4.0.35 final portal QA lock and all previous map/sidebar fixes.
 
 Badge:
-v4.0.36 PRIORITY RESPONSE MARKETPLACE FLOW
+v4.0.37 PRIORITY RESPONSE CARD CLEANUP + NO PRICING

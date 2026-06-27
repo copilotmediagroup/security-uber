@@ -1,21 +1,19 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.36",
-  "buildName": "PRIORITY RESPONSE MARKETPLACE FLOW",
+  "version": "4.0.37",
+  "buildName": "PRIORITY RESPONSE CARD CLEANUP + NO PRICING",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v436.js",
+  "entry": "index.html loads script-v437.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
-  "sql": "No new SQL required for Priority Response. It uses existing marketplace_jobs priority/patrol_type/request_notes fields.",
+  "sql": "No new SQL required. This is a UI cleanup/no-pricing patch for Priority Response.",
   "latestImportantFixes": [
-    "Priority Response added as a client request type with 911 safety acknowledgement",
-    "Priority Response submits through existing on-demand urgent marketplace flow",
-    "Agency Job Board pins Priority Response jobs and shows premium payout language",
-    "Platform Admin dashboard shows Priority Response live alert counts",
-    "Platform map shows pulsing Priority Response markers and orange route lines only while movement is active",
-    "Guard Active Job shows Priority Response assignment badge when assigned",
-    "Preserves v4.0.35 final portal QA lock, compact company cards, universal map cards, and route lifecycle enforcement"
+    "Priority Response cards tightened for the Agency Job Board and marketplace view",
+    "All Priority Response pricing, client price, agency payout, and premium payout language removed for now",
+    "Priority Response remains pinned above standard jobs and visually distinct",
+    "911 safety acknowledgement remains in client Priority Response request flow",
+    "Preserves Priority Response map markers, lifecycle routing rules, v4.0.35 QA lock, compact company cards, universal map cards, and sidebar stack fix"
   ]
 }

@@ -1,7 +1,7 @@
-# Co Pilot Security Marketplace v4.0.36 — Priority Response Marketplace Flow
+# Co Pilot Security Marketplace v4.0.37 — Priority Response Marketplace Flow
 
 ## Current build
-**v4.0.36 PRIORITY RESPONSE MARKETPLACE FLOW**
+**v4.0.37 PRIORITY RESPONSE CARD CLEANUP + NO PRICING**
 
 This package adds **Priority Response** as a premium marketplace request type. It is not branded as a 911/emergency replacement.
 
@@ -15,7 +15,7 @@ This package adds **Priority Response** as a premium marketplace request type. I
 - Guard Active Job shows a Priority Response assignment badge when assigned.
 
 ## SQL
-No new SQL is required for v4.0.36.
+No new SQL is required for v4.0.37.
 
 Priority Response uses existing fields:
 - `marketplace_jobs.priority`
@@ -25,4 +25,8 @@ Priority Response uses existing fields:
 Keep the previous SQL files only for fresh projects or previous optional fixes.
 
 ## Expected badge
-`v4.0.36 PRIORITY RESPONSE MARKETPLACE FLOW`
+`v4.0.37 PRIORITY RESPONSE CARD CLEANUP + NO PRICING`
+
+
+## v4.0.37 note
+Priority Response cards were tightened and all pricing/payout language was removed until pricing, platform fees, and agency payouts are finalized. No new SQL required.
