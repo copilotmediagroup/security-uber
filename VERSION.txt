@@ -1,14 +1,14 @@
 Co Pilot Security Marketplace
-Version: 4.0.18
-Build Name: ADMIN LIVE ACTIVITY STATUS SYNC
-Package: CONSOLIDATED LESS THAN 20 FILES
+Version: 4.0.19
+Build Name: QUIET ADMIN LIVE SYNC NO PAGE RELOAD
+Package: GITHUB READY ZIP
 Date: 2026-06-27
 
 Summary:
-- Keeps v4.0.17 server-root entry lock / stale dist badge fix.
-- Platform Admin Marketplace Activity now syncs guard lifecycle steps from job_events, marketplace_jobs timestamps, proof rows, report rows, and local publish audit rows.
-- Admin feed clearly covers guard accepted, en route, arrived, checking property, proof uploaded, completed, and report published.
-- Platform Command Center auto-refreshes while open.
+- Emergency fix after v4.0.18 auto-refresh made the Platform Admin page feel like it was constantly reloading.
+- Disables old full-dashboard auto-render timers from the Platform Command Center.
+- Keeps manual Refresh working.
+- Uses quiet admin sync that updates activity/status panels without resetting the map or redrawing the whole page.
 
 Badge:
-v4.0.18 ADMIN LIVE ACTIVITY STATUS SYNC
+v4.0.19 QUIET ADMIN LIVE SYNC NO PAGE RELOAD

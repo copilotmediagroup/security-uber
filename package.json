@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v418-admin-live-activity-status-sync",
-  "version": "4.0.18",
+  "name": "co-pilot-security-marketplace-v419-quiet-admin-live-sync-no-page-reload",
+  "version": "4.0.19",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.18 syncing Platform Admin Marketplace Activity with every guard lifecycle and report publish status.",
+  "description": "Co Pilot Security Marketplace v4.0.19 quiet admin live sync fix that stops dashboard reloading while preserving activity status sync.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

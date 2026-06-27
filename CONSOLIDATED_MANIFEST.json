@@ -1,23 +1,19 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.18",
-  "buildName": "ADMIN LIVE ACTIVITY STATUS SYNC",
+  "version": "4.0.19",
+  "buildName": "QUIET ADMIN LIVE SYNC NO PAGE RELOAD",
   "packageType": "consolidated-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v418.js",
+  "entry": "index.html loads script-v419.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
-  "sql": "RUN_IF_NEEDED_ALL_SQL_V400_TO_V417_CONSOLIDATED.sql (unchanged; do not rerun unless fresh/missing RPC)",
+  "sql": "RUN_IF_NEEDED_ALL_SQL_V400_TO_V417_CONSOLIDATED.sql",
   "latestImportantFixes": [
-    "v4.0.18 patches Platform Admin Marketplace Activity to read job_events, marketplace_jobs timestamps, proof rows, reports, and local publish audit rows",
-    "v4.0.18 shows guard accepted, en route, arrived, checking property, proof uploaded, completed, and report published in one live admin feed",
-    "v4.0.18 adds a 6-second Platform Command Center refresh layer and a final badge lock for v4.0.18",
-    "v4.0.17 fixed stale dist/index.html causing old badge to persist",
-    "Platform Command Center shows marketplace-wide real map visibility",
-    "Platform activity feed reads guard lifecycle updates",
-    "Agency admins add guards directly under their agency",
-    "Agency admins accept marketplace jobs and assign their own guards",
-    "Guard Active Job uses marketplace_jobs lifecycle statuses"
+    "v4.0.19 stops Platform Admin from visually reloading every few seconds",
+    "Disables old v4.0.12 full-dashboard auto-render timer for Platform Command Center",
+    "Replaces v4.0.18 6-second full render with 30-second quiet panel sync",
+    "Manual Refresh button still performs a full data refresh when needed",
+    "Marketplace Activity still reads guard lifecycle events, proof uploads, and report published activity"
   ]
 }
