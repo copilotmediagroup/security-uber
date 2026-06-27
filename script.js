@@ -1,8 +1,8 @@
 
-const CP_DEV_CACHE_BUST = '2026-06-27T04-11-guard-marketplace-job-flow';
+const CP_DEV_CACHE_BUST = '2026-06-27T04-12-platform-lifecycle-sync-fix';
 const BUILD = {
-  version: '4.0.11',
-  label: 'v4.0.11 GUARD MARKETPLACE JOB FLOW'
+  version: '4.0.12',
+  label: 'v4.0.12 PLATFORM LIFECYCLE SYNC FIX'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -13820,4 +13820,291 @@ document.addEventListener('click', async e => {
   BUILD.version = '4.0.11';
   BUILD.label = 'v4.0.11 GUARD MARKETPLACE JOB FLOW';
   window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
+})();
+
+
+/* -----------------------------------------------------------------------------
+   v4.0.12 PLATFORM LIFECYCLE SYNC FIX
+   Platform Command Center now follows the same marketplace_jobs + job_events
+   lifecycle that guards update from their Active Job flow. Platform Admin gets
+   auto-refresh, richer job ownership rows, current guard step badges, and a
+   real-time activity stream without acting as dispatch.
+----------------------------------------------------------------------------- */
+(function cp412PlatformLifecycleSyncFix(){
+  const CP412_STATUSES = ['open_marketplace','agency_accepted','guard_assigned','assigned','guard_accepted','accepted','en_route','arrived','in_progress','active','proof_uploaded','completed','report_published','published'];
+  const CP412_ACTIVE_STATUSES = ['guard_assigned','assigned','guard_accepted','accepted','en_route','arrived','in_progress','active','proof_uploaded'];
+  const CP412_DONE_STATUSES = ['completed','report_published','published'];
+  const CP412_STATUS_RANK = {
+    open_marketplace: 1, pending_marketplace: 1, marketplace_open: 1,
+    agency_accepted: 2, accepted_by_agency: 2,
+    guard_assigned: 3, assigned: 3,
+    guard_accepted: 4, accepted: 4,
+    en_route: 5,
+    arrived: 6,
+    in_progress: 7, active: 7,
+    proof_uploaded: 8,
+    completed: 9,
+    report_published: 10, published: 10
+  };
+  const CP412_STATUS_COPY = {
+    open_marketplace: ['Open Marketplace', 'Visible to approved agencies'],
+    pending_marketplace: ['Open Marketplace', 'Visible to approved agencies'],
+    marketplace_open: ['Open Marketplace', 'Visible to approved agencies'],
+    agency_accepted: ['Agency Accepted', 'Locked to company'],
+    accepted_by_agency: ['Agency Accepted', 'Locked to company'],
+    guard_assigned: ['Guard Assigned', 'Waiting for guard to accept'],
+    assigned: ['Guard Assigned', 'Waiting for guard to accept'],
+    guard_accepted: ['Guard Accepted', 'Guard accepted assignment'],
+    accepted: ['Guard Accepted', 'Guard accepted assignment'],
+    en_route: ['En Route', 'Guard is traveling to property'],
+    arrived: ['Arrived', 'Guard is on site'],
+    in_progress: ['In Progress', 'Guard is checking property'],
+    active: ['In Progress', 'Guard is checking property'],
+    proof_uploaded: ['Proof Uploaded', 'Waiting for agency review/report'],
+    completed: ['Completed', 'Guard completed job'],
+    report_published: ['Report Published', 'Client report released'],
+    published: ['Report Published', 'Client report released']
+  };
+  function cp412Status(status = '') {
+    const raw = String(status || '').trim().toLowerCase();
+    if (raw === 'on_way' || raw === 'on-route' || raw === 'on_route') return 'en_route';
+    if (raw === 'checking' || raw === 'started' || raw === 'patrol_started') return 'in_progress';
+    if (raw === 'upload_proof') return 'proof_uploaded';
+    if (raw === 'complete') return 'completed';
+    return raw || 'open_marketplace';
+  }
+  function cp412Rank(status = '') { return CP412_STATUS_RANK[cp412Status(status)] || 0; }
+  function cp412JobId(job = {}) { return String(job.id || job.marketplace_job_id || job.job_id || '').trim(); }
+  function cp412EventJobId(e = {}) { return String(e.job_id || e.marketplace_job_id || e.marketplace_job || '').trim(); }
+  function cp412EventStatus(e = {}) {
+    const joined = [e.event_status, e.current_status, e.next_status, e.event_type, e.title, e.action].filter(Boolean).join(' ').toLowerCase();
+    if (/report.*publish|published/.test(joined)) return 'report_published';
+    if (/complete/.test(joined)) return 'completed';
+    if (/proof.*upload|uploaded.*proof|proof_uploaded/.test(joined)) return 'proof_uploaded';
+    if (/progress|started patrol|start.*patrol|checking/.test(joined)) return 'in_progress';
+    if (/arrived|on site/.test(joined)) return 'arrived';
+    if (/en.route|en_route|on way|travel/.test(joined)) return 'en_route';
+    if (/guard.*accept|guard_accepted/.test(joined)) return 'guard_accepted';
+    if (/guard.*assign|guard_assigned|assigned/.test(joined)) return 'guard_assigned';
+    if (/agency.*accept|agency_accepted/.test(joined)) return 'agency_accepted';
+    if (/client.*request|open marketplace|open_marketplace/.test(joined)) return 'open_marketplace';
+    return cp412Status(e.event_status || e.event_type || e.current_status || '');
+  }
+  function cp412EventTime(e = {}) { return e.created_at || e.event_at || e.updated_at || e.inserted_at || ''; }
+  function cp412EventText(e = {}) { return [e.event_type, e.event_status, e.title, e.details, e.message, e.description, e.actor_name].filter(Boolean).join(' '); }
+  function cp412NormalizePlatformLifecycleState() {
+    try {
+      const events = (state.jobEvents || []).slice().sort((a,b) => new Date(cp412EventTime(a) || 0) - new Date(cp412EventTime(b) || 0));
+      const proofs = (state.proofItems || []).slice();
+      state.marketplaceJobs = (state.marketplaceJobs || []).map(job => {
+        const id = cp412JobId(job);
+        if (!id) return job;
+        let merged = { ...job };
+        const current = cp412Status(merged.current_status || merged.status || 'open_marketplace');
+        let bestStatus = current;
+        let bestTime = merged.updated_at || merged.created_at || '';
+        const jobEvents = events.filter(e => cp412EventJobId(e) === id || String(e.patrol_request_id || '') === String(job.patrol_request_id || ''));
+        for (const e of jobEvents) {
+          const eventStatus = cp412EventStatus(e);
+          if (!eventStatus) continue;
+          const eventRank = cp412Rank(eventStatus);
+          const bestRank = cp412Rank(bestStatus);
+          const eventTime = cp412EventTime(e);
+          if (eventRank > bestRank || (eventRank === bestRank && new Date(eventTime || 0) > new Date(bestTime || 0))) {
+            bestStatus = eventStatus;
+            bestTime = eventTime || bestTime;
+          }
+          if (!merged.assigned_guard_name && e.actor_role === 'guard' && e.actor_name) merged.assigned_guard_name = e.actor_name;
+          if (!merged.accepted_agency_name && e.actor_agency_name) merged.accepted_agency_name = e.actor_agency_name;
+        }
+        const proofForJob = proofs.filter(p => String(p.marketplace_job_id || p.job_id || '') === id || String(p.request_id || '') === String(job.patrol_request_id || ''));
+        if (proofForJob.length && cp412Rank(bestStatus) < cp412Rank('proof_uploaded') && !CP412_DONE_STATUSES.includes(bestStatus)) {
+          bestStatus = 'proof_uploaded';
+          const latestProof = proofForJob.sort((a,b) => new Date(b.uploaded_at || b.created_at || 0) - new Date(a.uploaded_at || a.created_at || 0))[0];
+          bestTime = latestProof?.uploaded_at || latestProof?.created_at || bestTime;
+        }
+        merged.current_status = bestStatus;
+        merged.status = bestStatus;
+        merged.updated_at = bestTime || merged.updated_at;
+        merged._platform_lifecycle_status = bestStatus;
+        merged._platform_lifecycle_events = jobEvents;
+        merged._platform_proof_count = Math.max(Number(merged.proof_count || 0), proofForJob.length);
+        return merged;
+      });
+    } catch (err) {
+      console.warn('v4.0.12 platform lifecycle normalization skipped:', err);
+    }
+  }
+
+  const cp412BaseLoadData = loadData;
+  loadData = async function cp412LoadDataWithLifecycleSync(...args) {
+    const result = await cp412BaseLoadData.apply(this, args);
+    cp412NormalizePlatformLifecycleState();
+    state.platformLifecycleLastSyncAt = new Date().toISOString();
+    return result;
+  };
+
+  function cp412LifecycleLabel(status = '') { return (CP412_STATUS_COPY[cp412Status(status)] || [statusText(status), 'Marketplace status'])[0]; }
+  function cp412LifecycleSub(status = '') { return (CP412_STATUS_COPY[cp412Status(status)] || [statusText(status), 'Marketplace status'])[1]; }
+  function cp412LifecycleChip(status = '') {
+    const s = cp412Status(status);
+    const tone = s === 'completed' || s === 'report_published' || s === 'published' ? 'green' : s === 'proof_uploaded' ? 'purple' : ['in_progress','active','arrived','en_route','guard_accepted','accepted'].includes(s) ? 'cyan' : ['guard_assigned','assigned','agency_accepted'].includes(s) ? 'amber' : 'blue';
+    return `<span class="workflow-stage-chip ${tone}"><b>${esc(cp412LifecycleLabel(s))}</b><small>${esc(cp412LifecycleSub(s))}</small></span>`;
+  }
+  function cp412IsPlatformCommand() { return Boolean(isPlatformAdmin && isPlatformAdmin() && !isAgencyAdmin() && state.role === 'admin' && (state.view === 'dashboard' || state.view === 'live-gps')); }
+  function cp412LatestJobEvent(job = {}) {
+    const id = cp412JobId(job);
+    return (state.jobEvents || []).filter(e => cp412EventJobId(e) === id || String(e.patrol_request_id || '') === String(job.patrol_request_id || '')).sort((a,b) => new Date(cp412EventTime(b) || 0) - new Date(cp412EventTime(a) || 0))[0] || null;
+  }
+  function cp412JobUpdatedAt(job = {}) {
+    const e = cp412LatestJobEvent(job);
+    return cp412EventTime(e) || job.updated_at || job.completed_at || job.proof_uploaded_at || job.started_at || job.arrived_at || job.en_route_at || job.guard_accepted_at || job.assigned_at || job.created_at || '';
+  }
+
+  cp409JobStatus = function(job = {}) { return cp412Status(job._platform_lifecycle_status || job.current_status || job.status || 'open_marketplace'); };
+  cp409IsAcceptedJob = function(job = {}) { return Boolean(cp409AgencyId(job)) || cp412Rank(cp409JobStatus(job)) >= cp412Rank('agency_accepted'); };
+  cp409IsAssignedJob = function(job = {}) { return Boolean(job.assigned_guard_id || job.guard_id) || cp412Rank(cp409JobStatus(job)) >= cp412Rank('guard_assigned'); };
+  cp409IsActiveJob = function(job = {}) { return CP412_ACTIVE_STATUSES.includes(cp409JobStatus(job)); };
+  cp407RouteEligibleStatus = function(status = '') { return CP412_ACTIVE_STATUSES.concat(CP412_DONE_STATUSES).includes(cp412Status(status)); };
+
+  cp409JobForGuard = function(guard = {}) {
+    const keys = dispatchGuardIdentityKeys ? dispatchGuardIdentityKeys(guard) : [guard.id, guard.email].filter(Boolean).map(v => String(v).toLowerCase());
+    return marketplaceJobRows().slice().sort((a,b) => {
+      const activeDelta = (cp409IsActiveJob(b) ? 1 : 0) - (cp409IsActiveJob(a) ? 1 : 0);
+      if (activeDelta) return activeDelta;
+      return new Date(cp412JobUpdatedAt(b) || 0) - new Date(cp412JobUpdatedAt(a) || 0);
+    }).find(job => {
+      const assigned = [job.assigned_guard_id, job.guard_id, job.assigned_guard_auth_user_id, job.assigned_guard_email, job.guard_email].filter(Boolean).map(v => String(v).trim().toLowerCase());
+      return assigned.some(x => keys.includes(x));
+    }) || null;
+  };
+
+  cp409PlatformCommandKpis = function() {
+    const jobs = marketplaceJobRows();
+    const open = jobs.filter(cp409IsOpenJob).length;
+    const accepted = jobs.filter(cp409IsAcceptedJob).length;
+    const assigned = jobs.filter(cp409IsAssignedJob).length;
+    const inMotion = jobs.filter(j => ['guard_accepted','accepted','en_route','arrived','in_progress','active','proof_uploaded'].includes(cp409JobStatus(j))).length;
+    const completed = jobs.filter(j => CP412_DONE_STATUSES.includes(cp409JobStatus(j))).length;
+    const online = cp409PlatformOnlineGuardEntries().length;
+    const activeCompanies = cp409ActiveAgencies().length;
+    const approvedCompanies = cp409ApprovedAgencies().length;
+    return `<section class="kpi-row platform-command-kpi-row cp412-kpi-row">
+      ${kpiCard('▦','Active Companies',activeCompanies,`${approvedCompanies} approved agencies`,'#31c8ff')}
+      ${kpiCard('◈','Open Jobs',open,'Visible to approved agencies','#ffb53d')}
+      ${kpiCard('➜','In Motion',inMotion,`${assigned} assigned / ${accepted} accepted`,'#37dc72')}
+      ${kpiCard('⌖','Online Guards',online,`${completed} completed jobs`,'#b05cff')}
+    </section>`;
+  };
+
+  cp409JobOwnershipTable = function() {
+    const rows = cp409PlatformJobsAll().slice(0, 12);
+    return `<section class="panel panel-pad cp409-jobs-panel cp412-jobs-panel"><div class="panel-head"><div><h2>Live Job Ownership</h2><p>Every row reads marketplace_jobs.current_status plus job_events from the guard lifecycle.</p></div><button class="ghost-button" data-action="platform-command-refresh-v409">Refresh</button></div><div class="client-request-history-table cp409-jobs-table cp412-jobs-table"><div class="client-request-history-head"><span>Job</span><span>Client / Property</span><span>Live Stage</span><span>Company</span><span>Guard</span><span>Last Update</span></div>${rows.length ? rows.map(job => {
+      const latest = cp412LatestJobEvent(job);
+      const guard = cp409JobGuardName(job);
+      const agency = cp409JobAgencyName(job);
+      return `<div class="client-request-history-row"><span><strong>${esc(job.job_number || job.id)}</strong><small>${esc(v401Service(job))}</small></span><span><strong>${esc(job.property_label || propertyLabel(job) || 'Property')}</strong><small>${esc(v401Address(job))}</small></span><span>${cp412LifecycleChip(cp409JobStatus(job))}</span><span><strong>${esc(agency)}</strong><small>${esc(cp409AgencyId(job) ? 'Accepted company' : 'Open to agencies')}</small></span><span><strong>${esc(guard)}</strong><small>${esc(cp409IsAssignedJob(job) ? 'Assigned by agency' : 'Waiting')}</small></span><span><strong>${esc(timeAgo(cp412JobUpdatedAt(job)))}</strong><small>${esc(latest?.title || latest?.event_type || cp412LifecycleLabel(cp409JobStatus(job)))}</small></span></div>`;
+    }).join('') : '<div class="empty">No marketplace jobs match your filters.</div>'}</div></section>`;
+  };
+
+  cp409PlatformActivityFeed = function() {
+    const companyFilter = String(state.platformCommandCompanyFilter || 'all');
+    const allowedJobIds = new Set(cp409PlatformJobsAll().map(j => cp412JobId(j)).filter(Boolean));
+    const eventRows = (state.jobEvents || []).slice().filter(e => {
+      const jid = cp412EventJobId(e);
+      return !allowedJobIds.size || !jid || allowedJobIds.has(jid);
+    }).map(e => ({
+      id: e.id || `${cp412EventJobId(e)}-${cp412EventTime(e)}-${e.event_type}`,
+      created_at: cp412EventTime(e),
+      status: cp412EventStatus(e),
+      title: e.title || e.event_type || cp412LifecycleLabel(cp412EventStatus(e)),
+      message: e.details || e.message || e.description || e.actor_name || '',
+      actor: e.actor_name || '',
+      raw: e
+    }));
+    const jobRows = cp409PlatformJobsAll().map(job => ({
+      id: `job-${cp412JobId(job)}`,
+      created_at: cp412JobUpdatedAt(job),
+      status: cp409JobStatus(job),
+      title: cp412LifecycleLabel(cp409JobStatus(job)),
+      message: `${cp409JobAgencyName(job)} · ${cp409JobGuardName(job)} · ${job.job_number || job.id}`,
+      actor: cp409JobGuardName(job),
+      raw: job
+    }));
+    const map = new Map();
+    [...eventRows, ...jobRows].forEach(row => { if (row.created_at) map.set(String(row.id), row); });
+    const rows = Array.from(map.values()).sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0, 12);
+    const lastSync = state.platformLifecycleLastSyncAt ? `Synced ${timeAgo(state.platformLifecycleLastSyncAt)}` : 'Sync ready';
+    return `<section class="panel panel-pad cp409-feed-panel cp412-feed-panel"><div class="panel-head"><div><h2>Marketplace Activity</h2><p>Guard lifecycle events, proof uploads, completion, and assignment movement.</p></div><button class="ghost-button" data-action="platform-command-refresh-v409">${esc(lastSync)}</button></div><div class="live-gps-feed-list">${rows.length ? rows.map(e => `<div class="live-gps-feed-row cp412-feed-${esc(cp412Status(e.status))}"><i></i><span><strong>${esc(fmtTime(e.created_at))}</strong><p>${esc(e.title || cp412LifecycleLabel(e.status))}</p><small>${esc(e.message || e.actor || '')}</small></span></div>`).join('') : '<div class="empty">No marketplace activity yet.</div>'}</div></section>`;
+  };
+
+  cp409CompanySummaryPanel = function() {
+    const rows = cp409CompanyRows().slice(0, 8);
+    return `<section class="panel panel-pad cp409-company-panel cp412-company-panel"><div class="panel-head"><div><h2>Company Activity</h2><p>Which licensed companies are active, what they own, and how far their guards moved the job.</p></div><button class="ghost-button" data-view="agency-approvals">Agencies</button></div><div class="cp409-company-list">${rows.length ? rows.map(row => {
+      const inMotion = row.jobs.filter(j => ['guard_accepted','accepted','en_route','arrived','in_progress','active','proof_uploaded'].includes(cp409JobStatus(j))).length;
+      const completed = row.jobs.filter(j => CP412_DONE_STATUSES.includes(cp409JobStatus(j))).length;
+      return `<div class="cp409-company-row"><span><strong>${esc(row.agency.agency_name || row.agency.name || 'Agency')}</strong><small>${esc(row.onlineCount)} online guards · ${esc(row.guards.length)} total guards</small><small>${esc(inMotion)} in motion · ${esc(completed)} completed</small></span><b>${esc(row.jobs.length)}</b><em>${esc(row.assigned)} assigned</em></div>`;
+    }).join('') : '<div class="empty">No approved agencies yet.</div>'}</div></section>`;
+  };
+
+  const cp412BasePlatformDashboard = platformCommandCenterDashboard;
+  platformCommandCenterDashboard = function() {
+    cp412NormalizePlatformLifecycleState();
+    const selectedCompany = String(state.platformCommandCompanyFilter || 'all');
+    const companyLabel = selectedCompany === 'all' ? 'All Companies' : selectedCompany === 'open' ? 'Open Marketplace' : cp409AgencyNameById(selectedCompany);
+    const syncText = state.platformLifecycleLastSyncAt ? `Last sync ${timeAgo(state.platformLifecycleLastSyncAt)}` : 'Live sync ready';
+    const jobs = marketplaceJobRows();
+    return `<div class="dashboard platform-command-center-view cp412-platform-sync"><header class="dashboard-header"><div class="title-block"><h1>Platform Command Center</h1><p>Whole marketplace visibility: companies, guards, client properties, accepted jobs, assigned routes, and guard lifecycle steps.</p></div><div class="header-actions"><span class="system-pill"><i></i>${esc(companyLabel)}</span><button class="ghost-button" data-action="platform-command-refresh-v409">${esc(syncText)}</button></div></header>
+      <section class="workflow-finished-panel success"><strong>Platform oversight, not dispatch</strong><p>Co Pilot sees the live marketplace lifecycle. Agencies accept jobs, assign guards, and the guard steps update the same global job record.</p></section>
+      ${cp409PlatformCommandKpis()}
+      <section class="platform-command-layout"><main class="platform-command-main">${cp409PlatformMapPanel()}${cp409JobOwnershipTable()}</main><aside class="platform-command-rail">${cp409CompanySummaryPanel()}${cp409PlatformActivityFeed()}<section class="panel panel-pad"><div class="panel-head"><div><h2>Global Lifecycle Totals</h2><p>Source of truth: marketplace_jobs + job_events.</p></div></div><div class="detail-grid"><span>Total Jobs</span><strong>${esc(jobs.length)}</strong><span>Open Marketplace</span><strong>${esc(jobs.filter(cp409IsOpenJob).length)}</strong><span>In Motion</span><strong>${esc(jobs.filter(cp409IsActiveJob).length)}</strong><span>Completed / Published</span><strong>${esc(jobs.filter(j => CP412_DONE_STATUSES.includes(cp409JobStatus(j))).length)}</strong></div></section></aside></section>
+    </div>`;
+  };
+
+  function cp412StopTimer() {
+    if (window.CP412_PLATFORM_LIFECYCLE_TIMER) {
+      clearInterval(window.CP412_PLATFORM_LIFECYCLE_TIMER);
+      window.CP412_PLATFORM_LIFECYCLE_TIMER = null;
+    }
+  }
+  async function cp412RefreshPlatformLifecycle(reason = 'timer') {
+    if (!cp412IsPlatformCommand()) { cp412StopTimer(); return; }
+    if (window.CP412_PLATFORM_LIFECYCLE_BUSY) return;
+    window.CP412_PLATFORM_LIFECYCLE_BUSY = true;
+    try {
+      await loadData();
+      if (cp412IsPlatformCommand()) render();
+    } catch (err) {
+      console.warn('Platform lifecycle sync failed:', err);
+    } finally {
+      window.CP412_PLATFORM_LIFECYCLE_BUSY = false;
+    }
+  }
+  function cp412EnsureTimer() {
+    if (!cp412IsPlatformCommand()) { cp412StopTimer(); return; }
+    if (!window.CP412_PLATFORM_LIFECYCLE_TIMER) {
+      window.CP412_PLATFORM_LIFECYCLE_TIMER = setInterval(() => cp412RefreshPlatformLifecycle('interval'), 9000);
+    }
+  }
+
+  const cp412BaseRender = render;
+  render = function cp412RenderWithPlatformSync(...args) {
+    const out = cp412BaseRender.apply(this, args);
+    cp412EnsureTimer();
+    return out;
+  };
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && cp412IsPlatformCommand()) setTimeout(() => cp412RefreshPlatformLifecycle('visible'), 250);
+  });
+  window.addEventListener('focus', () => {
+    if (cp412IsPlatformCommand()) setTimeout(() => cp412RefreshPlatformLifecycle('focus'), 250);
+  });
+
+  setTimeout(() => { try { cp412NormalizePlatformLifecycleState(); if (cp412IsPlatformCommand()) render(); } catch {} }, 900);
+  setTimeout(() => { try { if (cp412IsPlatformCommand()) cp412RefreshPlatformLifecycle('boot'); } catch {} }, 2500);
+
+  BUILD.version = '4.0.12';
+  BUILD.label = 'v4.0.12 PLATFORM LIFECYCLE SYNC FIX';
+  window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
+  window.CP_DEV_CACHE_BUST = '2026-06-27T04-12-platform-lifecycle-sync-fix';
 })();

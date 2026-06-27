@@ -1,22 +1,21 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-Latest package: v4.0.11 GUARD MARKETPLACE JOB FLOW
+Latest package: **v4.0.12 PLATFORM LIFECYCLE SYNC FIX**
 
-Important instruction: No Bolt AI prompts. Build complete GitHub-ready ZIP replacement packages only.
+Important: This remains the separate Uber-style security marketplace project, not the old v3 single-company app. Do not suggest Bolt AI prompts. Future changes must be complete GitHub-ready ZIP replacement packages.
 
-Current marketplace model:
-Client creates job → job opens to approved agencies → agency accepts → agency assigns its guard → guard works lifecycle → proof/report ownership stays tied to marketplace_jobs.
+Current Supabase: `https://nmfvxozbptcvyaenvkxl.supabase.co`
 
-What v4.0.11 added:
-- Guard Active Job reads assigned `marketplace_jobs` first.
-- Guard can Accept Job, Mark En Route, Mark Arrived, Start Patrol, Upload Proof, and Complete Job.
-- Guard steps update `marketplace_jobs.current_status`.
-- Guard steps write `job_events`.
-- Proof upload can attach to `marketplace_job_id`.
-- Completed marketplace jobs show in guard Completed view.
+What v4.0.12 fixed:
+- Platform Command Center now syncs with the guard marketplace lifecycle from v4.0.11.
+- Platform Admin reads `marketplace_jobs.current_status`, `job_events`, and proof records together.
+- Added auto-refresh while Platform Command Center is open.
+- Job Ownership now shows guard accepted, en route, arrived, in progress, proof uploaded, completed, and report published statuses.
+- Marketplace Activity feed shows latest guard lifecycle movement.
+- Company Activity panel shows in-motion/completed counts by agency.
 
-SQL to run after v4.0.10:
-`RUN_AFTER_V411_GUARD_MARKETPLACE_JOB_FLOW.sql`
+SQL after v4.0.11:
+- Run only `RUN_AFTER_V412_PLATFORM_LIFECYCLE_SYNC_FIX.sql`.
+- It is a cache-refresh/no-schema patch.
 
-Recommended next build:
-v4.0.12 CLIENT MARKETPLACE STATUS TRACKER — client sees open marketplace, agency accepted, guard assigned, guard accepted, en route, arrived, in progress, proof uploaded, completed, report published.
+Next recommended build: **v4.0.13 CLIENT MARKETPLACE STATUS TRACKER** so clients can see the same lifecycle from their dashboard.
