@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v431-compact-company-activity-universal-map-card-fix",
-  "version": "4.0.31",
+  "name": "co-pilot-security-marketplace-v432-compact-company-card-logo-map-header-cleanup",
+  "version": "4.0.32",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.31 makes the Company Activity card compact for the side panel and locks every map to the same image/detail-rich universal card system.",
+  "description": "Co Pilot Security Marketplace v4.0.32 removes the Platform Admin map header paragraph, keeps Company Activity as a compact side-panel card, and adds agency logo visibility support.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

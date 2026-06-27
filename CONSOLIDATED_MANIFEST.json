@@ -1,18 +1,18 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.31",
-  "buildName": "COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX",
+  "version": "4.0.32",
+  "buildName": "COMPACT COMPANY CARD LOGO + MAP HEADER CLEANUP",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v431.js",
+  "entry": "index.html loads script-v432.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
+  "optionalSql": "RUN_ONCE_V432_AGENCY_LOGO_VISIBILITY_FIX.sql",
   "latestImportantFixes": [
-    "Company Activity card is compact side-panel height instead of oversized dashboard block",
-    "Universal map card system reapplied after old map-card overrides",
-    "Platform Admin marker popups pull image/detail card data for guards and properties",
-    "Preserves global job-state map flow enforcement and prior marketplace fixes"
-  ],
-  "sql": "No new SQL required. Existing RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql remains included for proof-upload RLS if needed."
+    "Removed unwanted Platform Admin map header paragraph text",
+    "Company Activity card is compact for the side rail, not oversized",
+    "Agency logo/profile photo can persist into agency record for Platform Admin visibility",
+    "Universal map popup card system reasserted across Admin, Agency, Guard, and Client maps"
+  ]
 }

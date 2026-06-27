@@ -1,46 +1,38 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-We are building **Co Pilot Security Marketplace**, the Uber-style marketplace version of the security patrol app. Do not suggest Bolt AI prompts. All future changes must be full GitHub-ready ZIP replacement packages.
+We are building **Co Pilot Security Marketplace**, the Uber-style marketplace for licensed security agencies.
+
+Do not suggest Bolt AI prompts. The user has no Bolt tokens. All changes must be complete GitHub-ready ZIP replacement packages.
 
 Current repo: **security-uber**
 
-Latest package:
-**v4.0.31 COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX**
+Current latest build:
+**v4.0.32 COMPACT COMPANY CARD LOGO + MAP HEADER CLEANUP**
 
 Supabase:
 `https://nmfvxozbptcvyaenvkxl.supabase.co`
 
-Publishable key is already in `config.js`.
+What v4.0.32 fixed:
+- Removed the unwanted paragraph text from the Platform Admin map header.
+- Rebuilt the Company Activity card as a compact side-panel card, not a large dashboard/mockup block.
+- Company Activity card now keeps: left logo column, company name, online guards, total guards, jobs in motion, jobs completed.
+- Reasserted universal image/detail-rich map cards for Admin, Agency, Guard, and Client maps.
+- Added optional SQL patch `RUN_ONCE_V432_AGENCY_LOGO_VISIBILITY_FIX.sql` so agency profile/company photos can persist into the agency record and show in Platform Admin.
 
-Important marketplace model:
-- Co Pilot Security is the platform/software marketplace layer, not the licensed security provider.
-- Clients request patrol jobs.
-- Approved licensed/certified agencies accept open jobs.
-- The accepted job locks to that agency.
-- Agency Admin assigns its own guards.
-- Guard works lifecycle.
-- Agency Admin reviews proof and publishes the client report.
-- Platform Admin sees and audits everything but does not dispatch for agencies.
+Important SQL note:
+Do not rerun full consolidated SQL. Only run the v4.0.32 SQL patch if the agency logo still does not appear in Platform Admin.
 
-Latest v4.0.31 changes:
-- Built the approved Company Activity card layout.
-- Left side of each company card is a tall logo/image column.
-- Right side shows company name, online guards, total guards, jobs in motion, and jobs completed.
-- Universal map card system is enforced globally.
-- Platform Admin map markers now open the same compact professional cards with image/detail data.
-- Guard card format: company name, guard name, guard current address, guard image if available.
-- Client/property card format: client name, property name, property address, property image if available.
-- Preserves v4.0.29 single source badge lock and earlier flow fixes.
-
-Expected badge:
-**v4.0.31 COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX**
-
-No new SQL required.
-
-
-## v4.0.31 Update
-- Company Activity card is now compact for the side panel, about a small card height instead of a large block.
-- Left logo column remains, but resized to fit the rail.
-- Right-side stats show company name, online guards, total guards, jobs in motion, and jobs completed.
-- Universal image/detail map cards were reapplied globally for Platform Admin, Agency Admin, Guard, and Client maps.
-- No SQL required.
+Previous preserved fixes:
+- v4.0.31 compact company activity sizing
+- v4.0.30 company activity card direction + map data attempt
+- v4.0.29 single source badge lock
+- v4.0.28 universal map card system
+- v4.0.27 live GPS roster + property visibility
+- v4.0.26 global job state/map route enforcement
+- v4.0.25 agency proof review + client report delivery
+- v4.0.24 guard job-flow icon sync
+- v4.0.23 badge lock
+- v4.0.22 proof upload support
+- v4.0.21 profile photo save
+- v4.0.20 client tracker
+- v4.0.19 no-page-reload admin sync

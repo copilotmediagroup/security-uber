@@ -1,45 +1,31 @@
-# Co Pilot Security Marketplace v4.0.31 COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX
-
-This is the latest GitHub-ready replacement package for the **security-uber** marketplace app.
+# Co Pilot Security Marketplace v4.0.32
 
 ## Build
-**v4.0.31 COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX**
+**v4.0.32 COMPACT COMPANY CARD LOGO + MAP HEADER CLEANUP**
 
 ## What changed
-- Company Activity now uses the approved professional card layout:
-  - large company logo/image on the left
-  - company name on the right
+- Removed the long text paragraph from the Platform Admin map header.
+- Rebuilt **Company Activity** as a compact side-panel card.
+- Kept the intended card structure:
+  - logo/photo column on the left
+  - company name
   - online guards
   - total guards
   - jobs in motion
   - jobs completed
-- Map cards are now forced into one universal card system across:
-  - Platform Admin maps
-  - Agency Admin maps
-  - Guard maps
-  - Client maps
-- Platform Admin Leaflet markers now open image/detail-rich cards instead of text-only tooltips.
-- Guard cards show company name, guard name, guard image when available, and current address.
-- Client/property cards show client name, property name, property image when available, and address.
+- Reasserted one universal image/detail map card system across Admin, Agency, Guard, and Client maps.
+- Added optional SQL support so agency profile photos/logos can persist to the agency record and show to Platform Admin.
 
 ## Supabase
-Use the marketplace Supabase only:
-`https://nmfvxozbptcvyaenvkxl.supabase.co`
+Use the existing marketplace Supabase project.
 
-The publishable key is already in `config.js`.
+Do **not** rerun the full consolidated SQL.
 
-## SQL
-No new SQL is required for v4.0.31.
+Only run this new one-time patch if the agency/company logo still does not appear in Platform Admin Company Activity:
 
-The included proof-upload SQL file should only be run if proof upload still shows a Supabase RLS policy error.
+`RUN_ONCE_V432_AGENCY_LOGO_VISIBILITY_FIX.sql`
+
+After running the SQL patch, have the Agency Admin save the profile/company photo once more if the old upload does not immediately backfill.
 
 ## Expected badge
-**v4.0.31 COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX**
-
-
-## v4.0.31 Update
-- Company Activity card is now compact for the side panel, about a small card height instead of a large block.
-- Left logo column remains, but resized to fit the rail.
-- Right-side stats show company name, online guards, total guards, jobs in motion, and jobs completed.
-- Universal image/detail map cards were reapplied globally for Platform Admin, Agency Admin, Guard, and Client maps.
-- No SQL required.
+`v4.0.32 COMPACT COMPANY CARD LOGO + MAP HEADER CLEANUP`

@@ -1,15 +1,15 @@
 Co Pilot Security Marketplace
-Version: 4.0.31
-Build Name: COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX
+Version: 4.0.32
+Build Name: COMPACT COMPANY CARD LOGO + MAP HEADER CLEANUP
 Package: GITHUB READY LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Fixes Company Activity card sizing so it is a compact side-panel card, not a large dashboard block.
-- Preserves the left logo column and right-side company stats layout.
-- Reapplies one universal map card system for Admin, Agency, Guard, and Client maps.
-- Platform Admin map marker cards now use image/detail-rich cards when images/details are available.
-- No new SQL required.
+- Removes the unwanted paragraph text from the Platform Admin map header.
+- Rebuilds Company Activity as a true compact side-panel card.
+- Preserves the left logo column, company name, online guards, total guards, jobs in motion, and jobs completed.
+- Adds an optional SQL patch so agency profile photos/logos persist into the agency record and appear for Platform Admin.
+- Reasserts universal image/detail-rich map cards for Admin, Agency, Guard, and Client maps.
 
 Badge:
-v4.0.31 COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX
+v4.0.32 COMPACT COMPANY CARD LOGO + MAP HEADER CLEANUP
