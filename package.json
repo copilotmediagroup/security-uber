@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v417-server-root-entry-lock-activity-feed",
-  "version": "4.0.17",
+  "name": "co-pilot-security-marketplace-v418-admin-live-activity-status-sync",
+  "version": "4.0.18",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.17 forcing Bolt to serve root entry files while preserving marketplace guard activity feed.",
+  "description": "Co Pilot Security Marketplace v4.0.18 syncing Platform Admin Marketplace Activity with every guard lifecycle and report publish status.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

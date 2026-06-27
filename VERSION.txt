@@ -1,20 +1,14 @@
 Co Pilot Security Marketplace
-Version: 4.0.17
-Build Name: SERVER ROOT ENTRY LOCK + ACTIVITY FEED
+Version: 4.0.18
+Build Name: ADMIN LIVE ACTIVITY STATUS SYNC
+Package: CONSOLIDATED LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Fixes the issue where Bolt kept serving stale /dist/index.html and the visible app badge remained v4.0.13.
-- server.cjs now always serves root index.html instead of preferring dist/index.html.
-- Root index.html loads script-v417.js with a v4.0.17 cache buster.
-- dist/ is still generated fresh for GitHub/static reference, but it is no longer the server entry source.
-- Preserves the v4.0.14/v4.0.15/v4.0.16 marketplace activity feed work.
-- Platform Admin Marketplace Activity should show guard lifecycle actions including accepted, en route, arrived, checking property, proof uploaded, completed, and report published.
+- Keeps v4.0.17 server-root entry lock / stale dist badge fix.
+- Platform Admin Marketplace Activity now syncs guard lifecycle steps from job_events, marketplace_jobs timestamps, proof rows, report rows, and local publish audit rows.
+- Admin feed clearly covers guard accepted, en route, arrived, checking property, proof uploaded, completed, and report published.
+- Platform Command Center auto-refreshes while open.
 
 Badge:
-v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED
-
-SQL:
-No real schema change required.
-Optional cache refresh:
-RUN_AFTER_V417_SERVER_ROOT_ENTRY_LOCK_ACTIVITY_FEED.sql
+v4.0.18 ADMIN LIVE ACTIVITY STATUS SYNC

@@ -1,18 +1,23 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.17",
-  "buildName": "SERVER ROOT ENTRY LOCK + ACTIVITY FEED",
-  "type": "server-root-entry-lock-activity-feed",
-  "sql_required": false,
-  "features": [
-    "Forces Bolt preview server to serve root index.html instead of stale dist/index.html",
-    "Adds script-v417.js as the current app entry file with v4.0.17 cache buster",
-    "Includes regenerated dist folder but prevents dist from overriding root during dev preview",
-    "Preserves marketplace guard lifecycle activity feed for Platform Admin",
-    "Preserves Platform Command Center real map and company/job ownership overlays"
-  ],
-  "expectedBadge": "v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED",
-  "sql_files": [
-    "RUN_AFTER_V417_SERVER_ROOT_ENTRY_LOCK_ACTIVITY_FEED.sql"
+  "repo": "security-uber",
+  "version": "4.0.18",
+  "buildName": "ADMIN LIVE ACTIVITY STATUS SYNC",
+  "packageType": "consolidated-less-than-20-files",
+  "fileCountTarget": "under 20 files at zip root",
+  "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
+  "entry": "index.html loads script-v418.js",
+  "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
+  "sql": "RUN_IF_NEEDED_ALL_SQL_V400_TO_V417_CONSOLIDATED.sql (unchanged; do not rerun unless fresh/missing RPC)",
+  "latestImportantFixes": [
+    "v4.0.18 patches Platform Admin Marketplace Activity to read job_events, marketplace_jobs timestamps, proof rows, reports, and local publish audit rows",
+    "v4.0.18 shows guard accepted, en route, arrived, checking property, proof uploaded, completed, and report published in one live admin feed",
+    "v4.0.18 adds a 6-second Platform Command Center refresh layer and a final badge lock for v4.0.18",
+    "v4.0.17 fixed stale dist/index.html causing old badge to persist",
+    "Platform Command Center shows marketplace-wide real map visibility",
+    "Platform activity feed reads guard lifecycle updates",
+    "Agency admins add guards directly under their agency",
+    "Agency admins accept marketplace jobs and assign their own guards",
+    "Guard Active Job uses marketplace_jobs lifecycle statuses"
   ]
 }

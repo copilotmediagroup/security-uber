@@ -13517,3 +13517,51 @@ button.is-busy {
 .cp414-feed-report_published i { background: var(--green); box-shadow: 0 0 0 5px rgba(55,220,114,.15); }
 .cp414-feed-row p { text-transform: none; letter-spacing: 0; }
 .cp414-feed-row small { line-height: 1.35; }
+
+
+/* v4.0.18 Admin Live Activity Status Sync */
+.cp418-feed-panel .panel-head p { max-width: 330px; }
+.cp418-coverage-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+.cp418-coverage-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(114,171,233,.20);
+  background: rgba(8, 22, 38, .62);
+  color: #cfe6ff;
+  font-size: 10px;
+  font-weight: 1000;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.cp418-feed-row { border-left: 3px solid rgba(49, 200, 255, .7); }
+.cp418-feed-source {
+  display: inline-flex;
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(126, 171, 219, .11);
+  color: var(--muted);
+  font-size: 9px;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.cp418-feed-guard_accepted i,
+.cp418-feed-en_route i,
+.cp418-feed-arrived i,
+.cp418-feed-in_progress i { background: var(--cyan); box-shadow: 0 0 0 5px rgba(49,200,255,.15); }
+.cp418-feed-proof_uploaded i { background: var(--purple); box-shadow: 0 0 0 5px rgba(176,92,255,.15); }
+.cp418-feed-completed i,
+.cp418-feed-report_published i,
+.cp418-feed-published i { background: var(--green); box-shadow: 0 0 0 5px rgba(55,220,114,.15); }
+.cp418-feed-agency_accepted i,
+.cp418-feed-guard_assigned i,
+.cp418-feed-assigned i { background: var(--amber); box-shadow: 0 0 0 5px rgba(255,181,61,.15); }

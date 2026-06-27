@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-// v4.0.17: Always serve root files. Do NOT prefer /dist,
+// v4.0.18: Always serve root files. Do NOT prefer /dist,
 // because stale dist/index.html was keeping Bolt locked on older badges.
 const root = __dirname;
 const port = process.env.PORT || 5173;
