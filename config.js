@@ -1,5 +1,5 @@
 window.COPILOT_SECURITY_CONFIG = {
   supabaseUrl: 'https://nmfvxozbptcvyaenvkxl.supabase.co',
   supabaseAnonKey: 'sb_publishable_TDy5UWNgZp0Ag4uj4-QAGw_kZAbw7nM',
-  appVersion: '4.0.19-quiet-admin-live-sync-no-page-reload'
+  appVersion: '4.0.20-client-marketplace-status-tracker'
 };

@@ -1,31 +1,52 @@
-# Co Pilot Security Marketplace v4.0.19 — Consolidated Package
+# Co Pilot Security Marketplace v4.0.20
 
-This is the latest working **Security Uber / marketplace** build consolidated to fewer than 20 files for easy upload into GitHub/Bolt.
+## Build
+**v4.0.20 CLIENT MARKETPLACE STATUS TRACKER**
 
-## Current build
-**v4.0.19 QUIET ADMIN LIVE SYNC NO PAGE RELOAD**
+This is a complete GitHub-ready replacement package for the `security-uber` repo.
 
-This build keeps the v4.0.17 server-root entry lock fix and adds a stronger Platform Admin Marketplace Activity sync layer.
-
-## What changed in v4.0.19
-- Platform Admin Marketplace Activity now builds one live feed from `job_events`, `marketplace_jobs` lifecycle timestamps, proof uploads, patrol report rows, and local report-publish audit rows.
-- The admin feed clearly covers: Guard accepted job → En route → Arrived → Checking property → Proof uploaded → Completed → Report published.
-- Platform Command Center now auto-refreshes every 6 seconds while the platform admin dashboard is open, plus refreshes on browser focus/visibility.
-- Report publish now attempts to sync the marketplace job to `report_published` and write a `job_events` row when permissions allow it; if Supabase blocks it, the UI still shows the local publish event.
-- Badge hard-lock updated to: `v4.0.19 QUIET ADMIN LIVE SYNC NO PAGE RELOAD`.
+## Important
+Do not use Bolt AI prompts. Upload/replace files through GitHub/Bolt import.
 
 ## Supabase
-Use the marketplace Supabase only:
+Use the marketplace Supabase project only:
 
-- URL: `https://nmfvxozbptcvyaenvkxl.supabase.co`
-- Publishable key is already in `config.js`
+`https://nmfvxozbptcvyaenvkxl.supabase.co`
+
+The publishable key is already inside `config.js`.
 
 ## SQL
-This package still includes the existing all-in-one SQL file:
+No new SQL is required for v4.0.20.
+
+Keep using:
 
 `RUN_IF_NEEDED_ALL_SQL_V400_TO_V417_CONSOLIDATED.sql`
 
-No new SQL is required for v4.0.19. Do **not** rerun SQL unless the Supabase project is fresh or a table/RPC/function error appears.
+Only run it if the Supabase project is fresh or a missing table/RPC/function error appears.
 
-## Main app flow
-Client requests job → job goes to open marketplace → approved agency accepts → job locks to agency → agency assigns its own guard → guard works lifecycle → Platform Admin sees activity/status/map globally.
+## What v4.0.20 adds
+Client Marketplace Status Tracker.
+
+The client now gets a clear Uber-style tracker that reads the shared marketplace lifecycle:
+
+1. Open Marketplace
+2. Agency Accepted
+3. Guard Assigned
+4. Guard Accepted
+5. En Route
+6. Arrived
+7. Checking Property
+8. Proof Uploaded
+9. Completed
+10. Report Published
+
+## Preserved from v4.0.19
+- No aggressive Platform Admin page reload.
+- No full dashboard refresh timer.
+- Quiet admin activity sync remains.
+- Manual Refresh still works.
+
+## Badge
+Expected badge:
+
+**v4.0.20 CLIENT MARKETPLACE STATUS TRACKER**

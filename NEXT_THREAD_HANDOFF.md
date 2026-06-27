@@ -5,7 +5,7 @@ We are building **Co Pilot Security Marketplace**, the Uber-style marketplace ve
 This is separate from the old v3 single-company app called **Co Pilot Security OS**.
 
 Current latest working package:
-**v4.0.19 QUIET ADMIN LIVE SYNC NO PAGE RELOAD**
+**v4.0.20 CLIENT MARKETPLACE STATUS TRACKER**
 
 Repo:
 **security-uber**
@@ -26,26 +26,35 @@ Important business model:
 - Platform Admin sees the whole marketplace but does not dispatch for agencies.
 
 Latest working app status:
-- v4.0.17 fixed the stale `/dist/index.html` issue that made Bolt keep showing old badges.
-- `server.cjs` serves root files first.
-- v4.0.19 keeps that server-root entry lock and updates the badge to `v4.0.19 QUIET ADMIN LIVE SYNC NO PAGE RELOAD`.
-- Platform Admin Command Center shows the marketplace-wide map, companies, guards, jobs, job ownership, and activity.
-- v4.0.19 strengthens Platform Admin Marketplace Activity so it reads from `job_events`, `marketplace_jobs` timestamps, proof rows, reports, and local report publish audit rows.
-- Admin activity should show: guard accepted job, en route, arrived, checking property / started patrol, proof uploaded, completed, and report published.
-- Platform Command Center auto-refreshes every 6 seconds while Platform Admin dashboard is open and refreshes on browser focus/visibility.
-- Agency Admin can add guards directly by email/password under the agency, accept jobs, and assign guards.
-- Guard Active Job reads assigned marketplace jobs and moves through lifecycle using `marketplace_jobs.current_status` and `job_events`.
+- v4.0.17 fixed stale `/dist/index.html` badge issues by serving root files first.
+- v4.0.18 added admin live activity sync but refreshed too aggressively.
+- v4.0.19 fixed that by removing full-page admin refresh and keeping quiet admin activity/status sync.
+- v4.0.20 adds Client Marketplace Status Tracker while preserving the v4.0.19 no-page-reload fix.
 
-Current consolidated package:
-The ZIP has fewer than 20 files and includes one all-in-one SQL file:
-`RUN_IF_NEEDED_ALL_SQL_V400_TO_V417_CONSOLIDATED.sql`
+v4.0.20 Client Tracker:
+Client Dashboard and Patrol Requests now show a marketplace timeline:
+Open Marketplace → Agency Accepted → Guard Assigned → Guard Accepted → En Route → Arrived → Checking Property → Proof Uploaded → Completed → Report Published.
 
-No new SQL was added for v4.0.19. Do not rerun SQL unless the Supabase project is fresh or a missing table/RPC error appears.
+The tracker reads:
+- `marketplace_jobs.current_status`
+- `marketplace_jobs` lifecycle timestamps
+- `job_events`
+- proof upload rows
+- report publish rows
 
-Where to go next:
-1. Upload/import the v4.0.19 ZIP into `security-uber`.
-2. Verify badge says `v4.0.19 QUIET ADMIN LIVE SYNC NO PAGE RELOAD`.
-3. As a guard, move an assigned marketplace job through Accept Job → En Route → Arrived → Start Patrol → Upload Proof → Complete.
-4. As Platform Admin, verify Marketplace Activity updates each lifecycle step clearly.
-5. Publish a report and confirm Report Published appears in Platform Admin Marketplace Activity.
-6. After admin lifecycle sync is solid, build **Client Marketplace Status Tracker** showing: Open marketplace → Agency accepted → Guard assigned → Guard accepted → En route → Arrived → Checking property → Proof uploaded → Completed → Report published.
+No new SQL is required.
+Do not rerun SQL unless the Supabase project is fresh or a missing table/RPC/function error appears.
+
+Next direction:
+1. Upload/test v4.0.20.
+2. Confirm the badge reads **v4.0.20 CLIENT MARKETPLACE STATUS TRACKER**.
+3. Client creates job and sees Open Marketplace.
+4. Agency accepts and client tracker moves to Agency Accepted.
+5. Agency assigns guard and tracker moves to Guard Assigned.
+6. Guard lifecycle should move tracker through Guard Accepted, En Route, Arrived, Checking Property, Proof Uploaded, Completed.
+7. When report publishes, tracker should show Report Published.
+
+After tracker is solid, next build should likely be:
+**v4.0.21 MARKETPLACE PRICING + PLATFORM FEE DISPLAY**
+
+That build should show client price, agency payout, and Co Pilot platform fee without yet adding real payment processing.

@@ -1,14 +1,15 @@
 Co Pilot Security Marketplace
-Version: 4.0.19
-Build Name: QUIET ADMIN LIVE SYNC NO PAGE RELOAD
-Package: GITHUB READY ZIP
+Version: 4.0.20
+Build Name: CLIENT MARKETPLACE STATUS TRACKER
+Package: GITHUB READY LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Emergency fix after v4.0.18 auto-refresh made the Platform Admin page feel like it was constantly reloading.
-- Disables old full-dashboard auto-render timers from the Platform Command Center.
-- Keeps manual Refresh working.
-- Uses quiet admin sync that updates activity/status panels without resetting the map or redrawing the whole page.
+- Latest marketplace build after v4.0.19 fixed aggressive admin page reloads.
+- Keeps quiet Platform Admin live sync with no full-page reload timer.
+- Adds a client-facing Uber-style Marketplace Status Tracker.
+- Client tracker reads marketplace_jobs.current_status, job_events, proof rows, and report rows.
+- No new SQL required.
 
 Badge:
-v4.0.19 QUIET ADMIN LIVE SYNC NO PAGE RELOAD
+v4.0.20 CLIENT MARKETPLACE STATUS TRACKER

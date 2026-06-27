@@ -13565,3 +13565,180 @@ button.is-busy {
 .cp418-feed-agency_accepted i,
 .cp418-feed-guard_assigned i,
 .cp418-feed-assigned i { background: var(--amber); box-shadow: 0 0 0 5px rgba(255,181,61,.15); }
+
+/* v4.0.20 Client Marketplace Status Tracker */
+.cp420-client-tracker-card {
+  overflow: hidden;
+  border-color: rgba(49, 200, 255, .28);
+  background: linear-gradient(180deg, rgba(8, 24, 43, .92), rgba(5, 16, 30, .96));
+}
+.cp420-client-tracker-card.compact { margin-bottom: 16px; }
+.cp420-tracker-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid rgba(114, 171, 233, .16);
+  border-radius: 12px;
+  background: radial-gradient(circle at 0 0, rgba(46,125,255,.22), transparent 38%), rgba(3, 14, 27, .72);
+}
+.cp420-tracker-hero span {
+  display: inline-flex;
+  margin-bottom: 5px;
+  color: #8ac7ff;
+  font-size: 11px;
+  font-weight: 1000;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.cp420-tracker-hero h3 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -.04em;
+}
+.cp420-tracker-hero p { margin: 7px 0 0; color: var(--muted); line-height: 1.45; }
+.cp420-tracker-hero b {
+  width: 74px;
+  height: 74px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(55,220,114,.36);
+  color: #8dffb4;
+  background: rgba(55,220,114,.10);
+  font-size: 22px;
+  font-weight: 1000;
+}
+.cp420-progress {
+  height: 10px;
+  margin: 14px 0;
+  border-radius: 999px;
+  background: rgba(113,169,232,.12);
+  overflow: hidden;
+  border: 1px solid rgba(113,169,232,.12);
+}
+.cp420-progress i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2e7dff, #31c8ff, #37dc72);
+}
+.cp420-job-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.cp420-job-facts span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid rgba(114,171,233,.14);
+  border-radius: 10px;
+  background: rgba(4, 15, 27, .58);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.cp420-job-facts strong {
+  color: var(--text);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cp420-job-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.cp420-job-option {
+  min-width: 0;
+  text-align: left;
+  display: grid;
+  gap: 3px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(114,171,233,.16);
+  background: rgba(8, 22, 38, .68);
+  color: var(--text);
+}
+.cp420-job-option.active {
+  border-color: rgba(49,200,255,.62);
+  background: rgba(46,125,255,.18);
+}
+.cp420-job-option strong { font-size: 13px; }
+.cp420-job-option small { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cp420-job-option span { color: #8dffb4; font-size: 11px; font-weight: 900; }
+.cp420-tracker-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.cp420-tracker-step {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(114,171,233,.14);
+  background: rgba(4,15,27,.56);
+  position: relative;
+}
+.cp420-tracker-step i {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  font-weight: 1000;
+  color: #8eb3d9;
+  border: 1px solid rgba(114,171,233,.18);
+  background: rgba(114,171,233,.08);
+}
+.cp420-tracker-step strong { display:block; font-size: 14px; }
+.cp420-tracker-step p { margin: 3px 0 5px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+.cp420-tracker-step small { color: var(--muted-2); font-size: 11px; }
+.cp420-tracker-step.done {
+  border-color: rgba(55,220,114,.24);
+  background: rgba(55,220,114,.08);
+}
+.cp420-tracker-step.done i {
+  color: #dfffe9;
+  border-color: rgba(55,220,114,.42);
+  background: rgba(55,220,114,.24);
+}
+.cp420-tracker-step.active {
+  border-color: rgba(49,200,255,.54);
+  box-shadow: 0 0 0 4px rgba(49,200,255,.08);
+  background: rgba(49,200,255,.10);
+}
+.cp420-tracker-step.active i {
+  color: #fff;
+  border-color: rgba(49,200,255,.62);
+  background: rgba(46,125,255,.38);
+}
+.cp420-tracker-step.final {
+  border-color: rgba(176,92,255,.38);
+  background: rgba(176,92,255,.12);
+}
+.cp420-client-copy {
+  margin-top: 14px;
+  padding: 13px 14px;
+  border-radius: 11px;
+  border: 1px solid rgba(49,200,255,.18);
+  background: rgba(49,200,255,.07);
+}
+.cp420-client-copy strong { display:block; margin-bottom: 4px; }
+.cp420-client-copy p { margin: 0; color: var(--muted); line-height: 1.45; }
+@media (max-width: 1180px) {
+  .cp420-job-facts, .cp420-tracker-steps, .cp420-job-options { grid-template-columns: 1fr; }
+}
