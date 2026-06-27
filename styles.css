@@ -15062,3 +15062,60 @@ button.is-busy {
   .cp437-priority-alert { grid-template-columns:1fr !important; }
   .cp437-priority-alert-stats { width:100% !important; justify-content:flex-start !important; }
 }
+
+/* v4.0.40 Priority Response alert + notification system */
+.cp440-priority-alert {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  margin: 0 0 14px;
+  padding: 13px 15px;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 128, 64, .46);
+  background: linear-gradient(135deg, rgba(64, 24, 11, .78), rgba(10, 20, 35, .90));
+  box-shadow: 0 16px 40px rgba(255, 101, 35, .12), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.cp440-priority-alert > div { min-width: 0; display: grid; gap: 4px; }
+.cp440-priority-alert span {
+  width: max-content;
+  max-width: 100%;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 162, 92, .42);
+  background: rgba(255, 113, 43, .12);
+  color: #ffb17e;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 1000;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.cp440-priority-alert strong { color: #fff6ed; font-size: 16px; letter-spacing: -.02em; }
+.cp440-priority-alert p { margin: 0; color: #d5bba8; font-size: 12px; line-height: 1.35; }
+.cp440-priority-alert aside {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 2px 8px;
+  align-items: center;
+  min-width: 116px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(3, 12, 22, .60);
+  border: 1px solid rgba(255, 184, 105, .20);
+}
+.cp440-priority-alert aside b { color: #fff; font-size: 18px; text-align: right; }
+.cp440-priority-alert aside small { color: #ffbe90; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
+.cp440-platform-alert { border-color: rgba(255, 184, 72, .50); }
+.cp440-agency-alert { border-color: rgba(255, 128, 64, .52); }
+.cp440-client-alert { border-color: rgba(255, 184, 72, .40); }
+.cp440-guard-alert { border-color: rgba(255, 128, 64, .48); }
+.notification-orb.priority, .notification-orb[class*="priority"] { background: rgba(255, 125, 44, .14); color: #ffb073; border-color: rgba(255, 125, 44, .35); }
+.notification-row.priority, .notification-row:has(.notification-orb.priority) { border-color: rgba(255, 125, 44, .32); }
+.cp436-priority-opportunity, .cp436-priority-band, .cp436-priority-row {
+  --priority-border: rgba(255, 128, 64, .52);
+}
+@media (max-width: 900px) {
+  .cp440-priority-alert { grid-template-columns: 1fr; }
+  .cp440-priority-alert aside { width: 100%; justify-content: start; }
+}

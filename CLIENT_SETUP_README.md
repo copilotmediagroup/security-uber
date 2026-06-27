@@ -1,38 +1,24 @@
-# Co Pilot Security Marketplace v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
+# Co Pilot Security Marketplace v4.0.40 — Priority Response Alert + Notification System
 
-## Current build
-**v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
+This is a complete GitHub-ready replacement package.
 
-This package adds **Priority Response** as a premium marketplace request type. It is not branded as a 911/emergency replacement.
+## Build
+**v4.0.40 PRIORITY RESPONSE ALERT + NOTIFICATION SYSTEM**
 
 ## What changed
-- Client Patrol Requests now includes **Priority Response**.
-- Priority Response shows a required safety acknowledgement: if anyone is in immediate danger, call 911.
-- The request submits through the existing `marketplace_jobs` foundation using urgent priority and on-demand flow.
-- Agency Job Board pins Priority Response jobs above standard jobs and shows premium payout language.
-- Platform Admin sees Priority Response live alert counts.
-- Platform map uses a pulsing Priority Response marker.
-- Guard Active Job shows a Priority Response assignment badge when assigned.
+- Priority Response now has marketplace-wide alert visibility without adding pricing yet.
+- Agency Admin sees Priority Response Available banners and virtual notification entries.
+- Platform Admin sees Priority Response Live oversight banners.
+- Client Dashboard can show Priority Response status after request.
+- Assigned Guard views can show Priority Response Assignment cues.
+- Notification badges can reflect Priority Response events without requiring a new SQL table.
+- Pricing/payout/platform-fee language remains removed until pricing is designed.
+
+## Preserved
+- v4.0.39 Agency Portal identity + separate Dashboard / Available Jobs / Agency Job Management routes.
+- v4.0.38 startup recovery.
+- v4.0.37 Priority Response card cleanup/no pricing.
+- v4.0.35 final UI QA lock.
 
 ## SQL
-No new SQL is required for v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
-
-Priority Response uses existing fields:
-- `marketplace_jobs.priority`
-- `marketplace_jobs.patrol_type`
-- `marketplace_jobs.request_notes`
-
-Keep the previous SQL files only for fresh projects or previous optional fixes.
-
-## Expected badge
-`v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
-
-
-## v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
-Priority Response cards were tightened and all pricing/payout language was removed until pricing, platform fees, and agency payouts are finalized. No new SQL required.
-
-
-## v4.0.39 update
-v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
-
-This build fixes Agency Admin portal identity text and separates the Agency Dashboard from Available Jobs and Agency Job Management. It preserves startup recovery, Priority Response cleanup, and requires no new SQL.
+No new SQL required.

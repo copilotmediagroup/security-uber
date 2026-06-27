@@ -1,55 +1,37 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-We are building **Co Pilot Security Marketplace**, the Uber-style marketplace version of the security patrol app. Do not suggest Bolt AI prompts because the user does not have Bolt tokens. All future changes must be complete GitHub-ready ZIP replacement packages.
+We are building **Co Pilot Security Marketplace**, the Uber-style marketplace for licensed security agencies.
 
-Current repo: **security-uber**
+Do not suggest Bolt AI prompts. Future changes must be complete GitHub-ready ZIP replacement packages.
 
-Current latest working package:
-**v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
+Current latest package:
+**v4.0.40 PRIORITY RESPONSE ALERT + NOTIFICATION SYSTEM**
+
+Repo:
+**security-uber**
 
 Supabase:
 `https://nmfvxozbptcvyaenvkxl.supabase.co`
 
-Publishable key is already in `config.js`.
+Current marketplace model:
+Client requests job → approved agency accepts → agency assigns guard → guard works lifecycle → client tracks status/report → Platform Admin oversees marketplace activity but does not dispatch for agencies.
 
-Important business model:
-- Co Pilot Security is the platform/software marketplace layer, not the licensed security provider.
-- Clients request patrol jobs.
-- Licensed/certified agencies accept open marketplace jobs.
-- The accepting agency assigns its own guard.
-- Platform Admin sees the whole marketplace but does not dispatch for agencies.
+Latest focus:
+Priority Response is now a special no-pricing job class, not a 911/emergency replacement. The app keeps safety language telling users to call 911 for immediate danger.
 
-Latest additions:
-- Priority Response added as a premium urgent request class, not a 911 replacement.
-- Client must acknowledge that immediate danger means call 911.
-- Priority Response flows through the existing marketplace job backbone.
-- Agency Job Board pins/highlights Priority Response jobs with premium payout language.
-- Platform Admin sees Priority Response alert counts and priority map markers.
-- Guard Active Job shows Priority Response assignment badge.
-- No new SQL required for v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
-
-Preserved from previous builds:
-- v4.0.35 final portal QA lock.
-- Sidebar stack fix across portals.
-- Platform map header text removal.
-- Compact Company Activity card.
-- Universal map cards.
-- Live GPS roster/property visibility.
-- Global job state + map route enforcement.
-- Agency proof review + client report delivery.
-- Client marketplace status tracker.
+v4.0.40 adds:
+- Agency Admin Priority Response Available alerts.
+- Platform Admin Priority Response Live alerts.
+- Client Priority Response status cues.
+- Guard Priority Response Assignment cues.
+- Priority virtual notifications without requiring new SQL.
+- Pricing remains intentionally removed.
 
 Next likely build:
-**v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
+**v4.0.41 PRIORITY RESPONSE ACCEPTANCE TIMER + ONLINE GUARD REQUIREMENT**
 
-That should formalize client price, agency payout, and Co Pilot platform fee across standard and Priority Response jobs.
-
-
-## v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
-Priority Response cards were tightened and all pricing/payout language was removed until pricing, platform fees, and agency payouts are finalized. No new SQL required.
-
-
-## v4.0.39 update
-v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
-
-This build fixes Agency Admin portal identity text and separates the Agency Dashboard from Available Jobs and Agency Job Management. It preserves startup recovery, Priority Response cleanup, and requires no new SQL.
+Possible next items:
+- Agency can accept Priority Response only if it has an online/available guard or confirms immediate dispatch.
+- Add visible acceptance timer/time-since-request.
+- Add anti-spam notification dedupe persistence.
+- After Priority Response is stable, build marketplace pricing/platform fee logic.

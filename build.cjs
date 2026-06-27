@@ -6,7 +6,7 @@ const dist = path.join(root, 'dist');
 const files = [
   "index.html",
   "styles.css",
-  "script-v439.js",
+  "script-v440.js",
   "script.js",
   "supabase-client.js",
   "config.js",
@@ -34,4 +34,4 @@ for (const file of files) {
   }
 }
 
-console.log(`Co Pilot Security Marketplace v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX build complete. Copied ${count} files to dist/.`);
+console.log(`Co Pilot Security Marketplace v4.0.40 PRIORITY RESPONSE ALERT + NOTIFICATION SYSTEM build complete. Copied ${count} files to dist/.`);

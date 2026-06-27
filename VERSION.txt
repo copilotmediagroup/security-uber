@@ -1,14 +1,16 @@
 Co Pilot Security Marketplace
-Version: 4.0.39
-Build Name: AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
+Version: 4.0.40
+Build Name: PRIORITY RESPONSE ALERT + NOTIFICATION SYSTEM
 Package: GITHUB READY LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Emergency recovery build after v4.0.37 could stay stuck on Preparing app.
-- Removes aggressive Priority Response DOM observer/scrubber and replaces it with lightweight render-time cleanup.
-- Adds hard startup recovery so the app cannot stay trapped on the loading screen.
-- Keeps Priority Response marketplace flow, no-pricing cleanup, compact company activity, universal map cards, sidebar stack fix, and map header cleanup.
+- Adds Priority Response alert/notification system without pricing.
+- Agency Admin sees Priority Response Available banners and notification badges.
+- Platform Admin sees Priority Response Live banners and activity/notification cues.
+- Client tracker/dashboard can show Priority Response status updates.
+- Assigned Guard sees Priority Response Assignment cues.
+- Preserves v4.0.39 agency portal identity and dashboard route separation.
 
 Badge:
-v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
+v4.0.40 PRIORITY RESPONSE ALERT + NOTIFICATION SYSTEM
