@@ -1,17 +1,13 @@
 Co Pilot Security Marketplace
-Version: 4.0.15
-Build Name: BADGE HARD LOCK + ACTIVITY FEED
+Version: 4.0.16
+Build Name: SCRIPT CACHE KILLER + ACTIVITY FEED
 Date: 2026-06-27
 
 Summary:
-- Fixes v4.0.14 package issue where older internal v4.0.13 badge locks could keep the visible badge at v4.0.13.
-- Sets the primary BUILD object to v4.0.15 at the top of script.js.
-- Adds an absolute badge hard-lock after all patches load.
-- Keeps the marketplace guard activity feed from v4.0.14: Guard Accepted, En Route, Arrived, Checking Property, Proof Uploaded, Completed, Report Published.
-
-Badge:
-v4.0.15 BADGE HARD LOCK + ACTIVITY FEED
+- Replaces index loading from script.js to script-v416.js to bypass stale Bolt/browser script caching.
+- Keeps v4.0.14/v4.0.15 Marketplace Activity guard status feed.
+- Platform Admin activity should show guard accepted, en route, arrived, checking property, proof uploaded, completed, and report published.
+- Badge hard-locks to v4.0.16 after all app patches load.
 
 SQL:
-No real SQL schema change. Optional cache refresh only:
-RUN_AFTER_V415_BADGE_HARD_LOCK_ACTIVITY_FEED.sql
+No real schema change. Optional cache refresh only: RUN_AFTER_V416_SCRIPT_CACHE_KILLER_ACTIVITY_FEED.sql

@@ -7,6 +7,7 @@ const files = [
   'index.html',
   'styles.css',
   'script.js',
+  'script-v416.js',
   'supabase-client.js',
   'config.js',
   'server.cjs',
@@ -33,6 +34,7 @@ const files = [
   'RUN_AFTER_V413_BUILD_LABEL_LOCK_FIX.sql',
   'RUN_AFTER_V414_MARKETPLACE_ACTIVITY_GUARD_STATUS_FEED.sql',
   'RUN_AFTER_V415_BADGE_HARD_LOCK_ACTIVITY_FEED.sql',
+  'RUN_AFTER_V416_SCRIPT_CACHE_KILLER_ACTIVITY_FEED.sql',
   'RUN_IF_NEEDED_OPTIONAL_SQL_PATCHES_V1312_TO_V1322.sql'
 ];
 
@@ -48,4 +50,4 @@ for (const file of files) {
   }
 }
 
-console.log(`Co Pilot Security Marketplace v4.0.15 badge hard lock + activity feed build complete. Copied ${count} files to dist/.`);
+console.log(`Co Pilot Security Marketplace v4.0.16 script cache killer + activity feed build complete. Copied ${count} files to dist/.`);
