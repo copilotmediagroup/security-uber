@@ -1,5 +1,5 @@
 window.COPILOT_SECURITY_CONFIG = {
   supabaseUrl: 'https://nmfvxozbptcvyaenvkxl.supabase.co',
   supabaseAnonKey: 'sb_publishable_TDy5UWNgZp0Ag4uj4-QAGw_kZAbw7nM',
-  appVersion: '4.0.40-priority-response-alert-notification-system'
+  appVersion: '4.0.41-agency-availability-priority-acceptance-rules'
 };

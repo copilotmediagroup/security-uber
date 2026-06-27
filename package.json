@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v440-priority-response-alert-notification-system",
-  "version": "4.0.40",
+  "name": "co-pilot-security-marketplace-v441-agency-availability-priority-acceptance-rules",
+  "version": "4.0.41",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.40 Priority Response alert and notification system.",
+  "description": "Co Pilot Security Marketplace v4.0.41 Agency availability and Priority Response acceptance rules.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

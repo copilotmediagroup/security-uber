@@ -1,24 +1,19 @@
-# Co Pilot Security Marketplace v4.0.40 — Priority Response Alert + Notification System
-
-This is a complete GitHub-ready replacement package.
+# Co Pilot Security Marketplace v4.0.41
 
 ## Build
-**v4.0.40 PRIORITY RESPONSE ALERT + NOTIFICATION SYSTEM**
+**v4.0.41 AGENCY AVAILABILITY + PRIORITY ACCEPTANCE RULES**
 
 ## What changed
-- Priority Response now has marketplace-wide alert visibility without adding pricing yet.
-- Agency Admin sees Priority Response Available banners and virtual notification entries.
-- Platform Admin sees Priority Response Live oversight banners.
-- Client Dashboard can show Priority Response status after request.
-- Assigned Guard views can show Priority Response Assignment cues.
-- Notification badges can reflect Priority Response events without requiring a new SQL table.
-- Pricing/payout/platform-fee language remains removed until pricing is designed.
-
-## Preserved
-- v4.0.39 Agency Portal identity + separate Dashboard / Available Jobs / Agency Job Management routes.
-- v4.0.38 startup recovery.
-- v4.0.37 Priority Response card cleanup/no pricing.
-- v4.0.35 final UI QA lock.
+- Priority Response stays no-pricing.
+- Agency Admins must confirm **Immediate Dispatch** before accepting a Priority Response.
+- The confirmation checks agency guard readiness: online guards, available guards, and total agency guards.
+- If no online/available guard is detected, the agency must still acknowledge responsibility before accepting.
+- Agency Dashboard now separates Standard Open, Priority Open, Accepted By Us, Online Guards, Available Guards, and Priority Needs Assignment.
+- Accepted priority jobs move to **Agency Job Management** for guard assignment.
+- Platform Admin gets oversight if a priority job is accepted but still has no guard assigned.
 
 ## SQL
 No new SQL required.
+
+## Expected badge
+`v4.0.41 AGENCY AVAILABILITY + PRIORITY ACCEPTANCE RULES`

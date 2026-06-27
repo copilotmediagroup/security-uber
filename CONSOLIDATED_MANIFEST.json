@@ -1,21 +1,21 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.40",
-  "buildName": "PRIORITY RESPONSE ALERT + NOTIFICATION SYSTEM",
+  "version": "4.0.41",
+  "buildName": "AGENCY AVAILABILITY + PRIORITY ACCEPTANCE RULES",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v440.js",
+  "entry": "index.html loads script-v441.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
-  "sql": "No new SQL required. This is a UI cleanup/no-pricing patch for Priority Response.",
+  "sql": "No new SQL required. This is a UI/logic patch on top of existing marketplace_jobs and job_events.",
   "latestImportantFixes": [
-    "v4.0.40 adds Priority Response alert banners and virtual notification sync for platform, agency, guard, and client views",
-    "Priority Response remains no-pricing until pricing/platform fee logic is built",
-    "Priority Response cards tightened for the Agency Job Board and marketplace view",
-    "All Priority Response pricing, client price, agency payout, and premium payout language removed for now",
-    "Priority Response remains pinned above standard jobs and visually distinct",
-    "911 safety acknowledgement remains in client Priority Response request flow",
-    "Preserves Priority Response map markers, lifecycle routing rules, v4.0.35 QA lock, compact company cards, universal map cards, and sidebar stack fix"
+    "v4.0.41 adds Priority Response acceptance confirmation for agency admins",
+    "Priority Response acceptance checks online and available agency guard counts before locking the job",
+    "Agency Dashboard separates standard open jobs, priority open jobs, accepted jobs, online guards, available guards, and priority jobs needing assignment",
+    "Priority jobs accepted by an agency move the user into Agency Job Management for guard assignment",
+    "Platform Admin gets oversight warnings when priority jobs are accepted but have no guard assigned",
+    "Client dashboard can show waiting for agency acceptance / guard assignment for Priority Response",
+    "Pricing remains removed until the future marketplace pricing and platform fee build"
   ]
 }

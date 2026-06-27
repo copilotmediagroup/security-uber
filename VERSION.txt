@@ -1,16 +1,16 @@
 Co Pilot Security Marketplace
-Version: 4.0.40
-Build Name: PRIORITY RESPONSE ALERT + NOTIFICATION SYSTEM
+Version: 4.0.41
+Build Name: AGENCY AVAILABILITY + PRIORITY ACCEPTANCE RULES
 Package: GITHUB READY LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Adds Priority Response alert/notification system without pricing.
-- Agency Admin sees Priority Response Available banners and notification badges.
-- Platform Admin sees Priority Response Live banners and activity/notification cues.
-- Client tracker/dashboard can show Priority Response status updates.
-- Assigned Guard sees Priority Response Assignment cues.
-- Preserves v4.0.39 agency portal identity and dashboard route separation.
+- Adds agency availability rules for Priority Response acceptance.
+- Agency Admin must confirm immediate dispatch before accepting Priority Response jobs.
+- Agency Dashboard separates priority open jobs, standard open jobs, accepted jobs, online guards, available guards, and priority jobs needing assignment.
+- Accepted Priority Response jobs are pushed into Agency Job Management for guard assignment.
+- Platform Admin oversight shows priority jobs accepted but still waiting on guard assignment.
+- Pricing remains hidden until pricing/platform fee logic is finalized.
 
 Badge:
-v4.0.40 PRIORITY RESPONSE ALERT + NOTIFICATION SYSTEM
+v4.0.41 AGENCY AVAILABILITY + PRIORITY ACCEPTANCE RULES
