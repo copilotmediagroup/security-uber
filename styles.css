@@ -13756,3 +13756,83 @@ button.is-busy {
   color: var(--muted);
   font-weight: 800;
 }
+
+/* v4.0.26 compact professional map cards */
+.cp426-map-card,
+.guard302-live-card.cp426-map-card {
+  width: min(315px, calc(100% - 24px));
+  max-width: 315px;
+  min-height: unset;
+  padding: 10px 12px 10px 10px;
+  gap: 10px;
+  grid-template-columns: 40px minmax(0, 1fr);
+  border-radius: 12px;
+  border: 1px solid rgba(126, 190, 255, .30);
+  background: linear-gradient(180deg, rgba(7, 23, 40, .97), rgba(3, 12, 23, .97));
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .36), 0 0 0 1px rgba(255,255,255,.035) inset;
+}
+.cp426-map-card .avatar,
+.guard302-live-card.cp426-map-card .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  font-size: 13px;
+}
+.cp426-map-card strong {
+  display: block;
+  font-size: 14px;
+  line-height: 1.18;
+  letter-spacing: -.015em;
+  color: #f5fbff;
+  max-width: 210px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cp426-map-card small {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  line-height: 1.25;
+  color: #9fb7d1;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cp426-map-card p {
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #d9ecff;
+  max-height: 32px;
+  overflow: hidden;
+}
+.cp426-map-card em {
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  margin-top: 7px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(46, 125, 255, .14);
+  border: 1px solid rgba(102, 175, 255, .22);
+  color: #8fd0ff;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.cp426-card-label {
+  display: block;
+  margin-bottom: 2px;
+  color: #57caff;
+  font-size: 9px;
+  font-weight: 1000;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.cp426-client-card em { color: #8ff0ba; background: rgba(55, 220, 114, .12); border-color: rgba(55, 220, 114, .25); }
+.cp426-flow-map-card .guard302-map-stats strong:empty::before { content: '—'; }
+.cp426-flow-map-card .guard302-live:not(.on) { color: #9db3ca; }

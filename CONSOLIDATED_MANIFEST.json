@@ -1,19 +1,23 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.25",
-  "buildName": "AGENCY PROOF REVIEW + CLIENT REPORT DELIVERY",
+  "version": "4.0.26",
+  "buildName": "GLOBAL JOB STATE + MAP FLOW ENFORCEMENT",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v425.js",
+  "entry": "index.html loads script-v426.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
   "sql": [
     "RUN_IF_NEEDED_ALL_SQL_V400_TO_V422_CONSOLIDATED.sql",
     "RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql"
   ],
   "latestImportantFixes": [
-    "v4.0.25 adds Agency Proof Review + Client Report Delivery",
+    "v4.0.26 enforces global job state across all maps",
+    "Route lines show only during active movement: guard accepted / en route",
+    "Arrived, checking property, proof uploaded, completed, and report published no longer show guard-to-property route lines",
+    "Map cards are compact and professional for guards, companies, clients, properties, and addresses",
+    "v4.0.25 Agency Proof Review + Client Report Delivery preserved",
     "Agency Admin proof/reports are framed as agency-owned, not platform dispatch-owned",
     "Report publish attempts the existing Supabase report RPC and also writes a marketplace delivery copy for Bolt testing continuity",
     "Client reports/tracker can read delivered report records after agency publish",

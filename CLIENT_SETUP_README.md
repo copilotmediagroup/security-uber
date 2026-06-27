@@ -3,7 +3,7 @@
 This package adds the next marketplace handoff layer: the **accepted agency** reviews guard proof, builds/publishes the final report, and the **client** sees the delivered report/status.
 
 ## Current build
-**v4.0.25 AGENCY PROOF REVIEW + CLIENT REPORT DELIVERY**
+**v4.0.26 GLOBAL JOB STATE + MAP FLOW ENFORCEMENT**
 
 ## What changed
 - Agency Admin Proof Review is framed as agency-owned work, not platform dispatch work.
@@ -28,3 +28,12 @@ No new SQL is required for v4.0.25.
 If proof upload still shows `new row violates row-level security policy`, run the existing SQL patch once:
 
 `RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql`
+
+
+## v4.0.26 GLOBAL JOB STATE + MAP FLOW ENFORCEMENT
+- All live maps obey the same marketplace job lifecycle.
+- Route lines only show while a guard is actively moving to the property.
+- Arrived, checking property, proof uploaded, completed, and report published remove the guard-to-property route line.
+- Guard map cards are compact: company name, guard name, current address.
+- Client/property cards are compact: client name, property name, address.
+- No new SQL required.

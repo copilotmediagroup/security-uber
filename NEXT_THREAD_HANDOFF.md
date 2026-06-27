@@ -5,7 +5,7 @@ We are building **Co Pilot Security Marketplace**, the Uber-style marketplace ve
 This is separate from the old v3 single-company app called **Co Pilot Security OS**.
 
 Current latest working package:
-**v4.0.25 AGENCY PROOF REVIEW + CLIENT REPORT DELIVERY**
+**v4.0.26 GLOBAL JOB STATE + MAP FLOW ENFORCEMENT**
 
 Repo:
 **security-uber**
@@ -34,7 +34,7 @@ Latest build status:
 - v4.0.19 quiet admin live sync/no-page-reload is preserved.
 
 Testing order:
-1. Confirm badge reads `v4.0.25 AGENCY PROOF REVIEW + CLIENT REPORT DELIVERY`.
+1. Confirm badge reads `v4.0.26 GLOBAL JOB STATE + MAP FLOW ENFORCEMENT`.
 2. Guard completes job and uploads proof.
 3. Agency Admin opens Proof Review and approves/includes proof.
 4. Agency Admin opens Report Builder and publishes report.
@@ -45,3 +45,12 @@ Next likely build after this:
 **v4.0.26 MARKETPLACE PRICING + PLATFORM FEE DISPLAY**
 
 That should add client price, agency payout, Co Pilot platform fee, and job economics before agency earnings/payment flows.
+
+
+## v4.0.26 GLOBAL JOB STATE + MAP FLOW ENFORCEMENT
+- All live maps obey the same marketplace job lifecycle.
+- Route lines only show while a guard is actively moving to the property.
+- Arrived, checking property, proof uploaded, completed, and report published remove the guard-to-property route line.
+- Guard map cards are compact: company name, guard name, current address.
+- Client/property cards are compact: client name, property name, address.
+- No new SQL required.

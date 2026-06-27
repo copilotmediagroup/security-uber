@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v425-agency-proof-review-client-report-delivery",
-  "version": "4.0.25",
+  "name": "co-pilot-security-marketplace-v426-global-job-state-map-flow-enforcement",
+  "version": "4.0.26",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.25 adds Agency Proof Review and Client Report Delivery while preserving prior marketplace fixes.",
+  "description": "Co Pilot Security Marketplace v4.0.26 enforces global job state across all maps and adds compact professional map cards.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",
