@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v429-single-source-badge-lock",
-  "version": "4.0.29",
+  "name": "co-pilot-security-marketplace-v430-company-activity-universal-map-card-data-fix",
+  "version": "4.0.30",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.29 fixes stacked badge locks so every older patch points to one current build label while preserving all v4.0.28 map card fixes.",
+  "description": "Co Pilot Security Marketplace v4.0.30 adds the approved Company Activity card and fixes universal map cards so admin, agency, guard, and client maps use the same image/detail-rich layout.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

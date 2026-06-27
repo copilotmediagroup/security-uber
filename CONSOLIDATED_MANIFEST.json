@@ -1,19 +1,21 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.29",
-  "buildName": "SINGLE SOURCE BADGE LOCK",
-  "packageType": "github-ready-replacement",
+  "version": "4.0.30",
+  "buildName": "COMPANY ACTIVITY + UNIVERSAL MAP CARD DATA FIX",
+  "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v429.js",
+  "entry": "index.html loads script-v430.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
-  "sql": "No new SQL required for v4.0.29. V4.0.22 proof upload RLS SQL remains included if needed.",
   "latestImportantFixes": [
-    "All older stacked badge locks now resolve to v4.0.29",
-    "Prevents badge jumping backward to v4.0.25 or v4.0.27 after reload",
-    "Preserves v4.0.28 universal map cards",
-    "Preserves v4.0.27 Live GPS roster/property visibility",
-    "Preserves v4.0.26 global job state/map route enforcement"
-  ]
+    "Company Activity panel uses the approved large logo-left card layout",
+    "Company Activity card shows company logo/name, online guards, total guards, jobs in motion, and jobs completed",
+    "Platform Admin Leaflet map markers now open image/detail-rich universal cards instead of thin text-only tooltips",
+    "Admin, Agency, Guard, and Client map cards use the same compact professional universal card markup",
+    "Guard cards show company, guard name, guard image when present, and current address",
+    "Client/property cards show client, property name, property image when present, and address",
+    "Preserves v4.0.29 single source badge lock and all previous marketplace flow fixes"
+  ],
+  "sql": "No new SQL required. Existing RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql remains included for proof-upload RLS if needed."
 }

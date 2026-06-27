@@ -1,13 +1,14 @@
 Co Pilot Security Marketplace
-Version: 4.0.29
-Build Name: SINGLE SOURCE BADGE LOCK
-Package: GITHUB READY
+Version: 4.0.30
+Build Name: COMPANY ACTIVITY + UNIVERSAL MAP CARD DATA FIX
+Package: GITHUB READY LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Fixes badge jumping between v4.0.25, v4.0.27, and v4.0.28.
-- Makes all stacked badge lock routines use one current label.
-- Preserves universal map card system and all prior marketplace fixes.
+- Builds the approved Company Activity card layout with large left company logo and right-side company stats.
+- Fixes map card consistency globally across Admin, Agency, Guard, and Client maps.
+- Platform Admin map markers now open the same compact professional cards with image/detail data.
+- No new SQL required.
 
 Badge:
-v4.0.29 SINGLE SOURCE BADGE LOCK
+v4.0.30 COMPANY ACTIVITY + UNIVERSAL MAP CARD DATA FIX

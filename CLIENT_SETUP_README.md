@@ -1,36 +1,37 @@
-# Co Pilot Security Marketplace v4.0.29 — Single Source Badge Lock
+# Co Pilot Security Marketplace v4.0.30 COMPANY ACTIVITY + UNIVERSAL MAP CARD DATA FIX
 
-Current build:
-**v4.0.29 SINGLE SOURCE BADGE LOCK**
+This is the latest GitHub-ready replacement package for the **security-uber** marketplace app.
 
-This is a GitHub-ready replacement package for the `security-uber` repo.
+## Build
+**v4.0.30 COMPANY ACTIVITY + UNIVERSAL MAP CARD DATA FIX**
 
 ## What changed
+- Company Activity now uses the approved professional card layout:
+  - large company logo/image on the left
+  - company name on the right
+  - online guards
+  - total guards
+  - jobs in motion
+  - jobs completed
+- Map cards are now forced into one universal card system across:
+  - Platform Admin maps
+  - Agency Admin maps
+  - Guard maps
+  - Client maps
+- Platform Admin Leaflet markers now open image/detail-rich cards instead of text-only tooltips.
+- Guard cards show company name, guard name, guard image when available, and current address.
+- Client/property cards show client name, property name, property image when available, and address.
 
-v4.0.29 fixes the badge jumping issue where stacked older build-lock patches could briefly force the visible badge back to v4.0.25 or v4.0.27 after reload.
+## Supabase
+Use the marketplace Supabase only:
+`https://nmfvxozbptcvyaenvkxl.supabase.co`
 
-All badge lock routines now point to one current label:
-**v4.0.29 SINGLE SOURCE BADGE LOCK**
-
-The app still preserves:
-- v4.0.28 Universal Map Card System
-- v4.0.27 Live GPS roster + property visibility
-- v4.0.26 global job state + route flow enforcement
-- v4.0.25 Agency proof review + client report delivery
-- v4.0.24 Guard job-flow icon sync
-- v4.0.23 badge/cache protection
-- v4.0.22 proof upload RLS app support
-- v4.0.21 profile photo save
-- v4.0.20 client tracker
-- v4.0.19 no-page-reload admin sync
+The publishable key is already in `config.js`.
 
 ## SQL
+No new SQL is required for v4.0.30.
 
-No new SQL is required for v4.0.29.
-
-If proof upload still shows a Supabase RLS error, run the included:
-`RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql`
+The included proof-upload SQL file should only be run if proof upload still shows a Supabase RLS policy error.
 
 ## Expected badge
-
-**v4.0.29 SINGLE SOURCE BADGE LOCK**
+**v4.0.30 COMPANY ACTIVITY + UNIVERSAL MAP CARD DATA FIX**
