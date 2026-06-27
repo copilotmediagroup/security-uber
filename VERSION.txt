@@ -1,15 +1,16 @@
 Co Pilot Security Marketplace
-Version: 4.0.20
-Build Name: CLIENT MARKETPLACE STATUS TRACKER
+Version: 4.0.21
+Build Name: PROFILE PHOTO SAVE FIX
 Package: GITHUB READY LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Latest marketplace build after v4.0.19 fixed aggressive admin page reloads.
-- Keeps quiet Platform Admin live sync with no full-page reload timer.
-- Adds a client-facing Uber-style Marketplace Status Tracker.
-- Client tracker reads marketplace_jobs.current_status, job_events, proof rows, and report rows.
-- No new SQL required.
+- Fixes profile photos in Settings so upload is no longer preview-only.
+- Profile photos are uploaded to the profile-photos Supabase Storage bucket.
+- Save Changes persists avatar_url through cp_update_my_profile and updates local profile/guard/client avatar fields.
+- Keeps v4.0.19 quiet Platform Admin sync with no page reload loop.
+- Keeps v4.0.20 Client Marketplace Status Tracker.
+- No new SQL file required unless the profile-photos bucket/RPC is missing from Supabase.
 
 Badge:
-v4.0.20 CLIENT MARKETPLACE STATUS TRACKER
+v4.0.21 PROFILE PHOTO SAVE FIX

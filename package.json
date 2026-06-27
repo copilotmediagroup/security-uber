@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v420-client-marketplace-status-tracker",
-  "version": "4.0.20",
+  "name": "co-pilot-security-marketplace-v421-profile-photo-save-fix",
+  "version": "4.0.21",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.20 client marketplace status tracker with quiet admin live sync preserved.",
+  "description": "Co Pilot Security Marketplace v4.0.21 fixes profile photo uploads/saves while preserving quiet admin sync and client tracker.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

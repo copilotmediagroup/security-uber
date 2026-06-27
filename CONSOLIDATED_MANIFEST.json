@@ -1,20 +1,20 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.20",
-  "buildName": "CLIENT MARKETPLACE STATUS TRACKER",
+  "version": "4.0.21",
+  "buildName": "PROFILE PHOTO SAVE FIX",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v420.js",
+  "entry": "index.html loads script-v421.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
   "sql": "RUN_IF_NEEDED_ALL_SQL_V400_TO_V417_CONSOLIDATED.sql",
   "latestImportantFixes": [
-    "v4.0.19 stopped the aggressive admin page reload by preserving quiet admin activity sync only",
-    "v4.0.20 adds Client Marketplace Status Tracker",
-    "Client tracker reads marketplace_jobs.current_status plus job_events, proof uploads, and report publish records",
-    "Client Dashboard now shows a compact tracker card",
-    "Client Patrol Requests now shows the full tracker timeline",
-    "No new SQL required for v4.0.20"
+    "v4.0.21 fixes Settings profile photo preview-only behavior",
+    "Device-uploaded profile photos now upload to profile-photos storage bucket",
+    "Save Changes persists avatar_url through cp_update_my_profile",
+    "Local profile, matching guard, and matching client avatar fields update immediately after save",
+    "v4.0.19 quiet admin live sync remains preserved",
+    "v4.0.20 client marketplace status tracker remains preserved"
   ]
 }

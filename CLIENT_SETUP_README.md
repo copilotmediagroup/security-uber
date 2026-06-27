@@ -1,52 +1,38 @@
-# Co Pilot Security Marketplace v4.0.20
+# Co Pilot Security Marketplace v4.0.21 — Profile Photo Save Fix
 
-## Build
-**v4.0.20 CLIENT MARKETPLACE STATUS TRACKER**
+This is a complete GitHub-ready replacement package for **security-uber**.
 
-This is a complete GitHub-ready replacement package for the `security-uber` repo.
+## Current build
+**v4.0.21 PROFILE PHOTO SAVE FIX**
 
-## Important
-Do not use Bolt AI prompts. Upload/replace files through GitHub/Bolt import.
+## What this fixes
+Profile photos in Settings were only previewing after upload. They were not being saved to Supabase or persisted back to the user profile.
+
+v4.0.21 fixes that flow:
+
+1. User chooses a device image in Settings > Profile.
+2. Preview appears immediately.
+3. User clicks **Save Changes**.
+4. File uploads to Supabase Storage bucket `profile-photos`.
+5. App calls `cp_update_my_profile`.
+6. `avatar_url` is saved and reflected back into the logged-in profile.
+7. Matching guard/client avatar fields update in the local UI immediately.
 
 ## Supabase
-Use the marketplace Supabase project only:
+Use the marketplace Supabase only:
 
-`https://nmfvxozbptcvyaenvkxl.supabase.co`
-
-The publishable key is already inside `config.js`.
+- URL: `https://nmfvxozbptcvyaenvkxl.supabase.co`
+- Publishable key is already in `config.js`
 
 ## SQL
-No new SQL is required for v4.0.20.
+No new SQL was added in this package. The consolidated SQL already contains the profile photo bucket, `avatar_url` columns, and `cp_update_my_profile` function.
 
-Keep using:
+Do **not** rerun SQL unless Supabase returns a missing bucket/table/function/RPC error.
 
-`RUN_IF_NEEDED_ALL_SQL_V400_TO_V417_CONSOLIDATED.sql`
+## Preserved from earlier builds
+- v4.0.19 quiet admin live sync, no page reload loop.
+- v4.0.20 Client Marketplace Status Tracker.
+- Root server entry lock behavior.
 
-Only run it if the Supabase project is fresh or a missing table/RPC/function error appears.
-
-## What v4.0.20 adds
-Client Marketplace Status Tracker.
-
-The client now gets a clear Uber-style tracker that reads the shared marketplace lifecycle:
-
-1. Open Marketplace
-2. Agency Accepted
-3. Guard Assigned
-4. Guard Accepted
-5. En Route
-6. Arrived
-7. Checking Property
-8. Proof Uploaded
-9. Completed
-10. Report Published
-
-## Preserved from v4.0.19
-- No aggressive Platform Admin page reload.
-- No full dashboard refresh timer.
-- Quiet admin activity sync remains.
-- Manual Refresh still works.
-
-## Badge
-Expected badge:
-
-**v4.0.20 CLIENT MARKETPLACE STATUS TRACKER**
+## Expected badge
+`v4.0.21 PROFILE PHOTO SAVE FIX`

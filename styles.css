@@ -13742,3 +13742,17 @@ button.is-busy {
 @media (max-width: 1180px) {
   .cp420-job-facts, .cp420-tracker-steps, .cp420-job-options { grid-template-columns: 1fr; }
 }
+
+
+/* v4.0.21 Profile Photo Save Fix */
+.cp421-photo-panel [data-profile-photo-save-status] {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.cp421-settings-profile-card .settings-upload-button strong::after {
+  content: " — then Save Changes";
+  color: var(--muted);
+  font-weight: 800;
+}
