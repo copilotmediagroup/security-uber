@@ -1,50 +1,56 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
 Latest package:
-v4.0.3 AGENCY DISPATCH + CLIENT LOCATION FIX
+v4.0.0 MARKETPLACE DATA FOUNDATION
 
 Important instruction:
 The user is building through GitHub ZIP uploads into Bolt. Do not suggest Bolt AI prompts because the user does not have Bolt tokens. All future changes must be complete GitHub-ready ZIP replacement packages.
 
 Context:
-This is the separate v4 Uber-style marketplace version. It is not the old v3 single-company app. Clients request patrol jobs. Approved/licensed agencies accept jobs. Agencies dispatch their own guards.
+The user is preserving the v3 single-company Co Pilot Security app separately. This v4 project is a new Uber-style marketplace version where clients request patrol jobs and verified/licensed security agencies can accept those jobs. Guards should belong to an approved agency, not operate as random independent providers.
 
 New Supabase:
 https://nmfvxozbptcvyaenvkxl.supabase.co
 Publishable key is already in config.js.
 
-Current SQL order for fresh Supabase:
+SQL required:
+For a fresh Supabase, run:
 1. RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql
 2. RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql
-3. RUN_AFTER_V401_AGENCY_JOB_BOARD.sql
-4. RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql
-5. RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql
 
-If v4.0.0-v4.0.2 SQL already ran, only run:
-RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql
-
-What v4.0.3 completed:
-- Fixed missing client location capture. Client signup now requires property/business name, address, city, state, ZIP.
-- Client Approval Center now shows location data.
-- Approving a client creates/updates the active client and a primary property record.
-- Added Agency Dispatch board for accepted marketplace jobs.
-- Agency Admin can assign an agency guard to an accepted job.
-- Assignment updates marketplace_jobs.assigned_guard_id and current_status = guard_assigned.
-- Marketplace job detail shows assigned guard.
+What v4.0.0 completed:
+- Updated app version/badge/config to v4.0.0 MARKETPLACE DATA FOUNDATION.
+- Added marketplace roles: platform_admin and agency_admin.
+- Added agency signup public flow.
+- Added Platform Admin Agency Verification Center UI.
+- Added Marketplace Jobs UI.
+- Added Marketplace Data Foundation dashboard.
+- Added new SQL file for agencies, agency_members, agency_service_areas, marketplace_jobs, marketplace_job_claims, and job_events.
+- Added indexing around agency ownership, job status, client/property/guard linkage, reports, proof, and audit events.
+- Added RPCs for platform bootstrap, agency signup, agency review, marketplace request creation, agency job acceptance, agency guard assignment, event recording, and global app data loading.
+- Preserved v3.0.77 Recent Reports thumbnail fix and prior v3 report/proof/dashboard sync work.
 
 Current build direction:
-Next build should continue agency/guard workflow, not payments yet.
+This is the foundation only. Next builds should not add payments yet.
 
 Recommended next builds:
 
-v4.0.4 GUARD MARKETPLACE JOB FLOW
-- Assigned guard sees assigned marketplace job clearly.
-- Guard can accept assignment.
-- Guard can start job / arrive on site / upload proof / complete job.
-- Status must update marketplace_jobs as the source of truth.
+v4.0.1 AGENCY JOB BOARD FLOW
+- Make approved Agency Admin dashboard cleaner.
+- Open jobs list, job detail, accept job button, accepted jobs tab.
+- Lock accepted jobs to the accepted agency.
 
-v4.0.5 CLIENT MARKETPLACE STATUS TRACKER
-- Client sees open marketplace, agency accepted, guard assigned, guard accepted, in progress, completed, report published.
+v4.0.2 AGENCY DISPATCH FLOW
+- Agency assigns its own guard after accepting job.
+- Guard sees assigned marketplace job.
+- Platform Admin can see which agency/guard owns the job.
 
-v4.0.6 SERVICE AREA MATCHING
-- Jobs only show to agencies serving the property city/state/radius.
+v4.0.3 CLIENT MARKETPLACE STATUS TRACKER
+- Client sees marketplace status clearly:
+  open marketplace, agency accepted, guard assigned, in progress, completed, report published.
+
+v4.0.4 SERVICE AREA MATCHING
+- Jobs only show to agencies that serve the property city/radius.
+
+v4.0.5 MARKETPLACE REPORT OWNERSHIP
+- Final reports show performing agency, guard, license info placeholder, timestamps, and proof.

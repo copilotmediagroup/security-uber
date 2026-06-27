@@ -1,48 +1,44 @@
-# Co Pilot Security Marketplace v4.0.3 — Agency Dispatch + Client Location Fix
+# Co Pilot Security Marketplace v4.0.0 — Marketplace Data Foundation
 
-This is the separate Uber-style marketplace version of Co Pilot Security.
+This package starts the separate Uber-style / marketplace version of Co Pilot Security.
 
 ## Important
-This is not the old v3 single-company app database.
+This is **not** the v3 single-company app database.
 Use the new Supabase project only:
 
 - Supabase URL: `https://nmfvxozbptcvyaenvkxl.supabase.co`
 - Publishable key is already configured in `config.js`.
 
-## What v4.0.3 adds
+Do not point this package at the old v3 Supabase project.
 
-- Client signup now requires location:
-  - Property / business name
-  - Service address
-  - City
-  - State
-  - ZIP
-- Client Approval Center shows the submitted location before Platform Admin approves the client.
-- Approving a client creates/updates the active client record and creates/updates a primary property record.
-- Agency Dispatch board for accepted marketplace jobs.
-- Agency Admin can assign one of its own agency guards.
-- Assignment updates `marketplace_jobs.assigned_guard_id` and `marketplace_jobs.current_status = guard_assigned`.
-- Marketplace Jobs detail shows accepted agency and assigned guard.
-
-## SQL install order
-
-For a fresh Supabase project run:
+## SQL install order for a new Supabase
+Run these in the Supabase SQL editor in this order:
 
 1. `RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql`
 2. `RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql`
-3. `RUN_AFTER_V401_AGENCY_JOB_BOARD.sql`
-4. `RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql`
-5. `RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql`
 
-If you already ran v4.0.0, v4.0.1, and v4.0.2 SQL, run only:
+The first file installs the base v3 app schema/functions that the current app still needs.
+The second file adds the v4 marketplace foundation.
 
-`RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql`
+## What v4.0.0 adds
+- Platform Admin role
+- Agency Admin role
+- Agency signup
+- Agency verification center
+- Marketplace Jobs board
+- Marketplace Data Foundation dashboard
+- `marketplace_jobs` as the global job source of truth
+- `job_events` as the audit trail
+- agency approval/rejection RPCs
+- agency job acceptance RPC
+- client request creates open marketplace job after SQL is installed
 
-## Not included yet
-
+## What is intentionally not included yet
 - payments
-- Stripe
-- subscriptions
-- closest-agency auto-matching
-- bidding
+- Stripe split payouts
+- automatic closest-agency matching
+- client reviews
 - agency rankings
+- bidding/price competition
+
+Those come after the core data foundation is proven.

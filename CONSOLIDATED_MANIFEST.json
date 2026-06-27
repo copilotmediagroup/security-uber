@@ -1,26 +1,26 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.3",
-  "buildName": "AGENCY DISPATCH + CLIENT LOCATION FIX",
-  "type": "agency-dispatch-client-location",
+  "version": "4.0.0",
+  "buildName": "MARKETPLACE DATA FOUNDATION",
+  "type": "marketplace-data-foundation",
   "sql_required": true,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Required client service location at client signup",
-    "Client signup captures property/business name, service address, city, state, and ZIP",
-    "Client Approval Center displays submitted service location before approval",
-    "Client approval creates/updates active client and primary service property records",
-    "Agency Dispatch board for agency-accepted marketplace jobs",
-    "Agency Admin can assign agency guards to accepted jobs",
-    "Guard assignment updates marketplace_jobs.assigned_guard_id and current_status",
-    "Platform Admin job detail shows accepted agency and assigned guard",
-    "Preserves v4.0.1 Agency Job Board and v4.0.2 Client Approval Center"
+    "Converted v3 app into a separate v4 marketplace foundation package using the new Supabase project",
+    "Added platform_admin and agency_admin marketplace roles while preserving client and guard roles",
+    "Added agency signup flow for licensed/certified security agencies",
+    "Added Platform Admin Agency Verification Center UI",
+    "Added Marketplace Jobs board UI for global open/accepted jobs",
+    "Added Marketplace Data Foundation dashboard to explain and verify the global backbone",
+    "Added marketplace_jobs table as the main source of truth for client request, agency acceptance, guard assignment, proof, reports, and future payments",
+    "Added job_events table as the global audit/timeline trail",
+    "Added agencies, agency_members, agency_service_areas, and marketplace_job_claims tables",
+    "Added indexes for job status, agency ownership, client, property, guard, proof, reports, and audit events",
+    "Added RPCs for platform admin bootstrap, agency signup, agency approval/rejection, client marketplace request creation, agency job acceptance, agency guard assignment, and global app data loading",
+    "Preserved v3.0.77 Recent Reports thumbnail fix, v3.0.76 Recent Reports polish, v3.0.75 audit trail UI, and v3.0.74 dashboard/report/proof sync"
   ],
   "sql_files": [
     "RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql",
-    "RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql",
-    "RUN_AFTER_V401_AGENCY_JOB_BOARD.sql",
-    "RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql",
-    "RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql"
+    "RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql"
   ]
 }

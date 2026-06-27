@@ -1,30 +1,28 @@
 Co Pilot Security Marketplace
-Version: 4.0.3
-Build Name: AGENCY DISPATCH + CLIENT LOCATION FIX
+Version: 4.0.0
+Build Name: MARKETPLACE DATA FOUNDATION
 Date: 2026-06-27
 
 Summary:
-- Builds on v4.0.2 Client Approval Center.
-- Fixes the missing client service-location issue: client signup now requires property/business name, service address, city, state, and ZIP.
-- Platform Admin Client Approval Center now shows the submitted client service location before approval.
-- Client approval now creates/updates the active client record and a primary service property record.
-- Adds Agency Dispatch board for accepted marketplace jobs.
-- Agency Admin can assign one of its own agency guards to accepted jobs.
-- Assignment updates marketplace_jobs.assigned_guard_id and current_status = guard_assigned.
-- Guard portal continues to read assigned work from the same marketplace job/patrol request backbone.
-- Platform Admin marketplace job detail shows accepted agency and assigned guard.
-- No payments, Stripe, subscriptions, bidding, rankings, or closest-agency auto-matching added.
+- Separate v4 marketplace build for the new Supabase project.
+- New Supabase URL: https://nmfvxozbptcvyaenvkxl.supabase.co
+- Added platform_admin and agency_admin marketplace role support.
+- Added licensed agency signup path.
+- Added Platform Admin Agency Verification Center.
+- Added Marketplace Jobs board.
+- Added Marketplace Data Foundation dashboard.
+- Added SQL foundation for agencies, agency_members, agency_service_areas, marketplace_jobs, marketplace_job_claims, and job_events.
+- marketplace_jobs is the source of truth.
+- job_events is the audit/timeline backbone.
+- Client request now creates an open marketplace job after v4 SQL is installed.
+- Approved agencies can accept open marketplace jobs after v4 SQL is installed.
+- Preserved v3.0.77 client recent report thumbnail fix and prior report/proof/dashboard sync work.
 
 Badge:
-v4.0.3 AGENCY DISPATCH + CLIENT LOCATION FIX
+v4.0.0 MARKETPLACE DATA FOUNDATION
 
 SQL:
+New SQL required.
 For a brand-new Supabase project, run:
 1. RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql
 2. RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql
-3. RUN_AFTER_V401_AGENCY_JOB_BOARD.sql
-4. RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql
-5. RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql
-
-If v4.0.0, v4.0.1, and v4.0.2 SQL were already run, only run:
-RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql
