@@ -1,8 +1,8 @@
 
-const CP_DEV_CACHE_BUST = '2026-06-27T05-55-v416-script-cache-killer';
+const CP_DEV_CACHE_BUST = '2026-06-27T05-13-build-label-lock';
 const BUILD = {
-  version: '4.0.16',
-  label: 'v4.0.16 SCRIPT CACHE KILLER + ACTIVITY FEED'
+  version: '4.0.15',
+  label: 'v4.0.15 BADGE HARD LOCK + ACTIVITY FEED'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -14098,19 +14098,19 @@ document.addEventListener('click', async e => {
   setTimeout(() => { try { cp412NormalizePlatformLifecycleState(); if (cp412IsPlatformCommand()) render(); } catch {} }, 900);
   setTimeout(() => { try { if (cp412IsPlatformCommand()) cp412RefreshPlatformLifecycle('boot'); } catch {} }, 2500);
 
-  BUILD.version = '4.0.16';
-  BUILD.label = 'v4.0.16 SCRIPT CACHE KILLER + ACTIVITY FEED';
+  BUILD.version = '4.0.15';
+  BUILD.label = 'v4.0.15 BADGE HARD LOCK + ACTIVITY FEED';
   window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
-  window.CP_DEV_CACHE_BUST = '2026-06-27T05-55-v416-script-cache-killer-activity-feed';
+  window.CP_DEV_CACHE_BUST = '2026-06-27T05-35-v415-badge-hard-lock';
 })();
 
 
 /* v4.0.13 final build-label lock: keeps old module patches from downgrading badge after import/cache refresh. */
 try {
-  BUILD.version = '4.0.16';
-  BUILD.label = 'v4.0.16 SCRIPT CACHE KILLER + ACTIVITY FEED';
+  BUILD.version = '4.0.15';
+  BUILD.label = 'v4.0.15 BADGE HARD LOCK + ACTIVITY FEED';
   window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
-  window.CP_DEV_CACHE_BUST = '2026-06-27T05-55-v416-script-cache-killer-activity-feed';
+  window.CP_DEV_CACHE_BUST = '2026-06-27T05-35-v415-badge-hard-lock';
   if (typeof ensureBadge === 'function') setTimeout(ensureBadge, 0);
 } catch {}
 
@@ -14123,9 +14123,9 @@ try {
    so admin sees the guard movement even if a single source is sparse.
 ----------------------------------------------------------------------------- */
 (function cp414MarketplaceActivityGuardStatusFeed(){
-  const CP414_VERSION = '4.0.16';
-  const CP414_LABEL = 'v4.0.16 SCRIPT CACHE KILLER + ACTIVITY FEED';
-  const CP414_CACHE = '2026-06-27T05-55-v416-script-cache-killer-activity-feed';
+  const CP414_VERSION = '4.0.15';
+  const CP414_LABEL = 'v4.0.15 BADGE HARD LOCK + ACTIVITY FEED';
+  const CP414_CACHE = '2026-06-27T05-35-v415-badge-hard-lock-activity-feed';
   const CP414_STAGE_RANK = {
     open_marketplace: 1,
     pending_marketplace: 1,
@@ -14341,19 +14341,19 @@ try {
 
 /* v4.0.14 final build-label lock. */
 try {
-  BUILD.version = '4.0.16';
-  BUILD.label = 'v4.0.16 SCRIPT CACHE KILLER + ACTIVITY FEED';
+  BUILD.version = '4.0.15';
+  BUILD.label = 'v4.0.15 BADGE HARD LOCK + ACTIVITY FEED';
   window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
-  window.CP_DEV_CACHE_BUST = '2026-06-27T05-55-v416-script-cache-killer-activity-feed';
+  window.CP_DEV_CACHE_BUST = '2026-06-27T05-35-v415-badge-hard-lock-activity-feed';
   if (typeof ensureBadge === 'function') setTimeout(ensureBadge, 0);
 } catch {}
 
 
-/* v4.0.16 absolute badge hard lock: updates every visible build label after all patches load. */
+/* v4.0.15 absolute badge hard lock: updates every visible build label after all patches load. */
 (function cp415AbsoluteBadgeHardLock(){
-  const LABEL = 'v4.0.16 SCRIPT CACHE KILLER + ACTIVITY FEED';
-  const VERSION = '4.0.16';
-  const CACHE = '2026-06-27T05-55-v416-script-cache-killer-activity-feed';
+  const LABEL = 'v4.0.15 BADGE HARD LOCK + ACTIVITY FEED';
+  const VERSION = '4.0.15';
+  const CACHE = '2026-06-27T05-35-v415-badge-hard-lock-activity-feed';
   function lock() {
     try {
       BUILD.version = VERSION;
@@ -14362,7 +14362,7 @@ try {
       window.CP_DEV_CACHE_BUST = CACHE;
       document.querySelectorAll('.cp-build-badge,.version-mini').forEach(el => { el.textContent = LABEL; });
       const meta = document.querySelector('meta[name="app-version"]');
-      if (meta) meta.setAttribute('content', '4.0.16-script-cache-killer-activity-feed');
+      if (meta) meta.setAttribute('content', '4.0.15-badge-hard-lock-activity-feed');
     } catch {}
   }
   lock();

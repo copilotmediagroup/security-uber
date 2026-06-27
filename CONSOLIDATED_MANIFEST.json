@@ -1,16 +1,18 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.16",
-  "buildName": "SCRIPT CACHE KILLER + ACTIVITY FEED",
-  "type": "script-cache-killer-activity-feed",
+  "version": "4.0.15",
+  "buildName": "BADGE HARD LOCK + ACTIVITY FEED",
+  "type": "badge-hard-lock-activity-feed",
   "sql_required": false,
+  "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Index now loads script-v416.js instead of script.js to bypass stale Bolt/browser cache",
-    "Keeps Marketplace Activity guard status feed",
-    "Hard locks visible build badge to v4.0.16",
-    "Preserves Platform Command Center lifecycle sync and real map alignment"
+    "Primary BUILD object starts at v4.0.15 so the app cannot boot with the v4.0.13 badge.",
+    "Neutralizes older v4.0.13/v4.0.14 build label overrides by forcing the current label after all modules load.",
+    "Keeps Platform Command Center marketplace guard activity feed from v4.0.14.",
+    "Marketplace Activity shows guard accepted, en route, arrived, checking property, proof uploaded, completed, and report published.",
+    "No schema change required."
   ],
   "sql_files": [
-    "RUN_AFTER_V416_SCRIPT_CACHE_KILLER_ACTIVITY_FEED.sql"
+    "RUN_AFTER_V415_BADGE_HARD_LOCK_ACTIVITY_FEED.sql"
   ]
 }

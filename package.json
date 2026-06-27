@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v416-script-cache-killer-activity-feed",
-  "version": "4.0.16",
+  "name": "co-pilot-security-marketplace-v415-badge-hard-lock-activity-feed",
+  "version": "4.0.15",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.16 with renamed script cache killer and marketplace guard activity feed.",
+  "description": "Co Pilot Security Marketplace v4.0.15 with badge hard lock and marketplace guard activity feed.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",
