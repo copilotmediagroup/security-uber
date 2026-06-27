@@ -1,28 +1,27 @@
 Co Pilot Security Marketplace
-Version: 4.0.0
-Build Name: MARKETPLACE DATA FOUNDATION
+Version: 4.0.1
+Build Name: AGENCY JOB BOARD
 Date: 2026-06-27
 
 Summary:
-- Separate v4 marketplace build for the new Supabase project.
-- New Supabase URL: https://nmfvxozbptcvyaenvkxl.supabase.co
-- Added platform_admin and agency_admin marketplace role support.
-- Added licensed agency signup path.
-- Added Platform Admin Agency Verification Center.
-- Added Marketplace Jobs board.
-- Added Marketplace Data Foundation dashboard.
-- Added SQL foundation for agencies, agency_members, agency_service_areas, marketplace_jobs, marketplace_job_claims, and job_events.
-- marketplace_jobs is the source of truth.
-- job_events is the audit/timeline backbone.
-- Client request now creates an open marketplace job after v4 SQL is installed.
-- Approved agencies can accept open marketplace jobs after v4 SQL is installed.
-- Preserved v3.0.77 client recent report thumbnail fix and prior report/proof/dashboard sync work.
+- Builds on v4.0.0 marketplace data foundation.
+- Adds a cleaner Agency Job Board for approved licensed/certified security agencies.
+- Approved Agency Admins can review open client marketplace jobs.
+- Agency Admins can accept available jobs and lock them to their agency.
+- Agency Admins can decline jobs they do not want; declined jobs are removed from Available.
+- Job rows show property, address/city, client request notes, urgency, service type, status, and requested time.
+- Job detail panel keeps the lifecycle tied to marketplace_jobs.current_status.
+- Platform Admin can still see all marketplace jobs.
+- No payments, Stripe, subscriptions, bidding, rankings, or closest-agency auto-matching added.
 
 Badge:
-v4.0.0 MARKETPLACE DATA FOUNDATION
+v4.0.1 AGENCY JOB BOARD
 
 SQL:
-New SQL required.
 For a brand-new Supabase project, run:
 1. RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql
 2. RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql
+3. RUN_AFTER_V401_AGENCY_JOB_BOARD.sql
+
+If v4.0.0 SQL was already run, only run:
+RUN_AFTER_V401_AGENCY_JOB_BOARD.sql

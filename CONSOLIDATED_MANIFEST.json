@@ -1,11 +1,19 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.0",
-  "buildName": "MARKETPLACE DATA FOUNDATION",
-  "type": "marketplace-data-foundation",
+  "version": "4.0.1",
+  "buildName": "AGENCY JOB BOARD",
+  "type": "marketplace-agency-job-board",
   "sql_required": true,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
+    "Built on the separate v4 marketplace foundation using the new Supabase project",
+    "Added v4.0.1 Agency Job Board for approved licensed/certified agency admins",
+    "Added Available, Accepted By Us, Declined, Locked, and All job board tabs",
+    "Added job detail panel showing property, address/city, client notes, urgency, service type, requested time, ownership, and status",
+    "Added agency decline flow using marketplace_job_claims and job_events when the v4.0.1 SQL patch is run",
+    "Accepted jobs still lock through cp_agency_accept_marketplace_job and marketplace_jobs.accepted_agency_id",
+    "Kept marketplace_jobs.current_status as the source of truth for job lifecycle status",
+    "No payments, Stripe, subscriptions, bidding, rankings, or auto-matching added",
     "Converted v3 app into a separate v4 marketplace foundation package using the new Supabase project",
     "Added platform_admin and agency_admin marketplace roles while preserving client and guard roles",
     "Added agency signup flow for licensed/certified security agencies",
@@ -21,6 +29,7 @@
   ],
   "sql_files": [
     "RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql",
-    "RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql"
+    "RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql",
+    "RUN_AFTER_V401_AGENCY_JOB_BOARD.sql"
   ]
 }

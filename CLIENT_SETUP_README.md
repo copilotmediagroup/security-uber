@@ -1,6 +1,6 @@
-# Co Pilot Security Marketplace v4.0.0 — Marketplace Data Foundation
+# Co Pilot Security Marketplace v4.0.1 — Agency Job Board
 
-This package starts the separate Uber-style / marketplace version of Co Pilot Security.
+This package continues the separate Uber-style / marketplace version of Co Pilot Security.
 
 ## Important
 This is **not** the v3 single-company app database.
@@ -16,22 +16,19 @@ Run these in the Supabase SQL editor in this order:
 
 1. `RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql`
 2. `RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql`
+3. `RUN_AFTER_V401_AGENCY_JOB_BOARD.sql`
 
-The first file installs the base v3 app schema/functions that the current app still needs.
-The second file adds the v4 marketplace foundation.
+If v4.0.0 SQL was already run, only run:
 
-## What v4.0.0 adds
-- Platform Admin role
-- Agency Admin role
-- Agency signup
-- Agency verification center
-- Marketplace Jobs board
-- Marketplace Data Foundation dashboard
-- `marketplace_jobs` as the global job source of truth
-- `job_events` as the audit trail
-- agency approval/rejection RPCs
-- agency job acceptance RPC
-- client request creates open marketplace job after SQL is installed
+`RUN_AFTER_V401_AGENCY_JOB_BOARD.sql`
+
+## What v4.0.1 adds
+- Agency Job Board for approved licensed/certified agencies.
+- Available / Accepted By Us / Declined / Locked / All tabs.
+- Job detail panel before acceptance.
+- Job rows show property, address/city, client notes, urgency, service type, requested time, and status.
+- Agency decline RPC: `cp_agency_decline_marketplace_job`.
+- Decline records into `marketplace_job_claims` and `job_events` without changing the global open job status.
 
 ## What is intentionally not included yet
 - payments
@@ -40,5 +37,3 @@ The second file adds the v4 marketplace foundation.
 - client reviews
 - agency rankings
 - bidding/price competition
-
-Those come after the core data foundation is proven.

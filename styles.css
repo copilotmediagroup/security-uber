@@ -13219,3 +13219,39 @@ button.is-busy {
   font-size: 11px;
   white-space: nowrap;
 }
+
+/* v4.0.1 Agency Job Board */
+.job-board-tabs { margin-bottom: 12px; }
+.job-board-tabs .ghost-button.active {
+  background: linear-gradient(180deg, rgba(46,125,255,.95), rgba(22,88,207,.95));
+  border-color: rgba(112,174,255,.48);
+  color: #fff;
+}
+.job-board-tabs .ghost-button b {
+  margin-left: 6px;
+  min-width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255,255,255,.12);
+  padding: 0 7px;
+}
+.agency-job-table .client-request-history-row.selected {
+  outline: 1px solid rgba(49,200,255,.42);
+  background: rgba(46,125,255,.10);
+}
+.marketplace-job-detail .note-box {
+  margin-top: 14px;
+  border: 1px solid rgba(113, 169, 232, .13);
+  border-radius: 9px;
+  background: rgba(8, 22, 38, .48);
+  padding: 14px;
+}
+.marketplace-job-detail .note-box strong { display:block; margin-bottom: 6px; color:#edf7ff; }
+.marketplace-job-detail .note-box p { margin: 0; color: var(--muted); line-height: 1.55; }
+.agency-job-board-view .filters-row { margin-bottom: 12px; }
+.workflow-finished-panel.warning {
+  border-color: rgba(255,181,61,.35);
+  background: rgba(92,55,8,.25);
+}
