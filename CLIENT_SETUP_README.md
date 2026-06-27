@@ -1,23 +1,44 @@
-# Co Pilot Security Marketplace v4.0.7 — Agency Live GPS Route Visibility
+# Co Pilot Security Marketplace v4.0.0 — Marketplace Data Foundation
 
-This package keeps the marketplace model clear: Co Pilot is the platform, while the licensed agency that accepts a job manages its own guards.
+This package starts the separate Uber-style / marketplace version of Co Pilot Security.
 
-## What changed
-- Agency Admin Live GPS now shows the agency guard roster and agency-owned jobs.
-- Accepted marketplace jobs with assigned guards are treated as agency route jobs.
-- The assigned guard route is drawn to the job location when GPS and property coordinates are available.
-- Marketplace job service addresses can be geocoded and cached in the browser if coordinates are not already stored.
-- No public guard signup or agency dropdown was reintroduced.
+## Important
+This is **not** the v3 single-company app database.
+Use the new Supabase project only:
 
-## SQL
-No schema change is required. After upload, you may run the optional reload file:
+- Supabase URL: `https://nmfvxozbptcvyaenvkxl.supabase.co`
+- Publishable key is already configured in `config.js`.
 
-`RUN_AFTER_V407_AGENCY_LIVE_GPS_ROUTE_VISIBILITY.sql`
+Do not point this package at the old v3 Supabase project.
 
-## Test
-1. Log in as Agency Admin.
-2. Make sure an agency guard exists and has GPS online.
-3. Accept a marketplace job.
-4. Assign the job to the guard.
-5. Open Agency Live GPS.
-6. Confirm the agency guard appears and the route draws to the job location.
+## SQL install order for a new Supabase
+Run these in the Supabase SQL editor in this order:
+
+1. `RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql`
+2. `RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql`
+
+The first file installs the base v3 app schema/functions that the current app still needs.
+The second file adds the v4 marketplace foundation.
+
+## What v4.0.0 adds
+- Platform Admin role
+- Agency Admin role
+- Agency signup
+- Agency verification center
+- Marketplace Jobs board
+- Marketplace Data Foundation dashboard
+- `marketplace_jobs` as the global job source of truth
+- `job_events` as the audit trail
+- agency approval/rejection RPCs
+- agency job acceptance RPC
+- client request creates open marketplace job after SQL is installed
+
+## What is intentionally not included yet
+- payments
+- Stripe split payouts
+- automatic closest-agency matching
+- client reviews
+- agency rankings
+- bidding/price competition
+
+Those come after the core data foundation is proven.

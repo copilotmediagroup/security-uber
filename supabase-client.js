@@ -81,17 +81,6 @@ class CoPilotSupabaseClient {
     return data;
   }
 
-
-  async signUpNoSession(email, password, metadata = {}) {
-    const previousSession = { access_token: this.accessToken, refresh_token: this.refreshToken };
-    const data = await this.authRequest('/signup', { email, password, data: metadata });
-    this.accessToken = previousSession.access_token || '';
-    this.refreshToken = previousSession.refresh_token || '';
-    if (this.accessToken) localStorage.setItem('cp_access_token', this.accessToken);
-    if (this.refreshToken) localStorage.setItem('cp_refresh_token', this.refreshToken);
-    return data;
-  }
-
   async signOut() {
     this.setSession(null);
   }
