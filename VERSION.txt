@@ -1,17 +1,13 @@
 Co Pilot Security Marketplace
-Version: 4.0.9
-Build Name: PLATFORM COMMAND CENTER MAP
+Version: 4.0.10
+Build Name: PLATFORM REAL MAP ALIGNMENT
 Date: 2026-06-27
 
 Summary:
-- Platform Admin dashboard is now a live marketplace command center.
-- Adds global map-style view of online guards, client properties, open jobs, accepted jobs, and assigned guard routes.
-- Adds company-level oversight showing active/approved agencies, job ownership, assigned guards, and online guards per company.
-- Co Pilot remains platform oversight, not dispatch. Agencies accept jobs and assign their own guards.
+- Replaced the mock Platform Command Center map with the same real Leaflet/OpenStreetMap style used by the guard, client, and agency GPS maps.
+- Platform Admin now sees client properties, open jobs, accepted jobs, online guards, and assigned guard routes on a real street map.
+- Kept company ownership, job ownership, activity feed, and marketplace totals from v4.0.9.
+- No database schema changes required.
 
 Badge:
-v4.0.9 PLATFORM COMMAND CENTER MAP
-
-SQL:
-No schema change required. Optional cache refresh:
-RUN_AFTER_V409_PLATFORM_COMMAND_CENTER_MAP.sql
+v4.0.10 PLATFORM REAL MAP ALIGNMENT

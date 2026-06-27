@@ -1,8 +1,8 @@
 
 const CP_DEV_CACHE_BUST = '2026-06-27T04-10-v409-platform-command-center-map';
 const BUILD = {
-  version: '4.0.9',
-  label: 'v4.0.9 PLATFORM COMMAND CENTER MAP'
+  version: '4.0.10',
+  label: 'v4.0.10 PLATFORM REAL MAP ALIGNMENT'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -2147,6 +2147,7 @@ function renderLoading() {
   scheduleGuardGpsPrep();
   scheduleGuardLeafletMap();
   scheduleDispatchLeafletMap();
+  schedulePlatformCommandLeafletMap();
   scheduleDispatchRoutePrep();
   scheduleClientMapPrep();
   scheduleClientLeafletMap();
@@ -10107,6 +10108,7 @@ function render() {
   scheduleGuardGpsPrep();
   scheduleGuardLeafletMap();
   scheduleDispatchLeafletMap();
+  schedulePlatformCommandLeafletMap();
   scheduleDispatchRoutePrep();
   scheduleClientMapPrep();
   scheduleClientLeafletMap();
@@ -12695,10 +12697,10 @@ document.addEventListener('change', e => {
    job and the map draws a mandatory route to the assignment property when
    coordinates are available. Address geocoding is cached locally so marketplace
    jobs with service addresses can route even if the property table has no lat/lng. */
-BUILD.version = '4.0.9';
-BUILD.label = 'v4.0.9 PLATFORM COMMAND CENTER MAP';
+BUILD.version = '4.0.10';
+BUILD.label = 'v4.0.10 PLATFORM REAL MAP ALIGNMENT';
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
-window.CP_DEV_CACHE_BUST = '2026-06-27T03-50-v408';
+window.CP_DEV_CACHE_BUST = '2026-06-27T04-22-v410';
 
 function cp407IsAgencyLiveGps() {
   return Boolean(isAgencyAdmin && isAgencyAdmin() && state.role === 'admin' && state.view === 'live-gps');
@@ -13170,46 +13172,162 @@ function cp409AgencyFilterOptions() {
   const rows = cp409ApprovedAgencies();
   return `<option value="all" ${activeId === 'all' ? 'selected' : ''}>All companies</option><option value="open" ${activeId === 'open' ? 'selected' : ''}>Open marketplace only</option>${rows.map(a => `<option value="${esc(a.id)}" ${activeId === String(a.id) ? 'selected' : ''}>${esc(a.agency_name || a.name || 'Agency')}</option>`).join('')}`;
 }
+function cp410IsPlatformCommandMapView() {
+  return Boolean(isPlatformAdmin && isPlatformAdmin() && !isAgencyAdmin() && state.role === 'admin' && state.view === 'dashboard');
+}
+function cp410PlatformMapState() {
+  window.CP410_PLATFORM_COMMAND_MAP = window.CP410_PLATFORM_COMMAND_MAP || { map: null, layer: null };
+  return window.CP410_PLATFORM_COMMAND_MAP;
+}
+function cp410PlatformHideFallback() {
+  const el = document.getElementById('platform-command-map-fallback');
+  if (el) el.classList.add('loaded');
+}
+function cp410PlatformShowFallback(message = 'Live street map unavailable. Showing marketplace activity data below.') {
+  const el = document.getElementById('platform-command-map-fallback');
+  if (!el) return;
+  el.classList.remove('loaded');
+  const p = el.querySelector('p');
+  if (p) p.textContent = message;
+}
+function cp410MarkerHtml(label = '') {
+  return `<span></span>${label ? `<b>${esc(label)}</b>` : ''}`;
+}
+function cp410PlatformIcon(type = 'guard', label = '') {
+  const cls = {
+    property: 'leaflet-platform-property-icon',
+    open: 'leaflet-platform-open-job-icon',
+    accepted: 'leaflet-platform-accepted-job-icon',
+    active: 'leaflet-platform-active-job-icon',
+    guard: 'leaflet-platform-guard-icon',
+    guardJob: 'leaflet-platform-guard-job-icon'
+  }[type] || 'leaflet-platform-guard-icon';
+  return L.divIcon({ className: cls, html: cp410MarkerHtml(label), iconSize: [34, 34], iconAnchor: [17, 17] });
+}
+function cp410PlatformJobLabel(job = {}) {
+  return job.job_number || String(job.id || '').slice(0, 10) || 'Job';
+}
+function cp410PlatformTooltip(html = '') {
+  return { direction: 'top', offset: [0, -14], opacity: .96, className: 'cp410-platform-tooltip' };
+}
+function cp410PlatformPointList() {
+  const properties = cp409ClientPropertyEntries();
+  const jobs = cp409JobLocationEntries();
+  const guards = cp409PlatformOnlineGuardEntries();
+  const points = [];
+  properties.forEach(e => e.coords && points.push([e.coords.lat, e.coords.lng]));
+  jobs.forEach(e => e.coords && points.push([e.coords.lat, e.coords.lng]));
+  guards.forEach(e => e.coords && points.push([e.coords.lat, e.coords.lng]));
+  return points;
+}
+function initPlatformCommandLeafletMap() {
+  if (!cp410IsPlatformCommandMapView()) return;
+  const el = document.getElementById('platform-command-leaflet-map');
+  if (!el) return;
+  if (!window.L) { cp410PlatformShowFallback('Leaflet did not load yet. Showing marketplace activity data below.'); return; }
+  if (el.dataset.ready === '1') {
+    const st = cp410PlatformMapState();
+    if (st.map) { try { st.map.invalidateSize(); } catch {} }
+    return;
+  }
+  const st = cp410PlatformMapState();
+  if (st.map) { try { st.map.remove(); } catch {} st.map = null; st.layer = null; }
+  try {
+    const properties = cp409ClientPropertyEntries();
+    const jobs = cp409JobLocationEntries();
+    const guards = cp409PlatformOnlineGuardEntries();
+    const first = guards[0]?.coords || jobs[0]?.coords || properties[0]?.coords || null;
+    const center = first ? [first.lat, first.lng] : [36.1699, -115.1398];
+    const map = L.map(el, { zoomControl: true, attributionControl: false, dragging: true, scrollWheelZoom: true, doubleClickZoom: true }).setView(center, first ? 13 : 11);
+    st.map = map;
+    el.dataset.ready = '1';
+    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, crossOrigin: true });
+    tiles.on('load', cp410PlatformHideFallback);
+    tiles.on('tileerror', () => cp410PlatformShowFallback('Map tiles blocked or slow. Showing marketplace activity data below.'));
+    tiles.addTo(map);
+    const group = L.featureGroup().addTo(map);
+
+    properties.forEach(entry => {
+      const lat = Number(entry.coords?.lat), lng = Number(entry.coords?.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+      const label = propertyDisplayName(entry.property) || entry.property.name || 'Client Property';
+      const m = L.marker([lat, lng], { icon: cp410PlatformIcon('property', '') }).addTo(group);
+      m.bindTooltip(`<strong>${esc(label)}</strong><br><span>Client property</span>`, cp410PlatformTooltip());
+    });
+
+    jobs.forEach(entry => {
+      const lat = Number(entry.coords?.lat), lng = Number(entry.coords?.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+      const type = entry.isOpen ? 'open' : entry.isActive ? 'active' : 'accepted';
+      const job = entry.job || {};
+      const label = cp410PlatformJobLabel(job);
+      const m = L.marker([lat, lng], { icon: cp410PlatformIcon(type, '') }).addTo(group);
+      m.bindTooltip(`<strong>${esc(label)}</strong><br><span>${esc(propertyLabel(job) || job.property_label || 'Job Location')}</span><br><span>${esc(statusText(cp409JobStatus(job)))} · ${esc(cp409JobAgencyName(job))}</span>`, cp410PlatformTooltip());
+    });
+
+    guards.forEach(entry => {
+      const lat = Number(entry.coords?.lat), lng = Number(entry.coords?.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+      const guard = entry.guard || {};
+      const name = guard.name || guard.display_name || guard.email || 'Guard';
+      const job = entry.request || cp409JobForGuard(guard);
+      const markerType = job ? 'guardJob' : 'guard';
+      const m = L.marker([lat, lng], { icon: cp410PlatformIcon(markerType, '') }).addTo(group);
+      const agencyName = guard.agency_name || cp409AgencyNameById(guard.agency_id || guard.agencyId || cp409AgencyId(job || {}));
+      m.bindTooltip(`<strong>${esc(name)}</strong><br><span>${esc(agencyName)}</span><br><span>${esc(job ? 'Assigned to ' + (cp410PlatformJobLabel(job)) : 'Online guard')}</span>`, cp410PlatformTooltip());
+      if (job) {
+        const end = cp409JobCoords(job);
+        if (end && Number.isFinite(Number(end.lat)) && Number.isFinite(Number(end.lng))) {
+          const route = dispatchRouteForPoints(entry.coords, end);
+          const routeCoords = route?.points?.length >= 2
+            ? route.points.map(pt => [pt.lat, pt.lng])
+            : dispatchRouteFallbackPoints(entry.coords, end).map(pt => [pt.lat, pt.lng]);
+          const line = L.polyline(routeCoords, { color: '#2e88ff', weight: 5, opacity: .90, dashArray: '10 8', lineCap: 'round', lineJoin: 'round' }).addTo(group);
+          line.bindTooltip(`<strong>${esc(name)} route</strong><br><span>${esc(cp410PlatformJobLabel(job))}</span>`, cp410PlatformTooltip());
+        }
+      }
+    });
+
+    const pts = cp410PlatformPointList();
+    if (pts.length) {
+      try { map.fitBounds(L.latLngBounds(pts), { padding: [42, 42], maxZoom: 15 }); } catch {}
+    }
+    setTimeout(() => { try { map.invalidateSize(); } catch {} }, 150);
+    setTimeout(() => {
+      const tilePane = el.querySelector('.leaflet-tile-pane');
+      const hasTiles = tilePane && tilePane.querySelector('img');
+      if (hasTiles) cp410PlatformHideFallback();
+    }, 1000);
+  } catch (err) {
+    cp410PlatformShowFallback('Map could not initialize. Showing marketplace activity data below.');
+  }
+}
+function schedulePlatformCommandLeafletMap() {
+  if (!cp410IsPlatformCommandMapView()) return;
+  requestAnimationFrame(() => [75, 450, 1200, 2500].forEach(delay => setTimeout(initPlatformCommandLeafletMap, delay)));
+}
 function cp409PlatformMapPanel() {
   cp409SchedulePlatformGeoPrep();
   const properties = cp409ClientPropertyEntries();
   const jobs = cp409JobLocationEntries();
   const guards = cp409PlatformOnlineGuardEntries();
-  const points = [...properties.map(e => e.coords), ...jobs.map(e => e.coords), ...guards.map(e => e.coords)];
-  const bounds = cp409Bounds(points);
-  const routePaths = cp409PlatformRoutePaths(guards, jobs, bounds);
-  const propertyMarkers = properties.map(entry => {
-    const pct = mapPercentForPoint(entry.coords.lat, entry.coords.lng, bounds);
-    return `<button type="button" class="cp409-map-marker property" style="left:${pct.x.toFixed(2)}%;top:${pct.y.toFixed(2)}%"><span></span><em>${esc(propertyDisplayName(entry.property) || 'Property')}</em></button>`;
-  }).join('');
-  const jobMarkers = jobs.map(entry => {
-    const pct = mapPercentForPoint(entry.coords.lat, entry.coords.lng, bounds);
-    const cls = entry.isOpen ? 'open-job' : entry.isActive ? 'active-job' : 'accepted-job';
-    const label = entry.job.job_number || entry.job.property_label || 'Job';
-    return `<button type="button" class="cp409-map-marker ${esc(cls)}" style="left:${pct.x.toFixed(2)}%;top:${pct.y.toFixed(2)}%"><span></span><em>${esc(label)}</em></button>`;
-  }).join('');
-  const guardMarkers = guards.map(entry => {
-    const pct = mapPercentForPoint(entry.coords.lat, entry.coords.lng, bounds);
-    const name = entry.guard.name || entry.guard.display_name || entry.guard.email || 'Guard';
-    return `<button type="button" class="cp409-map-marker guard ${entry.request ? 'on-job' : ''}" style="left:${pct.x.toFixed(2)}%;top:${pct.y.toFixed(2)}%"><span></span><em>${esc(name)}</em></button>`;
-  }).join('');
-  return `<section class="panel platform-command-map-panel">
+  const routes = guards.filter(g => g.request).length;
+  return `<section class="panel platform-command-map-panel cp410-real-map-panel">
     <div class="platform-command-toolbar">
-      <div><strong>Marketplace Live Map</strong><small>Properties, open jobs, company-owned jobs, online guards, and assigned routes.</small></div>
+      <div><strong>Marketplace Live Street Map</strong><small>Same live map system as the guard, client, and agency GPS views — with marketplace ownership overlays.</small></div>
       <div class="platform-command-filters"><input data-platform-command-search-v409 value="${esc(state.platformCommandSearch || '')}" placeholder="Search job, company, guard, property..." /><select data-platform-company-filter-v409>${cp409AgencyFilterOptions()}</select><select data-platform-status-filter-v409><option value="all" ${state.platformCommandStatusFilter === 'all' ? 'selected' : ''}>All statuses</option><option value="open" ${state.platformCommandStatusFilter === 'open' ? 'selected' : ''}>Open marketplace</option><option value="accepted" ${state.platformCommandStatusFilter === 'accepted' ? 'selected' : ''}>Accepted by company</option><option value="assigned" ${state.platformCommandStatusFilter === 'assigned' ? 'selected' : ''}>Guard assigned</option><option value="active" ${state.platformCommandStatusFilter === 'active' ? 'selected' : ''}>In progress / active</option><option value="completed" ${state.platformCommandStatusFilter === 'completed' ? 'selected' : ''}>Completed / published</option></select><button class="ghost-button" data-action="platform-command-refresh-v409">Refresh</button></div>
     </div>
-    <div class="cp409-map-wrap">
-      <div class="guard302-map-fallback cp409-command-map">
-        <span class="street-name s1">Marketplace Area</span><span class="street-name s2">Agency Coverage</span><span class="street-name s3">Client Properties</span><span class="street-name s4">Live Guards</span>
-        <div class="fallback-road r1"></div><div class="fallback-road r2"></div><div class="fallback-road r3"></div><div class="fallback-road r4"></div>
-        ${routePaths ? `<svg class="guard302-fallback-route dispatch-multi-route cp409-routes" viewBox="0 0 100 100" preserveAspectRatio="none">${routePaths}</svg>` : ''}
-        ${propertyMarkers}${jobMarkers}${guardMarkers}
-        <div class="cp409-map-legend"><span><i class="property"></i>Client Properties</span><span><i class="open-job"></i>Open Jobs</span><span><i class="accepted-job"></i>Accepted Jobs</span><span><i class="guard"></i>Online Guards</span><span><i class="route"></i>Assigned Routes</span></div>
+    <div class="cp409-map-wrap cp410-real-map-wrap">
+      <div class="guard302-leaflet-wrap dispatch-leaflet-wrap cp410-platform-leaflet-wrap">
+        <div id="platform-command-leaflet-map" class="guard302-leaflet-map cp410-platform-leaflet-map" data-online="${guards.length ? '1' : '0'}"></div>
+        <div id="platform-command-map-fallback" class="cp410-platform-map-fallback loaded"><strong>Street map loading</strong><p>Loading real map tiles and marketplace markers.</p></div>
+        <div class="cp409-map-legend cp410-map-legend"><span><i class="property"></i>Client Properties</span><span><i class="open-job"></i>Open Jobs</span><span><i class="accepted-job"></i>Accepted Jobs</span><span><i class="guard"></i>Online Guards</span><span><i class="route"></i>Assigned Routes</span></div>
       </div>
     </div>
-    <div class="guard302-map-metrics cp409-map-metrics"><div><small>Client Properties</small><strong>${properties.length}</strong></div><div><small>Job Locations</small><strong>${jobs.length}</strong></div><div><small>Online Guards</small><strong>${guards.length}</strong></div><div><small>Routes</small><strong>${guards.filter(g => g.request).length}</strong></div></div>
+    <div class="guard302-map-metrics cp409-map-metrics"><div><small>Client Properties</small><strong>${properties.length}</strong></div><div><small>Job Locations</small><strong>${jobs.length}</strong></div><div><small>Online Guards</small><strong>${guards.length}</strong></div><div><small>Routes</small><strong>${routes}</strong></div></div>
   </section>`;
 }
+
 function cp409CompanyRows() {
   const jobs = marketplaceJobRows();
   const guards = cp409PlatformGuardsAll();

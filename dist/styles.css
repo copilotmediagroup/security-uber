@@ -13422,3 +13422,55 @@ button.is-busy {
   .platform-command-filters { min-width: 0; grid-template-columns: 1fr 1fr; }
   .cp409-map-wrap { height: 420px; }
 }
+
+
+/* v4.0.10 Platform Command Center real street map alignment */
+.cp410-real-map-panel .platform-command-toolbar{align-items:flex-start;}
+.cp410-real-map-wrap{position:relative;min-height:430px;}
+.cp410-platform-leaflet-wrap{min-height:430px;border-radius:0;background:#06111d;overflow:hidden;position:relative;}
+.cp410-platform-leaflet-map{height:430px;min-height:430px;width:100%;z-index:1;}
+.cp410-platform-map-fallback{
+  position:absolute;inset:0;z-index:3;display:grid;place-items:center;text-align:center;padding:22px;
+  background:linear-gradient(145deg,rgba(5,18,32,.94),rgba(2,8,18,.94));color:#dcecff;pointer-events:none;
+}
+.cp410-platform-map-fallback.loaded{display:none;}
+.cp410-platform-map-fallback strong{display:block;font-size:18px;margin-bottom:6px;}
+.cp410-platform-map-fallback p{margin:0;color:var(--muted);}
+.leaflet-platform-property-icon,
+.leaflet-platform-open-job-icon,
+.leaflet-platform-accepted-job-icon,
+.leaflet-platform-active-job-icon,
+.leaflet-platform-guard-icon,
+.leaflet-platform-guard-job-icon{background:transparent!important;border:0!important;}
+.leaflet-platform-property-icon span,
+.leaflet-platform-open-job-icon span,
+.leaflet-platform-accepted-job-icon span,
+.leaflet-platform-active-job-icon span,
+.leaflet-platform-guard-icon span,
+.leaflet-platform-guard-job-icon span{
+  width:25px;height:25px;display:block;border-radius:50%;border:4px solid #071321;position:relative;
+  box-shadow:0 0 0 10px rgba(46,136,255,.14),0 0 30px rgba(46,136,255,.62);
+}
+.leaflet-platform-property-icon span{background:#2e88ff;}
+.leaflet-platform-open-job-icon span{background:#ffb53d;box-shadow:0 0 0 10px rgba(255,181,61,.16),0 0 30px rgba(255,181,61,.62);}
+.leaflet-platform-accepted-job-icon span{background:#31c8ff;box-shadow:0 0 0 10px rgba(49,200,255,.16),0 0 30px rgba(49,200,255,.62);}
+.leaflet-platform-active-job-icon span{background:#b05cff;box-shadow:0 0 0 10px rgba(176,92,255,.16),0 0 30px rgba(176,92,255,.62);}
+.leaflet-platform-guard-icon span{background:#37dc72;box-shadow:0 0 0 10px rgba(55,220,114,.16),0 0 30px rgba(55,220,114,.62);}
+.leaflet-platform-guard-job-icon span{background:#37dc72;box-shadow:0 0 0 10px rgba(55,220,114,.20),0 0 36px rgba(46,136,255,.72);}
+.leaflet-platform-property-icon span:after,
+.leaflet-platform-open-job-icon span:after,
+.leaflet-platform-accepted-job-icon span:after,
+.leaflet-platform-active-job-icon span:after,
+.leaflet-platform-guard-icon span:after,
+.leaflet-platform-guard-job-icon span:after{
+  content:"";position:absolute;inset:-15px;border-radius:50%;border:2px solid currentColor;opacity:.55;animation:pulse303 1.7s ease-out infinite;
+}
+.leaflet-platform-property-icon span:after{color:#2e88ff;}
+.leaflet-platform-open-job-icon span:after{color:#ffb53d;}
+.leaflet-platform-accepted-job-icon span:after{color:#31c8ff;}
+.leaflet-platform-active-job-icon span:after{color:#b05cff;}
+.leaflet-platform-guard-icon span:after,.leaflet-platform-guard-job-icon span:after{color:#37dc72;}
+.cp410-map-legend{position:absolute;left:14px;bottom:14px;z-index:5;}
+.cp410-platform-tooltip{background:rgba(5,16,29,.96);border:1px solid rgba(114,171,233,.28);color:#edf7ff;border-radius:8px;box-shadow:0 14px 35px rgba(0,0,0,.28);font-weight:800;}
+.cp410-platform-tooltip span{color:#9db3ca;font-weight:700;}
+.cp410-platform-tooltip:before{border-top-color:rgba(5,16,29,.96)!important;}

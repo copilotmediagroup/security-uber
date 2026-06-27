@@ -1,26 +1,25 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-Latest package: v4.0.9 PLATFORM COMMAND CENTER MAP
+Latest package:
+v4.0.10 PLATFORM REAL MAP ALIGNMENT
 
-Important instruction: do not suggest Bolt AI prompts. All future changes must be complete GitHub-ready ZIP replacement packages.
+Important instruction:
+The user is building through GitHub ZIP uploads into Bolt. Do not suggest Bolt AI prompts because the user does not have Bolt tokens. All future changes must be complete GitHub-ready ZIP replacement packages.
 
-Current model:
-- Platform Admin = Co Pilot marketplace oversight.
-- Agency Admin = licensed security company that accepts jobs and assigns its own guards.
-- Guard = created privately by agency admin, logs in normally.
-- Client = approved customer requesting patrol jobs.
+Project:
+Co Pilot Security Marketplace / Security Uber — separate from the old v3 single-company app.
 
-What v4.0.9 completed:
-- Replaced Platform Admin dashboard with Platform Command Center.
-- Added map-style marketplace visibility for client properties, open jobs, accepted jobs, online guards, and assigned routes.
-- Added company filter and status filter on the Platform Command Center.
-- Added Company Activity panel for approved agencies, online guards, guard totals, job totals, and assigned jobs.
-- Added Job Ownership table showing each job's accepted company and assigned guard.
-- Preserved v4.0.8 boot fix and agency GPS route work.
+New Supabase:
+https://nmfvxozbptcvyaenvkxl.supabase.co
 
-SQL:
-- No schema change required. Optional: RUN_AFTER_V409_PLATFORM_COMMAND_CENTER_MAP.sql
+What v4.0.10 fixed:
+- The v4.0.9 Platform Command Center map looked like a mock diagram instead of the real GPS maps.
+- Replaced it with a real Leaflet/OpenStreetMap street map matching the other app maps.
+- Platform Admin map now shows client properties, open jobs, accepted jobs, online guards, and assigned guard routes on a real map.
+- Kept platform company activity, job ownership, activity feed, and global totals.
+- No SQL schema change required.
 
-Next recommended build:
-- v4.0.10 PLATFORM COMPANY DRILLDOWN / JOB AUDIT DETAIL
-- Click a company to see all jobs, guards, reports, proof, and live status for that company.
+Next likely work:
+- Improve marker popups/cards on Platform Command Center.
+- Add company filter interactions directly on the map.
+- Continue client marketplace status tracker and report ownership workflow.
