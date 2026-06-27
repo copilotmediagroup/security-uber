@@ -1,18 +1,17 @@
 Co Pilot Security Marketplace
-Version: 4.0.12
-Build Name: PLATFORM LIFECYCLE SYNC FIX
+Version: 4.0.11
+Build Name: GUARD MARKETPLACE JOB FLOW
 Date: 2026-06-27
 
 Summary:
-- Platform Command Center now syncs with the v4.0.11 guard marketplace lifecycle.
-- Platform Admin reads marketplace_jobs.current_status, job_events, and proof_items together.
-- Added auto-refresh while Platform Command Center is open.
-- Job ownership table now shows live guard steps: guard accepted, en route, arrived, in progress, proof uploaded, completed.
-- Marketplace activity feed now shows guard lifecycle events and proof/completion movement.
-- Company activity panel now shows in-motion and completed jobs by agency.
+- Guard Active Job now uses assigned marketplace_jobs first, not legacy dispatch-only patrol requests.
+- Guard can accept assigned marketplace jobs, mark en route, arrived, in progress, upload proof, and complete the job.
+- Each guard lifecycle action updates marketplace_jobs.current_status and writes a job_events audit record.
+- Proof uploads can attach directly to marketplace_job_id.
+- Agency Admin and Platform Admin can read the same global job lifecycle.
 
 Badge:
-v4.0.12 PLATFORM LIFECYCLE SYNC FIX
+v4.0.11 GUARD MARKETPLACE JOB FLOW
 
 SQL:
-Run only RUN_AFTER_V412_PLATFORM_LIFECYCLE_SYNC_FIX.sql after v4.0.11. It is a cache refresh/no-schema patch.
+Run only RUN_AFTER_V411_GUARD_MARKETPLACE_JOB_FLOW.sql after v4.0.10.

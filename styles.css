@@ -13481,22 +13481,3 @@ button.is-busy {
 .cp411-marketplace-flow .panel-head h2::after { content: ' SOURCE OF TRUTH'; margin-left: 8px; color: #7cf2a7; font-size: 10px; letter-spacing: .16em; }
 .cp411-active-stepper { grid-template-columns: repeat(7, minmax(90px, 1fr)); }
 @media (max-width: 1180px) { .cp411-active-stepper { grid-template-columns: repeat(3, 1fr); } }
-
-
-/* v4.0.12 Platform lifecycle sync polish */
-.cp412-platform-sync .workflow-finished-panel.success { border-color: rgba(55,220,114,.34); }
-.cp412-kpi-row .kpi-card { min-height: 104px; }
-.cp412-jobs-table .client-request-history-head,
-.cp412-jobs-table .client-request-history-row { grid-template-columns: 1.05fr 1.35fr 1.2fr 1fr 1fr .9fr; }
-.cp412-jobs-table .workflow-stage-chip { width: max-content; max-width: 190px; }
-.cp412-jobs-table .workflow-stage-chip small { display: block; margin-top: 2px; white-space: normal; line-height: 1.15; }
-.cp412-feed-panel .live-gps-feed-row i { box-shadow: 0 0 0 5px rgba(46,125,255,.12); }
-.cp412-feed-en_route i, .cp412-feed-arrived i { background: var(--cyan); box-shadow: 0 0 0 5px rgba(49,200,255,.12); }
-.cp412-feed-in_progress i, .cp412-feed-active i { background: var(--green); box-shadow: 0 0 0 5px rgba(55,220,114,.12); }
-.cp412-feed-proof_uploaded i { background: var(--purple); box-shadow: 0 0 0 5px rgba(176,92,255,.12); }
-.cp412-feed-completed i, .cp412-feed-report_published i, .cp412-feed-published i { background: var(--green); box-shadow: 0 0 0 5px rgba(55,220,114,.12); }
-.cp412-company-panel .cp409-company-row small + small { margin-top: 3px; color: #8ac7ff; }
-@media (max-width: 1180px) {
-  .cp412-jobs-table .client-request-history-head,
-  .cp412-jobs-table .client-request-history-row { grid-template-columns: 1fr; }
-}
