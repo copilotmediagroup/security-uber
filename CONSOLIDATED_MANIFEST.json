@@ -1,27 +1,19 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.6",
-  "buildName": "AGENCY ASSIGNMENT UI FIX",
-  "type": "agency-assignment-ui-fix",
+  "version": "4.0.7",
+  "buildName": "AGENCY LIVE GPS ROUTE VISIBILITY",
+  "type": "agency-live-gps-route-visibility",
   "sql_required": false,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Fixed Agency Job Management guard assignment dropdown markup",
-    "Removed duplicate Assign Guard action from accepted jobs table",
-    "Kept one clear Assign Guard action in the right-side job detail panel",
-    "Added change event support for the agency guard select field",
-    "Preserved private agency guard roster/direct add flow from v4.0.5",
-    "Preserved marketplace role cleanup and no public guard signup",
-    "Preserved client approval, agency job board, and agency ownership flow"
+    "Agency Admin Live GPS view focused on agency-owned jobs and guards",
+    "Agency guard roster displayed without public company dropdowns",
+    "Assigned guard route linked from accepted marketplace_jobs to job location",
+    "Job address geocode/cache support for route drawing when coordinates are missing",
+    "Live GPS KPIs updated for agency guards, assigned routes, and job locations",
+    "Maintains Uber-style model: agency accepts job and manages its own guard route visibility"
   ],
   "sql_files": [
-    "RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql",
-    "RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql",
-    "RUN_AFTER_V401_AGENCY_JOB_BOARD.sql",
-    "RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql",
-    "RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql",
-    "RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql",
-    "RUN_AFTER_V405_AGENCY_GUARD_DIRECT_ADD.sql",
-    "RUN_AFTER_V406_AGENCY_ASSIGNMENT_UI_FIX.sql"
+    "RUN_AFTER_V407_AGENCY_LIVE_GPS_ROUTE_VISIBILITY.sql"
   ]
 }

@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-agency-assignment-ui-fix",
-  "version": "4.0.6",
+  "name": "co-pilot-security-marketplace-agency-live-gps-route-visibility",
+  "version": "4.0.7",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.6 agency assignment UI fix with one clear guard assignment control and corrected agency guard dropdown.",
+  "description": "Co Pilot Security Marketplace v4.0.7 with agency Live GPS route visibility for accepted and assigned marketplace jobs.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

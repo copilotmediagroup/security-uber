@@ -1,23 +1,23 @@
-# Co Pilot Security Marketplace v4.0.6 — Agency Assignment UI Fix
+# Co Pilot Security Marketplace v4.0.7 — Agency Live GPS Route Visibility
 
-This is a GitHub-ready replacement package for the separate Uber-style security agency marketplace.
+This package keeps the marketplace model clear: Co Pilot is the platform, while the licensed agency that accepts a job manages its own guards.
 
-## What this patch fixes
-
-- The Agency Job Management page now has one clear guard assignment path.
-- The accepted jobs table no longer has a second Assign Guard button.
-- The table button now only opens/manages the selected job detail.
-- The right-side Agency Job Detail panel is the only place where the agency selects and assigns a guard.
-- The guard dropdown now renders valid option tags and stores the selected guard correctly.
-
-## Marketplace model
-
-Clients request jobs. Approved agencies accept open marketplace jobs. The accepted job locks to that agency. The agency then assigns one of its own guards. Co Pilot remains the software/platform layer.
+## What changed
+- Agency Admin Live GPS now shows the agency guard roster and agency-owned jobs.
+- Accepted marketplace jobs with assigned guards are treated as agency route jobs.
+- The assigned guard route is drawn to the job location when GPS and property coordinates are available.
+- Marketplace job service addresses can be geocoded and cached in the browser if coordinates are not already stored.
+- No public guard signup or agency dropdown was reintroduced.
 
 ## SQL
+No schema change is required. After upload, you may run the optional reload file:
 
-No schema change is required for this build. An optional no-op schema reload file is included:
+`RUN_AFTER_V407_AGENCY_LIVE_GPS_ROUTE_VISIBILITY.sql`
 
-`RUN_AFTER_V406_AGENCY_ASSIGNMENT_UI_FIX.sql`
-
-Run it only if you want to refresh Supabase PostgREST schema cache.
+## Test
+1. Log in as Agency Admin.
+2. Make sure an agency guard exists and has GPS online.
+3. Accept a marketplace job.
+4. Assign the job to the guard.
+5. Open Agency Live GPS.
+6. Confirm the agency guard appears and the route draws to the job location.

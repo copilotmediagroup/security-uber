@@ -1,19 +1,17 @@
 Co Pilot Security Marketplace
-Version: 4.0.6
-Build Name: AGENCY ASSIGNMENT UI FIX
+Version: 4.0.7
+Build Name: AGENCY LIVE GPS ROUTE VISIBILITY
 Date: 2026-06-27
 
 Summary:
-- Fixes the Agency Job Management guard assignment UI.
-- Removes the duplicate Assign Guard button from the accepted jobs table.
-- Keeps one assignment control in the right-side job detail panel.
-- Fixes the agency guard dropdown so selected guards are captured correctly.
-- Adds change-event support for the guard select field.
-- No SQL schema changes required for this patch.
+- Agency Admin Live GPS now prioritizes the agency that accepted the marketplace job.
+- Agency Admin sees approved agency guards on the GPS roster.
+- Assigned guard routes are linked to accepted marketplace_jobs.
+- Marketplace job addresses can be geocoded/cached for route drawing when lat/lng is not already stored.
+- Keeps Co Pilot as the marketplace platform, not the dispatcher/provider.
 
 Badge:
-v4.0.6 AGENCY ASSIGNMENT UI FIX
+v4.0.7 AGENCY LIVE GPS ROUTE VISIBILITY
 
 SQL:
-No schema change required. Optional no-op reload file included:
-RUN_AFTER_V406_AGENCY_ASSIGNMENT_UI_FIX.sql
+No schema change required. Optional SQL reload file included.

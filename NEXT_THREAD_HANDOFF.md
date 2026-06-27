@@ -1,36 +1,26 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-Latest package:
-v4.0.6 AGENCY ASSIGNMENT UI FIX
+Latest package: v4.0.7 AGENCY LIVE GPS ROUTE VISIBILITY
 
-Important instruction:
-The user is building through GitHub ZIP uploads into Bolt. Do not suggest Bolt AI prompts because the user does not have Bolt tokens. All future changes must be complete GitHub-ready ZIP replacement packages.
+Important instruction: no Bolt AI prompts. All changes must be complete GitHub-ready ZIP replacement packages.
 
-Context:
-This is the v4 Uber-style marketplace project, separate from the old v3 single-company security app. Clients request jobs, approved licensed/certified agencies accept jobs, and the accepted agency assigns its own guards. Co Pilot Security is the platform/software layer, not the licensed security provider.
+Project: security-uber. New Supabase: https://nmfvxozbptcvyaenvkxl.supabase.co
 
-Current fix completed:
-- Agency Job Management no longer has two assignment paths.
-- The table row action now only opens/manages the job detail.
-- The only Assign Guard action lives in the right-side Agency Job Detail panel.
-- Fixed the guard dropdown markup so the selected guard is actually captured.
-- Added select change handling for guard assignment.
-- No SQL schema change was required.
+Current marketplace model:
+- Client requests a job.
+- Job enters marketplace_jobs as open work.
+- Approved licensed agency accepts job.
+- Job locks to that agency.
+- Agency Admin privately adds/controls agency guards.
+- Agency assigns its own guard.
+- Agency Live GPS must show agency guards and route assigned guard to job.
 
-Current badge:
-v4.0.6 AGENCY ASSIGNMENT UI FIX
+v4.0.7 completed:
+- Agency Live GPS page now focuses on agency-owned accepted jobs.
+- Agency Admin sees approved agency guard roster.
+- Assigned marketplace job routes are linked to the assigned guard.
+- Job address geocode/cache support added for route drawing.
+- Co Pilot remains platform/software layer, not dispatch/provider.
 
-Testing path:
-1. Agency Admin logs in.
-2. Agency accepts a marketplace job from Available Jobs.
-3. Agency opens Agency Job Management.
-4. Click Manage on a job.
-5. Select a guard in the right-side panel.
-6. Click Assign Guard.
-7. Job should move to Assigned and show guard name.
-
-Next recommended build:
-v4.0.7 GUARD ASSIGNED JOB VISIBILITY
-- Guard logs in and sees only jobs assigned to that guard.
-- Guard can accept/start/complete assigned marketplace job.
-- Agency Admin sees guard status move through lifecycle.
+Next likely build:
+- Guard-side acceptance/status flow for marketplace jobs: guard sees assigned job, accepts, goes en route, starts job, uploads proof, completes job.

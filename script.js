@@ -1,8 +1,8 @@
 
 const CP_DEV_CACHE_BUST = '2026-06-27T03-45-v405-agency-guard-direct-add';
 const BUILD = {
-  version: '4.0.6',
-  label: 'v4.0.6 AGENCY ASSIGNMENT UI FIX'
+  version: '4.0.7',
+  label: 'v4.0.7 AGENCY LIVE GPS ROUTE VISIBILITY'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -12666,5 +12666,305 @@ document.addEventListener('change', e => {
     state.agencyDispatchGuardSelections = { ...(state.agencyDispatchGuardSelections || {}), [jobId]: i.value || '' };
   }
 });
+
+
+
+/* v4.0.7 Agency Live GPS Route Visibility
+   Agency Admin sees all approved/active agency guards on Live GPS. Once a job is
+   assigned to an agency guard, that guard is linked to the accepted marketplace
+   job and the map draws a mandatory route to the assignment property when
+   coordinates are available. Address geocoding is cached locally so marketplace
+   jobs with service addresses can route even if the property table has no lat/lng. */
+BUILD.version = '4.0.7';
+BUILD.label = 'v4.0.7 AGENCY LIVE GPS ROUTE VISIBILITY';
+window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
+window.CP_DEV_CACHE_BUST = '2026-06-27T03-35-v407';
+
+function cp407IsAgencyLiveGps() {
+  return Boolean(isAgencyAdmin && isAgencyAdmin() && state.role === 'admin' && state.view === 'live-gps');
+}
+function cp407RouteEligibleStatus(status = '') {
+  return ['guard_assigned','assigned','accepted','guard_accepted','en_route','in_progress','active','proof_uploaded','completed'].includes(String(status || '').toLowerCase());
+}
+function cp407AgencyLiveJobs() {
+  const mine = (typeof marketplaceJobRows === 'function' ? marketplaceJobRows() : (state.marketplaceJobs || []))
+    .filter(job => typeof v401Owner === 'function' ? v401Owner(job) === 'mine' : String(job.accepted_agency_id || '') === String(state.activeAgencyId || ''));
+  return mine
+    .map(job => ({ ...job, _status: typeof marketplaceJobStatus === 'function' ? marketplaceJobStatus(job) : String(job.current_status || job.status || '') }))
+    .filter(job => ['agency_accepted','accepted_by_agency','guard_assigned','assigned','accepted','guard_accepted','en_route','in_progress','active','proof_uploaded','completed'].includes(job._status))
+    .sort((a,b) => new Date(b.assigned_at || b.accepted_at || b.requested_at || b.created_at || 0) - new Date(a.assigned_at || a.accepted_at || a.requested_at || a.created_at || 0));
+}
+function cp407AgencyLiveRouteJobs() {
+  return cp407AgencyLiveJobs().filter(job => job.assigned_guard_id && cp407RouteEligibleStatus(job._status));
+}
+function cp407AddressForJob(job = {}) {
+  const parts = [
+    job.property_address || job.address || job.address_line1 || job.service_address || '',
+    job.property_city || job.city || '',
+    job.property_state || job.state || '',
+    job.property_zip || job.zip_code || job.zip || ''
+  ].filter(Boolean);
+  if (parts.length) return parts.join(', ');
+  try { return typeof v401Address === 'function' ? v401Address(job) : ''; } catch { return ''; }
+}
+function cp407PropertyLabel(job = {}) {
+  return job.property_label || job.property_name || job.business_name || job.client_business_name || (typeof propertyLabel === 'function' ? propertyLabel(job) : '') || 'Assignment Property';
+}
+function cp407PropertyId(job = {}) {
+  return String(job.property_id || job.propertyId || job.location_id || job.id || '');
+}
+function cp407GeoCacheKey() { return 'cp407_agency_live_gps_geocode_cache_v1'; }
+function cp407ReadGeoCache() {
+  try { const x = JSON.parse(localStorage.getItem(cp407GeoCacheKey()) || '{}'); return x && typeof x === 'object' ? x : {}; } catch { return {}; }
+}
+function cp407WriteGeoCache(cache = {}) { try { localStorage.setItem(cp407GeoCacheKey(), JSON.stringify(cache)); } catch {} }
+function cp407DirectCoords(row = {}) {
+  const loc = row.location || row.current_location || row.property_location || row.coords || {};
+  const lat = dispatchNumberValue(
+    row.property_latitude, row.latitude, row.lat, row.geo_lat, row.location_lat,
+    row.property_lat, row.service_latitude, row.address_latitude, loc.latitude, loc.lat
+  );
+  const lng = dispatchNumberValue(
+    row.property_longitude, row.longitude, row.lng, row.lon, row.geo_lng, row.location_lng,
+    row.property_lng, row.service_longitude, row.address_longitude, loc.longitude, loc.lng, loc.lon
+  );
+  if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng, source: 'direct' };
+  return null;
+}
+const cp407BaseGetPropertyCoords = typeof getPropertyCoords === 'function' ? getPropertyCoords : null;
+function getPropertyCoords(req = {}) {
+  const direct = cp407DirectCoords(req);
+  if (direct) return { lat: direct.lat, lng: direct.lng };
+  const p = propertyById ? propertyById(req?.property_id) : null;
+  const pDirect = p ? cp407DirectCoords(p) : null;
+  if (pDirect) return { lat: pDirect.lat, lng: pDirect.lng };
+  const cache = cp407ReadGeoCache();
+  const keys = [req?.id, req?.job_id, req?.marketplace_job_id, req?.property_id, cp407AddressForJob(req)].filter(Boolean).map(String);
+  for (const key of keys) {
+    const hit = cache[key];
+    if (hit && Number.isFinite(Number(hit.lat)) && Number.isFinite(Number(hit.lng))) return { lat: Number(hit.lat), lng: Number(hit.lng) };
+  }
+  if (cp407BaseGetPropertyCoords) {
+    try { return cp407BaseGetPropertyCoords(req); } catch {}
+  }
+  return null;
+}
+async function cp407GeocodeJobAddress(job = {}) {
+  const address = cp407AddressForJob(job);
+  if (!address || !job?.id) return null;
+  const cache = cp407ReadGeoCache();
+  const keys = [job.id, job.property_id, address].filter(Boolean).map(String);
+  for (const key of keys) {
+    const hit = cache[key];
+    if (hit && Number.isFinite(Number(hit.lat)) && Number.isFinite(Number(hit.lng))) return hit;
+  }
+  if (cache[`busy:${job.id}`]) return null;
+  cache[`busy:${job.id}`] = new Date().toISOString();
+  cp407WriteGeoCache(cache);
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(address)}`, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error('Address geocode failed');
+    const rows = await res.json();
+    const item = Array.isArray(rows) ? rows[0] : null;
+    const lat = Number(item?.lat), lng = Number(item?.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) throw new Error('Address not found');
+    const next = cp407ReadGeoCache();
+    const val = { lat, lng, address, updated_at: new Date().toISOString() };
+    keys.forEach(k => { next[k] = val; });
+    delete next[`busy:${job.id}`];
+    cp407WriteGeoCache(next);
+    return val;
+  } catch (err) {
+    const next = cp407ReadGeoCache();
+    delete next[`busy:${job.id}`];
+    next[`failed:${job.id}`] = { address, message: String(err?.message || err), updated_at: new Date().toISOString() };
+    cp407WriteGeoCache(next);
+    return null;
+  }
+}
+function cp407ScheduleAgencyGeoPrep() {
+  if (!cp407IsAgencyLiveGps()) return;
+  const jobs = cp407AgencyLiveJobs().filter(job => !getPropertyCoords(job)).slice(0, 5);
+  if (!jobs.length) return;
+  setTimeout(async () => {
+    let changed = false;
+    for (const job of jobs) {
+      const got = await cp407GeocodeJobAddress(job);
+      if (got) changed = true;
+    }
+    if (changed && cp407IsAgencyLiveGps()) { try { render(); } catch {} }
+  }, 250);
+}
+function cp407JobForGuard(guard = {}) {
+  const guardKeys = dispatchGuardIdentityKeys ? dispatchGuardIdentityKeys(guard) : [guard.id, guard.email].filter(Boolean).map(v => String(v).toLowerCase());
+  return cp407AgencyLiveRouteJobs().find(job => {
+    const assigned = [job.assigned_guard_id, job.guard_id, job.assigned_guard_auth_user_id, job.assigned_guard_email, job.guard_email]
+      .filter(Boolean).map(v => String(v).trim().toLowerCase());
+    return assigned.some(x => guardKeys.includes(x));
+  }) || null;
+}
+function cp407GuardApprovedForAgency(guard = {}) {
+  const status = String(guard.status || guard.approval_status || 'active').toLowerCase();
+  if (['inactive','disabled','rejected','pending','denied'].includes(status)) return false;
+  return true;
+}
+function cp407AgencyGuardRowsAll() {
+  return (typeof adminAssignableGuards === 'function' ? adminAssignableGuards() : (state.guards || [])).filter(cp407GuardApprovedForAgency);
+}
+function dispatchMapOnlineGuards() {
+  const guards = cp407IsAgencyLiveGps() ? cp407AgencyGuardRowsAll() : (typeof adminAssignableGuards === 'function' ? adminAssignableGuards() : (state.guards || []));
+  return guards.map((guard, idx) => {
+    const linkedReq = cp407IsAgencyLiveGps()
+      ? cp407JobForGuard(guard)
+      : (typeof activeRequests === 'function' ? activeRequests().find(req => String(req.guard_id || req.assigned_guard_id) === String(guard.id)) : null);
+    const coords = dispatchGuardCoords(guard, idx, linkedReq);
+    return { guard, request: linkedReq || null, coords, positionSource: coords?.source || 'unknown' };
+  }).filter(entry => cp407IsAgencyLiveGps() ? Boolean(entry.coords) : dispatchGuardIsOnlineForMap(entry.guard, entry.coords));
+}
+function dispatchMapPropertyEntries() {
+  if (cp407IsAgencyLiveGps()) {
+    const jobEntries = cp407AgencyLiveJobs().map(job => {
+      const coords = getPropertyCoords(job);
+      if (!coords) return null;
+      return {
+        property: {
+          id: cp407PropertyId(job),
+          label: cp407PropertyLabel(job),
+          name: cp407PropertyLabel(job),
+          address: job.property_address || job.address || job.address_line1 || job.service_address || '',
+          city: job.property_city || job.city || '',
+          state: job.property_state || job.state || '',
+          zip_code: job.property_zip || job.zip_code || job.zip || '',
+          owner_name: job.client_name || job.client_email || 'Marketplace Client',
+          latitude: coords.lat,
+          longitude: coords.lng,
+          marketplace_job_id: job.id
+        },
+        coords,
+        activeReq: job,
+        isActive: Boolean(job.assigned_guard_id)
+      };
+    }).filter(Boolean);
+    const seen = new Set();
+    return jobEntries.filter(entry => {
+      const key = `${entry.property.id}:${entry.coords.lat.toFixed(5)},${entry.coords.lng.toFixed(5)}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+  return (state.properties || []).map(property => {
+    const coords = dispatchPropertyCoords(property);
+    const activeReq = activeRequests().find(req => String(req.property_id) === String(property.id)) || null;
+    return { property, coords, activeReq, isActive: Boolean(activeReq) };
+  }).filter(entry => entry.coords);
+}
+function cp407AssignedJobCount() { return cp407AgencyLiveRouteJobs().length; }
+function dispatchLiveGpsKpiRow() {
+  const guards = cp407AgencyGuardRowsAll();
+  const online = dispatchMapOnlineGuards();
+  const active = cp407IsAgencyLiveGps() ? cp407AgencyLiveJobs() : (typeof activeRequests === 'function' ? activeRequests() : []);
+  const routeJobs = cp407IsAgencyLiveGps() ? cp407AgencyLiveRouteJobs() : active;
+  const properties = dispatchMapPropertyEntries();
+  const alerts = activeAlertCount ? activeAlertCount() : 0;
+  const onlineSub = cp407IsAgencyLiveGps() ? `${online.length} / ${Math.max(guards.length, online.length)} agency guards showing GPS` : `${online.length} / ${Math.max(guards.length, online.length)} guards online`;
+  const activeSub = cp407IsAgencyLiveGps() ? `${routeJobs.length} assigned route${routeJobs.length === 1 ? '' : 's'} of ${active.length} accepted jobs` : `${active.length} active requests`;
+  const propertySub = cp407IsAgencyLiveGps() ? `${properties.length} job locations mapped` : `${properties.length} properties mapped`;
+  const alertSub = alerts ? 'Require attention' : 'All clear';
+  return `<section class="live-gps-kpi-row">
+    ${liveGpsKpi('⌖', 'Agency Guards GPS', online.length, onlineSub, 'blue')}
+    ${liveGpsKpi('⟶', 'Assigned Routes', routeJobs.length, activeSub, 'green')}
+    ${liveGpsKpi('▥', 'Job Locations', properties.length, propertySub, 'purple')}
+    ${liveGpsKpi('⚠', 'Alerts', alerts, alertSub, 'red')}
+  </section>`;
+}
+function liveGpsOnlineGuardRoster() {
+  const mapRows = dispatchMapOnlineGuards();
+  const mapIds = new Set(mapRows.map(e => String(e.guard.id || '')));
+  const rows = cp407IsAgencyLiveGps()
+    ? cp407AgencyGuardRowsAll().map((guard, idx) => mapRows.find(e => String(e.guard.id || '') === String(guard.id || '')) || { guard, request: cp407JobForGuard(guard), coords: null, positionSource: 'no-gps' })
+    : mapRows;
+  return `<section class="panel panel-pad live-guard-roster-panel">
+    <div class="panel-head"><div><h2>${cp407IsAgencyLiveGps() ? 'Agency Guard Roster' : 'Online Guard Roster'}</h2></div><button type="button" data-view="guards">View all</button></div>
+    <div class="live-guard-roster-list">${rows.length ? rows.map(entry => {
+      const g = entry.guard;
+      const name = g.name || g.display_name || g.email || 'Guard';
+      const selected = String(liveGps.dispatchSelectedGuardId || '') === String(g.id);
+      const hasGps = Boolean(entry.coords);
+      const req = entry.request || null;
+      return `<button type="button" class="${selected ? 'selected' : ''}" data-action="select-live-gps-guard" data-guard-id="${esc(g.id)}">
+        ${avatar(name, g.photo_url || g.avatar_url || g.image_url || '')}
+        <span><strong>${esc(name)}</strong><small>${esc(req ? 'Assigned: ' + cp407PropertyLabel(req) : (hasGps ? 'Available / GPS on' : 'Approved / no GPS yet'))}</small></span>
+        <em>${hasGps ? esc(liveGpsGuardSpeed(entry)) + ' mph<br>' + esc(liveGpsGuardCity(entry)) : 'No GPS<br>Waiting'}</em>
+      </button>`;
+    }).join('') : '<div class="empty">No agency guards have been added yet.</div>'}</div>
+  </section>`;
+}
+function buildLiveGpsEvents() {
+  const now = Date.now();
+  const guardEntries = dispatchMapOnlineGuards();
+  const routeEvents = cp407IsAgencyLiveGps() ? cp407AgencyLiveRouteJobs().map((job, idx) => {
+    const guard = (state.guards || []).find(g => String(g.id) === String(job.assigned_guard_id)) || {};
+    const name = guard.name || guard.display_name || job.assigned_guard_name || job.assigned_guard_email || 'Assigned guard';
+    const entry = guardEntries.find(e => String(e.guard.id) === String(guard.id || job.assigned_guard_id));
+    const route = entry ? dispatchRouteForRequestAndGuard(job, entry) : null;
+    return {
+      id: `cp407-route-${job.id}`,
+      created_at: job.assigned_at || job.accepted_at || job.updated_at || new Date(now - idx * 90000).toISOString(),
+      guardName: name,
+      event: cp407RouteEligibleStatus(job._status) ? 'route linked to assignment' : 'assignment waiting',
+      location: cp407PropertyLabel(job),
+      status: job._status || job.current_status || 'assigned',
+      eta: route?.etaMin ? `${route.etaMin} min` : 'Route required'
+    };
+  }) : [];
+  const guardEvents = guardEntries.map((entry, idx) => {
+    const name = entry.guard.name || entry.guard.display_name || entry.guard.email || 'Guard';
+    const req = entry.request;
+    const route = req ? dispatchRouteForRequestAndGuard(req, entry) : null;
+    return {
+      id: `guard-${entry.guard.id}`,
+      created_at: liveGps.lastUpdate || new Date(now - idx * 90000).toISOString(),
+      guardName: name,
+      event: req ? 'en route to assignment' : 'showing agency GPS',
+      location: req ? cp407PropertyLabel(req) : dispatchGuardGpsAddress(entry),
+      status: req ? String(req._status || req.status || req.current_status || 'assigned') : 'online',
+      eta: req && route?.etaMin ? `${route.etaMin} min` : (req ? 'Route required' : 'Live')
+    };
+  });
+  const activityEvents = (state.patrolActivity || []).slice(0, 6).map((item, idx) => {
+    const req = requestById ? requestById(item.request_id) || {} : {};
+    return { id: item.id || `activity-${idx}`, created_at: item.created_at || new Date(now - idx * 240000).toISOString(), guardName: requestGuardName ? requestGuardName(req) : 'System', event: item.title || item.event_type || 'Route event', location: item.details || item.message || (propertyLabel ? propertyLabel(req) : 'Live GPS'), status: String(req.status || item.status || 'completed'), eta: fmtTime(item.created_at) };
+  });
+  return [...routeEvents, ...guardEvents, ...activityEvents].sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0, 12);
+}
+function dispatchLiveGpsView() {
+  cp407ScheduleAgencyGeoPrep();
+  const agency = typeof v401ActiveAgencyRecord === 'function' ? v401ActiveAgencyRecord() : null;
+  return `<div class="dashboard live-gps-shell">
+    <header class="dashboard-header live-gps-header">
+      <div class="title-block"><h1><i>⌖</i> ${cp407IsAgencyLiveGps() ? 'Agency Live GPS' : 'Live GPS'}</h1><p>${cp407IsAgencyLiveGps() ? 'Agency Admin sees every approved agency guard. Assigned guards must show a route to the accepted job location.' : 'Real-time live tracking of online guards, active patrols, and property locations.'}</p></div>
+      <div class="header-actions"><span class="system-pill"><i></i>${esc(cp407IsAgencyLiveGps() ? (agency?.agency_name || 'Agency GPS') : 'System Operational')}</span><button class="header-button" data-action="live-gps-search">⌕</button><button class="header-button" data-view="settings">⚙</button><button class="header-button" data-view="notifications">🔔${unreadNotificationsCount() ? `<b>${esc(unreadNotificationsCount())}</b>` : ''}</button><button class="header-button" data-view="dispatch-board">☰</button></div>
+    </header>
+    ${cp407IsAgencyLiveGps() ? `<section class="workflow-finished-panel success"><strong>Agency-owned GPS visibility</strong><p>Co Pilot does not dispatch the job. Once your agency accepts work, this page shows your approved guards and draws the assigned guard route to the client location.</p></section>` : ''}
+    ${dispatchLiveGpsKpiRow()}
+    <section class="live-gps-layout">
+      <main class="live-gps-main">
+        ${liveGpsMapPanel()}
+        ${liveGpsRouteEventsTable()}
+      </main>
+      <aside class="live-gps-rail">
+        ${liveGpsOnlineGuardRoster()}
+        ${liveGpsSelectedPropertyPanel()}
+        ${liveGpsFeedPanel()}
+      </aside>
+    </section>
+  </div>`;
+}
+const cp407BaseScheduleDispatchRoutePrep = typeof scheduleDispatchRoutePrep === 'function' ? scheduleDispatchRoutePrep : null;
+function scheduleDispatchRoutePrep() {
+  if (cp407IsAgencyLiveGps()) cp407ScheduleAgencyGeoPrep();
+  if (cp407BaseScheduleDispatchRoutePrep) return cp407BaseScheduleDispatchRoutePrep();
+}
 
 initialize();
