@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v422-proof-upload-rls-fix",
-  "version": "4.0.22",
+  "name": "co-pilot-security-marketplace-v423-badge-lock-proof-rls-preserved",
+  "version": "4.0.23",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.22 fixes marketplace proof upload storage RLS while preserving profile photo save, quiet admin sync, and client tracker.",
+  "description": "Co Pilot Security Marketplace v4.0.23 locks the visible build badge to v4.0.23 while preserving the proof upload RLS fix, profile photo save, quiet admin sync, and client tracker.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

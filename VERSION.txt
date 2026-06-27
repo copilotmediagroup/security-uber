@@ -1,16 +1,17 @@
 Co Pilot Security Marketplace
-Version: 4.0.22
-Build Name: PROOF UPLOAD RLS FIX
+Version: 4.0.23
+Build Name: BADGE LOCK + PROOF RLS PRESERVED
 Package: GITHUB READY LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Fixes marketplace proof uploads blocked by Supabase Storage RLS.
-- Adds RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql for existing Supabase projects showing row-level security policy errors.
-- Updates patrol-proof storage upload/read helper functions to allow marketplace_job_id proof paths assigned to the guard.
+- Fixes the visible badge staying on v4.0.21 after the v4.0.22 proof upload package.
+- Root cause: the v4.0.21 profile photo patch had its own repeating badge lock and kept forcing the UI badge backward.
+- Adds a final v4.0.23 badge lock that runs after older patch locks.
+- Preserves the v4.0.22 proof upload RLS app changes and SQL patch file.
 - Keeps v4.0.21 profile photo save fix.
 - Keeps v4.0.20 Client Marketplace Status Tracker.
 - Keeps v4.0.19 quiet Platform Admin sync with no page reload loop.
 
 Badge:
-v4.0.22 PROOF UPLOAD RLS FIX
+v4.0.23 BADGE LOCK + PROOF RLS PRESERVED

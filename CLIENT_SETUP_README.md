@@ -1,36 +1,25 @@
-# Co Pilot Security Marketplace v4.0.22 — Proof Upload RLS Fix
+# Co Pilot Security Marketplace v4.0.23 — Badge Lock + Proof RLS Preserved
 
-This is a complete GitHub-ready replacement package for **Co Pilot Security Marketplace**.
+This package fixes the issue where the app badge still read **v4.0.21 PROFILE PHOTO SAVE FIX** after uploading v4.0.22.
 
-## Build
-**v4.0.22 PROOF UPLOAD RLS FIX**
+## Root cause
+The v4.0.21 profile-photo patch included a repeating badge lock. Because that patch was loaded near the end of the app file, it kept forcing the visible badge back to v4.0.21 even though v4.0.22 files were present.
 
-## Why this build exists
-The guard proof-upload modal showed:
+## Current build
+**v4.0.23 BADGE LOCK + PROOF RLS PRESERVED**
 
-`new row violates row-level security policy`
+## What is preserved
+- v4.0.22 proof upload RLS app-side fixes
+- `RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql` for Supabase Storage RLS
+- v4.0.21 profile photo save fix
+- v4.0.20 client marketplace status tracker
+- v4.0.19 quiet admin live sync / no page reload
 
-The issue is Supabase Storage RLS. Earlier proof storage policy allowed object paths that started with a legacy `patrol_request_id`, but marketplace proof uploads use `marketplace_job_id/file-name`. This build adds a targeted SQL patch so assigned marketplace guards can upload proof to the `patrol-proof` bucket.
+## SQL
+If you already ran `RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql`, do not run it again.
 
-## What to upload
-Upload this whole ZIP to GitHub/Bolt as the replacement package.
-
-## SQL for existing Supabase project
-Because your screenshot shows a real RLS policy block, run this file **once** in Supabase SQL Editor:
+If proof upload still shows `new row violates row-level security policy`, run:
 
 `RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql`
 
-Do **not** rerun the full consolidated SQL on an existing project unless the database is fresh or missing older tables/RPCs.
-
-## Fresh Supabase project only
-For a fresh project, use:
-
-`RUN_IF_NEEDED_ALL_SQL_V400_TO_V422_CONSOLIDATED.sql`
-
-## Expected badge
-`v4.0.22 PROOF UPLOAD RLS FIX`
-
-## Preserved fixes
-- v4.0.19 quiet admin live sync / no page reload
-- v4.0.20 Client Marketplace Status Tracker
-- v4.0.21 Profile Photo Save Fix
+No other SQL is required for the badge fix itself.
