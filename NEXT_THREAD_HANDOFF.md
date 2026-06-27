@@ -5,7 +5,7 @@ We are building **Co Pilot Security Marketplace**, the Uber-style marketplace ve
 Current repo: **security-uber**
 
 Current latest working package:
-**v4.0.38 STARTUP RECOVERY + PRIORITY CARD STABILITY
+**v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
 
 Supabase:
 `https://nmfvxozbptcvyaenvkxl.supabase.co`
@@ -26,7 +26,7 @@ Latest additions:
 - Agency Job Board pins/highlights Priority Response jobs with premium payout language.
 - Platform Admin sees Priority Response alert counts and priority map markers.
 - Guard Active Job shows Priority Response assignment badge.
-- No new SQL required for v4.0.38 STARTUP RECOVERY + PRIORITY CARD STABILITY
+- No new SQL required for v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
 
 Preserved from previous builds:
 - v4.0.35 final portal QA lock.
@@ -40,16 +40,16 @@ Preserved from previous builds:
 - Client marketplace status tracker.
 
 Next likely build:
-**v4.0.38 STARTUP RECOVERY + PRIORITY CARD STABILITY
+**v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
 
 That should formalize client price, agency payout, and Co Pilot platform fee across standard and Priority Response jobs.
 
 
-## v4.0.38 STARTUP RECOVERY + PRIORITY CARD STABILITY
+## v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
 Priority Response cards were tightened and all pricing/payout language was removed until pricing, platform fees, and agency payouts are finalized. No new SQL required.
 
 
-## v4.0.38 update
-v4.0.38 STARTUP RECOVERY + PRIORITY CARD STABILITY
+## v4.0.39 update
+v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
 
-This emergency build removes the aggressive v4.0.37 DOM watcher that could leave Bolt stuck on Preparing app, adds startup recovery, keeps Priority Response no-pricing cleanup, and does not require new SQL.
+This build fixes Agency Admin portal identity text and separates the Agency Dashboard from Available Jobs and Agency Job Management. It preserves startup recovery, Priority Response cleanup, and requires no new SQL.

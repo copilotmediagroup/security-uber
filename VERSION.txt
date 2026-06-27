@@ -1,6 +1,6 @@
 Co Pilot Security Marketplace
-Version: 4.0.38
-Build Name: STARTUP RECOVERY + PRIORITY CARD STABILITY
+Version: 4.0.39
+Build Name: AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX
 Package: GITHUB READY LESS THAN 20 FILES
 Date: 2026-06-27
 
@@ -11,4 +11,4 @@ Summary:
 - Keeps Priority Response marketplace flow, no-pricing cleanup, compact company activity, universal map cards, sidebar stack fix, and map header cleanup.
 
 Badge:
-v4.0.38 STARTUP RECOVERY + PRIORITY CARD STABILITY
+v4.0.39 AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX

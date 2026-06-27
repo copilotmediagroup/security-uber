@@ -1,12 +1,12 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.38",
-  "buildName": "STARTUP RECOVERY + PRIORITY CARD STABILITY",
+  "version": "4.0.39",
+  "buildName": "AGENCY PORTAL IDENTITY + DASHBOARD ROUTE FIX",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v438.js",
+  "entry": "index.html loads script-v439.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
   "sql": "No new SQL required. This is a UI cleanup/no-pricing patch for Priority Response.",
   "latestImportantFixes": [

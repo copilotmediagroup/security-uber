@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v438-startup-recovery-priority-card-stability",
-  "version": "4.0.38",
+  "name": "co-pilot-security-marketplace-v439-agency-portal-identity-dashboard-route-fix",
+  "version": "4.0.39",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.38 startup recovery fix with stable Priority Response no-pricing card cleanup.",
+  "description": "Co Pilot Security Marketplace v4.0.39 fixing Agency Portal profile identity and separating Agency Dashboard from Available Jobs/Agency Job Management.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",
