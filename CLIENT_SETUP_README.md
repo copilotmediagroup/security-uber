@@ -1,32 +1,23 @@
-# Co Pilot Security Marketplace v4.0.5 — Agency Guard Direct Add
+# Co Pilot Security Marketplace v4.0.6 — Agency Assignment UI Fix
 
-This build removes public guard signup and keeps agency rosters private.
+This is a GitHub-ready replacement package for the separate Uber-style security agency marketplace.
 
-## Main rule
-Guards do **not** sign up publicly and do **not** choose from a list of security companies.
+## What this patch fixes
 
-Agency Admin adds guards inside the agency portal:
-
-1. Login as Agency Admin.
-2. Open **Agency Guards**.
-3. Click **Add Guard**.
-4. Enter guard name, email, phone, temporary password, rank/license/vehicle info.
-5. Guard logs in from the normal front page using that email/password.
-
-The password goes to Supabase Auth. It is not saved in a normal app database table.
-
-## SQL
-If you already ran v4.0.0 through v4.0.4 SQL, run only:
-
-`RUN_AFTER_V405_AGENCY_GUARD_DIRECT_ADD.sql`
-
-Do not rerun the old foundation SQL unless Supabase reports a missing-table error.
+- The Agency Job Management page now has one clear guard assignment path.
+- The accepted jobs table no longer has a second Assign Guard button.
+- The table button now only opens/manages the selected job detail.
+- The right-side Agency Job Detail panel is the only place where the agency selects and assigns a guard.
+- The guard dropdown now renders valid option tags and stores the selected guard correctly.
 
 ## Marketplace model
-- Client requests job.
-- Job enters open marketplace.
-- Approved agency accepts job.
-- Job locks to that agency.
-- Agency adds/manages its own guards.
-- Agency assigns one of its guards.
-- Guard logs in and sees only assigned agency jobs.
+
+Clients request jobs. Approved agencies accept open marketplace jobs. The accepted job locks to that agency. The agency then assigns one of its own guards. Co Pilot remains the software/platform layer.
+
+## SQL
+
+No schema change is required for this build. An optional no-op schema reload file is included:
+
+`RUN_AFTER_V406_AGENCY_ASSIGNMENT_UI_FIX.sql`
+
+Run it only if you want to refresh Supabase PostgREST schema cache.

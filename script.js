@@ -1,8 +1,8 @@
 
 const CP_DEV_CACHE_BUST = '2026-06-27T03-45-v405-agency-guard-direct-add';
 const BUILD = {
-  version: '4.0.5',
-  label: 'v4.0.5 AGENCY GUARD DIRECT ADD'
+  version: '4.0.6',
+  label: 'v4.0.6 AGENCY ASSIGNMENT UI FIX'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -12044,7 +12044,7 @@ function v403JobGuardName(job = {}) {
 function v403GuardOptions(job = {}) {
   const selected = state.agencyDispatchGuardSelections?.[job.id] || job.assigned_guard_id || '';
   const guards = v403AgencyGuards();
-  return `<select data-agency-dispatch-guard-select-v403="${esc(job.id)}"><option value="">Select agency guard...</option>${guards.map(g => `<option value="${esc(g.id)}" ${String(selected) === String(g.id) ? 'selected' : ''}>${esc(guardDisplayName(g))}${g.email ? ` · ${esc(g.email)}` : ''}</option>`).join('')}</select>`;
+  return `<option value="">Select agency guard...</option>${guards.map(g => `<option value="${esc(g.id)}" ${String(selected) === String(g.id) ? 'selected' : ''}>${esc(guardDisplayName(g))}${g.email ? ` · ${esc(g.email)}` : ''}</option>`).join('')}`;
 }
 function v403AgencyDispatchRow(job = {}) {
   const guardName = v403JobGuardName(job);
@@ -12054,7 +12054,7 @@ function v403AgencyDispatchRow(job = {}) {
     <span><strong>${esc(job.property_label || propertyLabel(job) || 'Property')}</strong><small>${esc(v401Address(job))}</small></span>
     <span>${displayStatusChip(marketplaceJobStatus(job))}</span>
     <span><strong>${esc(guardName || 'Unassigned')}</strong><small>${esc(guardName ? 'Agency guard' : 'Needs assignment')}</small></span>
-    <span class="button-row"><button class="ghost-button" data-action="view-agency-dispatch-job-v403" data-job-id="${esc(job.id)}">View</button>${canAssign ? `<button class="primary-button" data-action="agency-assign-guard-v403" data-job-id="${esc(job.id)}">Assign Guard</button>` : ''}</span>
+    <span class="button-row"><button class="ghost-button" data-action="view-agency-dispatch-job-v403" data-job-id="${esc(job.id)}">Manage</button></span>
   </div>`;
 }
 function v403AgencyDispatchDetail(job = null) {
@@ -12159,7 +12159,7 @@ document.addEventListener('input', e => {
 });
 
 
-/* v4.0.5 Marketplace Role Cleanup
+/* v4.0.6 Marketplace Role Cleanup
    The marketplace has no public Legacy Dispatch role.  Legacy admin rows are
    normalized to Platform Admin in the UI for compatibility with older v3 tables. */
 const CP_MARKETPLACE_PLATFORM_NAV_V404 = [
@@ -12367,11 +12367,13 @@ function v403AgencyDispatchDetail(job = null) {
   const status = marketplaceJobStatus(job);
   const guardName = v403JobGuardName(job);
   const assignable = ['agency_accepted','accepted_by_agency','pending_dispatch','guard_assigned','assigned'].includes(status);
+  const guards = v403AgencyGuards();
   return `<aside class="dashboard-right"><section class="panel panel-pad marketplace-job-detail agency-dispatch-detail"><div class="panel-head"><div><h2>Agency Job Detail</h2><p>Accepted job owned by ${esc(v401ActiveAgencyRecord()?.agency_name || 'your agency')}</p></div>${displayStatusChip(status)}</div>
     <div class="detail-grid"><span>Job</span><strong>${esc(job.job_number || job.id)}</strong><span>Property</span><strong>${esc(job.property_label || propertyLabel(job) || 'Property')}</strong><span>Address</span><strong>${esc(v401Address(job))}</strong><span>Service</span><strong>${esc(v401Service(job))}</strong><span>Client Notes</span><strong>${esc(v401Notes(job))}</strong><span>Assigned Guard</span><strong>${esc(guardName || 'Unassigned')}</strong></div>
-    <div class="note-box"><strong>Agency guard assignment</strong><p>Select one of your agency guards. The job stays locked to your agency and becomes visible only to the assigned guard.</p></div>
+    <div class="note-box"><strong>One guard assignment control</strong><p>Select the guard here, then click Assign Guard. The table only opens this job detail so there is no duplicate assignment path.</p></div>
     <label>Agency Guard<select data-agency-dispatch-guard-select-v403="${esc(job.id)}">${v403GuardOptions(job)}</select></label>
-    <div class="button-row">${assignable ? `<button class="primary-button" data-action="agency-assign-guard-v403" data-job-id="${esc(job.id)}">Assign Guard</button>` : ''}<button class="ghost-button" data-view="marketplace-jobs">Back To Available Jobs</button></div>
+    ${guards.length ? `<small class="muted-line">${esc(guards.length)} agency guard${guards.length === 1 ? '' : 's'} available for assignment.</small>` : `<div class="workflow-finished-panel warning"><strong>No active agency guards</strong><p>Add an active guard under Agency Guards before assigning this job.</p></div>`}
+    <div class="button-row">${assignable ? `<button class="primary-button" data-action="agency-assign-guard-v403" data-job-id="${esc(job.id)}" ${guards.length ? '' : 'disabled'}>Assign Guard</button>` : ''}<button class="ghost-button" data-view="marketplace-jobs">Back To Available Jobs</button></div>
   </section><section class="panel panel-pad"><div class="panel-head"><div><h2>Lifecycle</h2><p>No Co Pilot dispatch step. The accepted agency manages the job.</p></div></div><div class="priority-list">${priorityRow('Client request','Open marketplace',1,'#2f83ff','marketplace-jobs')}${priorityRow('Agency accepted','Job locked',1,'#37dc72','marketplace-jobs')}${priorityRow('Agency assigns guard',guardName || 'Unassigned',guardName ? 1 : 0,'#b05cff','dispatch-board')}</div></section></aside>`;
 }
 
@@ -12419,7 +12421,7 @@ function renderRoleView() {
 }
 
 
-/* v4.0.5 Agency Guard Direct Add
+/* v4.0.6 Agency Guard Direct Add
    Guards do not publicly sign up or pick from a list of agencies. Agency Admins
    create guard logins inside their private portal, then guards simply log in. */
 const CP_MARKETPLACE_AGENCY_NAV_V405 = [
@@ -12653,6 +12655,16 @@ document.addEventListener('submit', async e => {
   try { await cp405AgencyCreateGuard(form); }
   catch (err) { toast(friendly(err)); }
   finally { if (submitButton && document.body.contains(submitButton)) clearActionButtonBusy(submitButton); }
+});
+
+
+/* v4.0.6 Assignment select change support */
+document.addEventListener('change', e => {
+  const i = e.target;
+  if (i && i.hasAttribute('data-agency-dispatch-guard-select-v403')) {
+    const jobId = i.dataset.agencyDispatchGuardSelectV403 || '';
+    state.agencyDispatchGuardSelections = { ...(state.agencyDispatchGuardSelections || {}), [jobId]: i.value || '' };
+  }
 });
 
 initialize();

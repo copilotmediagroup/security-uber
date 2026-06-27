@@ -1,21 +1,19 @@
 Co Pilot Security Marketplace
-Version: 4.0.5
-Build Name: AGENCY GUARD DIRECT ADD
+Version: 4.0.6
+Build Name: AGENCY ASSIGNMENT UI FIX
 Date: 2026-06-27
 
 Summary:
-- Removed public Guard Sign Up from the front page.
-- Guards no longer choose from a public agency/company dropdown.
-- Agency Admin adds guards privately inside Agency Guards.
-- Agency Admin enters guard name, email, phone, temporary password, rank, license info, and vehicle info.
-- Password is sent to Supabase Auth; it is not stored in an app table.
-- SQL links the auth user/profile/guard record to the agency through agency_members.
-- Guard simply logs in from the public Login page using email/password.
-- Guard only sees jobs assigned by that agency.
+- Fixes the Agency Job Management guard assignment UI.
+- Removes the duplicate Assign Guard button from the accepted jobs table.
+- Keeps one assignment control in the right-side job detail panel.
+- Fixes the agency guard dropdown so selected guards are captured correctly.
+- Adds change-event support for the guard select field.
+- No SQL schema changes required for this patch.
 
 Badge:
-v4.0.5 AGENCY GUARD DIRECT ADD
+v4.0.6 AGENCY ASSIGNMENT UI FIX
 
 SQL:
-If v4.0.0 through v4.0.4 SQL has already been run, run only:
-RUN_AFTER_V405_AGENCY_GUARD_DIRECT_ADD.sql
+No schema change required. Optional no-op reload file included:
+RUN_AFTER_V406_AGENCY_ASSIGNMENT_UI_FIX.sql

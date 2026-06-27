@@ -23,6 +23,7 @@ const files = [
   'RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql',
   'RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql',
   'RUN_AFTER_V405_AGENCY_GUARD_DIRECT_ADD.sql',
+  'RUN_AFTER_V406_AGENCY_ASSIGNMENT_UI_FIX.sql',
   'RUN_IF_NEEDED_OPTIONAL_SQL_PATCHES_V1312_TO_V1322.sql'
 ];
 
@@ -38,4 +39,4 @@ for (const file of files) {
   }
 }
 
-console.log(`Co Pilot Security Marketplace v4.0.5 agency guard direct add build complete. Copied ${count} files to dist/.`);
+console.log(`Co Pilot Security Marketplace v4.0.6 agency assignment UI fix build complete. Copied ${count} files to dist/.`);

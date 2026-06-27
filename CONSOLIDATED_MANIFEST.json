@@ -1,26 +1,18 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.5",
-  "buildName": "AGENCY GUARD DIRECT ADD",
-  "type": "agency-guard-direct-add",
-  "sql_required": true,
+  "version": "4.0.6",
+  "buildName": "AGENCY ASSIGNMENT UI FIX",
+  "type": "agency-assignment-ui-fix",
+  "sql_required": false,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Removed public Legacy Dispatch login option",
-    "Normalized legacy admin/dispatch users to Platform Admin in the marketplace UI",
-    "Platform Admin is the Co Pilot marketplace owner/operator role",
-    "Agency Admin is the licensed security company role that accepts and manages jobs",
-    "Renamed Agency Dispatch UI to Agency Job Management",
-    "Platform Admin no longer sees legacy dispatch-board or pending-dispatch navigation",
-    "Accepted marketplace jobs remain locked to the accepting agency",
-    "Agency assigns its own guards after accepting open marketplace jobs",
-    "Preserves v4.0.3 client service-location capture and agency guard assignment",
-    "Removed public guard signup from the marketplace front page",
-    "Added Agency Admin direct Add Guard flow inside Agency Guards",
-    "Agency Admin can create a guard login with name, email, phone, and temporary password through Supabase Auth",
-    "Added SQL RPC to link guard profile, guard record, and agency_members privately to the agency",
-    "Guard logs in from the normal front page without choosing a security company",
-    "Agency guard roster remains private; no public agency dropdown is exposed"
+    "Fixed Agency Job Management guard assignment dropdown markup",
+    "Removed duplicate Assign Guard action from accepted jobs table",
+    "Kept one clear Assign Guard action in the right-side job detail panel",
+    "Added change event support for the agency guard select field",
+    "Preserved private agency guard roster/direct add flow from v4.0.5",
+    "Preserved marketplace role cleanup and no public guard signup",
+    "Preserved client approval, agency job board, and agency ownership flow"
   ],
   "sql_files": [
     "RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql",
@@ -29,6 +21,7 @@
     "RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql",
     "RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql",
     "RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql",
-    "RUN_AFTER_V405_AGENCY_GUARD_DIRECT_ADD.sql"
+    "RUN_AFTER_V405_AGENCY_GUARD_DIRECT_ADD.sql",
+    "RUN_AFTER_V406_AGENCY_ASSIGNMENT_UI_FIX.sql"
   ]
 }

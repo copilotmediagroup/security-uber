@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-agency-guard-direct-add",
-  "version": "4.0.5",
+  "name": "co-pilot-security-marketplace-agency-assignment-ui-fix",
+  "version": "4.0.6",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.5 with private agency guard direct add, Supabase Auth guard login creation, and agency roster linkage.",
+  "description": "Co Pilot Security Marketplace v4.0.6 agency assignment UI fix with one clear guard assignment control and corrected agency guard dropdown.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",
