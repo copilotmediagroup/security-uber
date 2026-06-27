@@ -1,19 +1,22 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.23",
-  "buildName": "BADGE LOCK + PROOF RLS PRESERVED",
+  "version": "4.0.24",
+  "buildName": "GUARD JOB FLOW ICON SYNC",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v423.js",
+  "entry": "index.html loads script-v424.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
   "sql": [
     "RUN_IF_NEEDED_ALL_SQL_V400_TO_V422_CONSOLIDATED.sql",
     "RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql"
   ],
   "latestImportantFixes": [
-    "v4.0.23 fixes badge being forced back to v4.0.21 by older profile photo patch lock",
+    "v4.0.24 syncs Guard Dashboard Job Flow icons with the actual guard workflow stage",
+    "Arrived/en route/checking/proof/completed steps now display complete/current/wait correctly",
+    "Guard workflow stage persists in localStorage and sessionStorage to avoid UI falling backward after render",
+    "v4.0.23 badge lock fix preserved",
     "v4.0.22 proof upload RLS app changes preserved",
     "v4.0.21 profile photo save fix preserved",
     "v4.0.20 client marketplace status tracker preserved",

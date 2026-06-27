@@ -1,17 +1,15 @@
 Co Pilot Security Marketplace
-Version: 4.0.23
-Build Name: BADGE LOCK + PROOF RLS PRESERVED
+Version: 4.0.24
+Build Name: GUARD JOB FLOW ICON SYNC
 Package: GITHUB READY LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Fixes the visible badge staying on v4.0.21 after the v4.0.22 proof upload package.
-- Root cause: the v4.0.21 profile photo patch had its own repeating badge lock and kept forcing the UI badge backward.
-- Adds a final v4.0.23 badge lock that runs after older patch locks.
-- Preserves the v4.0.22 proof upload RLS app changes and SQL patch file.
-- Keeps v4.0.21 profile photo save fix.
-- Keeps v4.0.20 Client Marketplace Status Tracker.
-- Keeps v4.0.19 quiet Platform Admin sync with no page reload loop.
+- Fixes Guard Dashboard Job Flow icons not matching the current guard workflow stage.
+- If the status says Arrived, the Arrived step now lights up and prior steps show complete/locked.
+- Share GPS now reflects shared/live GPS or any stage after en route.
+- Workflow stage persists in localStorage/sessionStorage so the UI does not fall backward after render.
+- Preserves proof upload RLS fix, profile photo save, client tracker, quiet admin sync, and badge lock.
 
 Badge:
-v4.0.23 BADGE LOCK + PROOF RLS PRESERVED
+v4.0.24 GUARD JOB FLOW ICON SYNC
