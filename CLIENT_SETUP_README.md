@@ -1,27 +1,28 @@
-# Co Pilot Security Marketplace v4.0.35
+# Co Pilot Security Marketplace v4.0.36 — Priority Response Marketplace Flow
 
-**v4.0.35 MARKETPLACE UI CONSISTENCY + FINAL PORTAL QA LOCK**
+## Current build
+**v4.0.36 PRIORITY RESPONSE MARKETPLACE FLOW**
 
-This package is a GitHub-ready replacement build for repo `security-uber`.
+This package adds **Priority Response** as a premium marketplace request type. It is not branded as a 911/emergency replacement.
 
-## What this build does
-
-- Locks the build badge to one canonical v4.0.35 label.
-- Hardens the left sidebar stack so profile cards and first nav items do not overlap on any portal.
-- Keeps the Platform Admin map-header explanatory text removed.
-- Keeps Company Activity compact in the right-side rail.
-- Reasserts universal map card styling and image/detail card classes after every render.
-- Keeps route lines limited to active movement job states only.
+## What changed
+- Client Patrol Requests now includes **Priority Response**.
+- Priority Response shows a required safety acknowledgement: if anyone is in immediate danger, call 911.
+- The request submits through the existing `marketplace_jobs` foundation using urgent priority and on-demand flow.
+- Agency Job Board pins Priority Response jobs above standard jobs and shows premium payout language.
+- Platform Admin sees Priority Response live alert counts.
+- Platform map uses a pulsing Priority Response marker.
+- Guard Active Job shows a Priority Response assignment badge when assigned.
 
 ## SQL
+No new SQL is required for v4.0.36.
 
-No new SQL is required for v4.0.35.
+Priority Response uses existing fields:
+- `marketplace_jobs.priority`
+- `marketplace_jobs.patrol_type`
+- `marketplace_jobs.request_notes`
 
-Existing optional patches remain included:
+Keep the previous SQL files only for fresh projects or previous optional fixes.
 
-- `RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql` only if proof upload still hits Storage RLS.
-- `RUN_ONCE_V433_AGENCY_LOGO_VISIBILITY_SAFE_FIX.sql` only if agency logos still do not show.
-
-Expected badge:
-
-`v4.0.35 MARKETPLACE UI CONSISTENCY + FINAL PORTAL QA LOCK`
+## Expected badge
+`v4.0.36 PRIORITY RESPONSE MARKETPLACE FLOW`

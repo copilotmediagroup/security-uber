@@ -1,5 +1,5 @@
 window.COPILOT_SECURITY_CONFIG = {
   supabaseUrl: 'https://nmfvxozbptcvyaenvkxl.supabase.co',
   supabaseAnonKey: 'sb_publishable_TDy5UWNgZp0Ag4uj4-QAGw_kZAbw7nM',
-  appVersion: '4.0.35-marketplace-ui-consistency-final-portal-qa-lock'
+  appVersion: '4.0.36-priority-response-marketplace-flow'
 };

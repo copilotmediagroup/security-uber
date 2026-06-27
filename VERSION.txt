@@ -1,16 +1,17 @@
 Co Pilot Security Marketplace
-Version: 4.0.35
-Build Name: MARKETPLACE UI CONSISTENCY + FINAL PORTAL QA LOCK
+Version: 4.0.36
+Build Name: PRIORITY RESPONSE MARKETPLACE FLOW
 Package: GITHUB READY / LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Final portal QA lock before pricing/platform fee work.
-- Locks badge to one source.
-- Hardens sidebar stacking across all portals.
-- Keeps Platform Admin map header text removed.
-- Keeps Company Activity compact.
-- Reasserts universal map card classes globally.
+- Adds Priority Response as a premium marketplace request class.
+- Client sees safety acknowledgement that Co Pilot is not a replacement for 911.
+- Priority requests enter the same marketplace_jobs backbone using urgent priority/on-demand flow.
+- Agency Job Board pins and visually highlights Priority Response jobs.
+- Platform Admin gets Priority Response live alert visibility.
+- Platform map uses a pulsing priority marker and orange priority routes only during active movement.
+- Guard Active Job shows Priority Response assignment badge when assigned.
 
 Badge:
-v4.0.35 MARKETPLACE UI CONSISTENCY + FINAL PORTAL QA LOCK
+v4.0.36 PRIORITY RESPONSE MARKETPLACE FLOW

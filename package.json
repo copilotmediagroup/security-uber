@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v435-marketplace-ui-consistency-final-portal-qa-lock",
-  "version": "4.0.35",
+  "name": "co-pilot-security-marketplace-v436-priority-response-marketplace-flow",
+  "version": "4.0.36",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.35 final portal QA lock for badge, sidebar, map header, compact company card, and universal map-card consistency before pricing.",
+  "description": "Co Pilot Security Marketplace v4.0.36 adds Priority Response as a premium marketplace job class with client safety acknowledgement, agency job-board priority styling, admin visibility, and priority map markers.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

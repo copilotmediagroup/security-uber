@@ -1,20 +1,21 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.35",
-  "buildName": "MARKETPLACE UI CONSISTENCY + FINAL PORTAL QA LOCK",
+  "version": "4.0.36",
+  "buildName": "PRIORITY RESPONSE MARKETPLACE FLOW",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v435.js",
+  "entry": "index.html loads script-v436.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
-  "sql": "No new SQL required. Keep existing consolidated SQL and optional v422/v433 patches only if needed.",
+  "sql": "No new SQL required for Priority Response. It uses existing marketplace_jobs priority/patrol_type/request_notes fields.",
   "latestImportantFixes": [
-    "One badge source locked to v4.0.35 across stacked patches",
-    "Sidebar profile/nav/footer stacking hardened on every portal",
-    "Platform Admin map explanatory header text removed and kept removed after render",
-    "Compact Company Activity card retained for side rail",
-    "Universal map card classes reasserted after render for admin, agency, guard, and client maps",
-    "Route visibility remains tied to active movement statuses only"
+    "Priority Response added as a client request type with 911 safety acknowledgement",
+    "Priority Response submits through existing on-demand urgent marketplace flow",
+    "Agency Job Board pins Priority Response jobs and shows premium payout language",
+    "Platform Admin dashboard shows Priority Response live alert counts",
+    "Platform map shows pulsing Priority Response markers and orange route lines only while movement is active",
+    "Guard Active Job shows Priority Response assignment badge when assigned",
+    "Preserves v4.0.35 final portal QA lock, compact company cards, universal map cards, and route lifecycle enforcement"
   ]
 }
