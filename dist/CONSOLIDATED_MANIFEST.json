@@ -1,18 +1,22 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.10",
-  "buildName": "PLATFORM REAL MAP ALIGNMENT",
-  "type": "platform-real-map-alignment",
+  "version": "4.0.13",
+  "buildName": "BUILD LABEL LOCK FIX",
+  "type": "build-label-lock-fix",
   "sql_required": false,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Replaced Platform Command Center mock map with real Leaflet/OpenStreetMap street map",
-    "Platform Admin map now matches the style/behavior of guard, client, and agency GPS maps",
-    "Shows client properties, open marketplace jobs, accepted jobs, online guards, and assigned guard routes on the real map",
-    "Preserves company activity, job ownership table, marketplace activity feed, and global totals",
-    "No SQL schema change required"
+    "Platform Command Center reads the v4.0.11 guard lifecycle statuses",
+    "Auto-refreshes Platform Command Center while open",
+    "Normalizes marketplace_jobs with latest job_events and proof_items",
+    "Job Ownership table shows live guard step and last update",
+    "Marketplace Activity feed shows guard accepted/en route/arrived/in progress/proof/completed events",
+    "Company Activity panel shows in-motion and completed counts by agency",
+    "Removed stale v4.0.10/v4.0.11 build-label overrides so Bolt cannot keep showing the old v4.0.10 badge after importing current GitHub files",
+    "Kept v4.0.12 Platform Lifecycle Sync Fix behavior intact"
   ],
   "sql_files": [
-    "RUN_AFTER_V410_PLATFORM_REAL_MAP_ALIGNMENT.sql"
+    "RUN_AFTER_V412_PLATFORM_LIFECYCLE_SYNC_FIX.sql",
+    "RUN_AFTER_V413_BUILD_LABEL_LOCK_FIX.sql"
   ]
 }

@@ -1,25 +1,18 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-Latest package:
-v4.0.10 PLATFORM REAL MAP ALIGNMENT
+Latest package: **v4.0.13 BUILD LABEL LOCK FIX**
 
-Important instruction:
-The user is building through GitHub ZIP uploads into Bolt. Do not suggest Bolt AI prompts because the user does not have Bolt tokens. All future changes must be complete GitHub-ready ZIP replacement packages.
+The user is building through GitHub-ready ZIP replacement packages only. Do not suggest Bolt AI prompts.
 
-Project:
-Co Pilot Security Marketplace / Security Uber — separate from the old v3 single-company app.
+Current issue fixed:
+- GitHub root `script.js` showed v4.0.12, but Bolt preview still showed v4.0.10.
+- Root cause was stale mid-file build-label overrides from v4.0.10/v4.0.11 inside `script.js`.
+- v4.0.13 removes those stale overrides and locks the current badge label at the end of the script.
 
-New Supabase:
-https://nmfvxozbptcvyaenvkxl.supabase.co
+v4 retained behavior:
+- v4.0.11 Guard Marketplace Job Flow.
+- v4.0.12 Platform Lifecycle Sync Fix.
+- Platform Admin Command Center should sync guard lifecycle updates from `marketplace_jobs.current_status`, `job_events`, and proof records.
 
-What v4.0.10 fixed:
-- The v4.0.9 Platform Command Center map looked like a mock diagram instead of the real GPS maps.
-- Replaced it with a real Leaflet/OpenStreetMap street map matching the other app maps.
-- Platform Admin map now shows client properties, open jobs, accepted jobs, online guards, and assigned guard routes on a real map.
-- Kept platform company activity, job ownership, activity feed, and global totals.
-- No SQL schema change required.
-
-Next likely work:
-- Improve marker popups/cards on Platform Command Center.
-- Add company filter interactions directly on the map.
-- Continue client marketplace status tracker and report ownership workflow.
+Next direction:
+- After confirming the badge reads v4.0.13 and lifecycle sync works, continue with client marketplace status tracker.

@@ -1,16 +1,18 @@
-# Co Pilot Security Marketplace v4.0.12 — Platform Lifecycle Sync Fix
+# Co Pilot Security Marketplace v4.0.13 — Build Label Lock Fix
 
-This is a GitHub-ready replacement package for the `security-uber` marketplace project.
+This package fixes the issue where GitHub showed v4.0.12 but Bolt still displayed the v4.0.10 badge.
 
-## What changed
-- Platform Command Center now follows the guard marketplace job lifecycle.
-- Platform Admin sees guard accepted, en route, arrived, in progress, proof uploaded, and completed statuses.
-- Command Center auto-refreshes while open so guard actions appear on the admin side.
-- Job Ownership table and Marketplace Activity feed now read from `marketplace_jobs`, `job_events`, and proof records.
+## Root cause
+Old module-level code inside `script.js` still reset the active build label to v4.0.10 and v4.0.11 after the file started loading. If a later lifecycle patch hit an error or initialized late, the visible badge could stay downgraded even though the repo had the new files.
+
+## Fix
+- Removed the stale v4.0.10 build-label override.
+- Removed the stale v4.0.11 build-label override.
+- Added a final v4.0.13 build-label lock.
+- Kept the v4.0.12 Platform Lifecycle Sync Fix.
 
 ## SQL
-If you already ran v4.0.11, run only:
+No real schema change required.
+Optional only:
 
-`RUN_AFTER_V412_PLATFORM_LIFECYCLE_SYNC_FIX.sql`
-
-This is only a schema-cache refresh. No new core tables are required.
+`RUN_AFTER_V413_BUILD_LABEL_LOCK_FIX.sql`

@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-platform-real-map-alignment",
-  "version": "4.0.10",
+  "name": "co-pilot-security-marketplace-build-label-lock-fix",
+  "version": "4.0.13",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.10 platform dashboard real street map alignment patch.",
+  "description": "Co Pilot Security Marketplace v4.0.13 build label lock fix with v4.0.12 lifecycle sync retained.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

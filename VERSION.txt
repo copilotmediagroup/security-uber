@@ -1,18 +1,18 @@
 Co Pilot Security Marketplace
-Version: 4.0.12
-Build Name: PLATFORM LIFECYCLE SYNC FIX
+Version: 4.0.13
+Build Name: BUILD LABEL LOCK FIX
 Date: 2026-06-27
 
 Summary:
-- Platform Command Center now syncs with the v4.0.11 guard marketplace lifecycle.
-- Platform Admin reads marketplace_jobs.current_status, job_events, and proof_items together.
-- Added auto-refresh while Platform Command Center is open.
-- Job ownership table now shows live guard steps: guard accepted, en route, arrived, in progress, proof uploaded, completed.
-- Marketplace activity feed now shows guard lifecycle events and proof/completion movement.
-- Company activity panel now shows in-motion and completed jobs by agency.
+- Fixes stale badge/version downgrade caused by old v4.0.10/v4.0.11 build-label overrides still inside script.js.
+- Keeps v4.0.12 Platform Lifecycle Sync Fix behavior.
+- Platform Command Center continues to sync with marketplace_jobs.current_status, job_events, and proof records.
+- Guard lifecycle flow remains active.
+- No database schema change required.
 
 Badge:
-v4.0.12 PLATFORM LIFECYCLE SYNC FIX
+v4.0.13 BUILD LABEL LOCK FIX
 
 SQL:
-Run only RUN_AFTER_V412_PLATFORM_LIFECYCLE_SYNC_FIX.sql after v4.0.11. It is a cache refresh/no-schema patch.
+No real SQL change. Optional cache refresh only:
+RUN_AFTER_V413_BUILD_LABEL_LOCK_FIX.sql

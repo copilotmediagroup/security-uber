@@ -28,6 +28,9 @@ const files = [
   'RUN_AFTER_V408_AGENCY_LIVE_GPS_BOOT_FIX.sql',
   'RUN_AFTER_V409_PLATFORM_COMMAND_CENTER_MAP.sql',
   'RUN_AFTER_V410_PLATFORM_REAL_MAP_ALIGNMENT.sql',
+  'RUN_AFTER_V411_GUARD_MARKETPLACE_JOB_FLOW.sql',
+  'RUN_AFTER_V412_PLATFORM_LIFECYCLE_SYNC_FIX.sql',
+  'RUN_AFTER_V413_BUILD_LABEL_LOCK_FIX.sql',
   'RUN_IF_NEEDED_OPTIONAL_SQL_PATCHES_V1312_TO_V1322.sql'
 ];
 
@@ -43,4 +46,4 @@ for (const file of files) {
   }
 }
 
-console.log(`Co Pilot Security Marketplace v4.0.10 platform real map alignment build complete. Copied ${count} files to dist/.`);
+console.log(`Co Pilot Security Marketplace v4.0.13 build label lock fix build complete. Copied ${count} files to dist/.`);

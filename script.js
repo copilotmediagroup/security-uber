@@ -1,8 +1,8 @@
 
-const CP_DEV_CACHE_BUST = '2026-06-27T04-12-platform-lifecycle-sync-fix';
+const CP_DEV_CACHE_BUST = '2026-06-27T05-13-build-label-lock';
 const BUILD = {
-  version: '4.0.12',
-  label: 'v4.0.12 PLATFORM LIFECYCLE SYNC FIX'
+  version: '4.0.13',
+  label: 'v4.0.13 BUILD LABEL LOCK FIX'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -12697,10 +12697,7 @@ document.addEventListener('change', e => {
    job and the map draws a mandatory route to the assignment property when
    coordinates are available. Address geocoding is cached locally so marketplace
    jobs with service addresses can route even if the property table has no lat/lng. */
-BUILD.version = '4.0.10';
-BUILD.label = 'v4.0.10 PLATFORM REAL MAP ALIGNMENT';
-window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
-window.CP_DEV_CACHE_BUST = '2026-06-27T04-22-v410';
+// v4.0.13: removed stale v4.0.10 build-label override so Bolt cannot show old badges.
 
 function cp407IsAgencyLiveGps() {
   return Boolean(isAgencyAdmin && isAgencyAdmin() && state.role === 'admin' && state.view === 'live-gps');
@@ -13817,9 +13814,7 @@ document.addEventListener('click', async e => {
     </section>`;
   };
 
-  BUILD.version = '4.0.11';
-  BUILD.label = 'v4.0.11 GUARD MARKETPLACE JOB FLOW';
-  window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
+  // v4.0.13: build label stays global/current; do not downgrade badge here.
 })();
 
 
@@ -14103,8 +14098,18 @@ document.addEventListener('click', async e => {
   setTimeout(() => { try { cp412NormalizePlatformLifecycleState(); if (cp412IsPlatformCommand()) render(); } catch {} }, 900);
   setTimeout(() => { try { if (cp412IsPlatformCommand()) cp412RefreshPlatformLifecycle('boot'); } catch {} }, 2500);
 
-  BUILD.version = '4.0.12';
-  BUILD.label = 'v4.0.12 PLATFORM LIFECYCLE SYNC FIX';
+  BUILD.version = '4.0.13';
+  BUILD.label = 'v4.0.13 BUILD LABEL LOCK FIX';
   window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
-  window.CP_DEV_CACHE_BUST = '2026-06-27T04-12-platform-lifecycle-sync-fix';
+  window.CP_DEV_CACHE_BUST = '2026-06-27T05-13-build-label-lock';
 })();
+
+
+/* v4.0.13 final build-label lock: keeps old module patches from downgrading badge after import/cache refresh. */
+try {
+  BUILD.version = '4.0.13';
+  BUILD.label = 'v4.0.13 BUILD LABEL LOCK FIX';
+  window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
+  window.CP_DEV_CACHE_BUST = '2026-06-27T05-13-build-label-lock';
+  if (typeof ensureBadge === 'function') setTimeout(ensureBadge, 0);
+} catch {}
