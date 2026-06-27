@@ -1,29 +1,26 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-Latest package:
-v4.0.8 AGENCY LIVE GPS BOOT FIX
+Latest package: v4.0.9 PLATFORM COMMAND CENTER MAP
 
-Important instruction:
-Do not suggest Bolt AI prompts. The user has no Bolt tokens. All changes must be complete GitHub-ready ZIP replacement packages.
+Important instruction: do not suggest Bolt AI prompts. All future changes must be complete GitHub-ready ZIP replacement packages.
 
-Current project:
-Co Pilot Security Marketplace / Security Uber. Separate from old v3 single-company app.
+Current model:
+- Platform Admin = Co Pilot marketplace oversight.
+- Agency Admin = licensed security company that accepts jobs and assigns its own guards.
+- Guard = created privately by agency admin, logs in normally.
+- Client = approved customer requesting patrol jobs.
 
-Marketplace model:
-Client requests a job → open marketplace → approved agency accepts → job locks to that agency → agency assigns its own guard → agency monitors guard route/GPS → report/proof returns through platform.
-
-What v4.0.8 fixed:
-- v4.0.7 froze on Preparing app.
-- The cause was a self-recursive Live GPS route prep override created by JavaScript hoisting.
-- Also disabled self-recursive property coordinate fallback.
-- Kept Agency Live GPS route visibility.
-- Added boot timeout/failsafe so app returns to login instead of hanging forever.
+What v4.0.9 completed:
+- Replaced Platform Admin dashboard with Platform Command Center.
+- Added map-style marketplace visibility for client properties, open jobs, accepted jobs, online guards, and assigned routes.
+- Added company filter and status filter on the Platform Command Center.
+- Added Company Activity panel for approved agencies, online guards, guard totals, job totals, and assigned jobs.
+- Added Job Ownership table showing each job's accepted company and assigned guard.
+- Preserved v4.0.8 boot fix and agency GPS route work.
 
 SQL:
-No real schema change. Optional file included:
-RUN_AFTER_V408_AGENCY_LIVE_GPS_BOOT_FIX.sql
+- No schema change required. Optional: RUN_AFTER_V409_PLATFORM_COMMAND_CENTER_MAP.sql
 
-Next likely work:
-- Test Agency Admin Live GPS with assigned guard online.
-- Confirm guard route to job appears.
-- Then tighten Guard active job workflow for marketplace_jobs statuses.
+Next recommended build:
+- v4.0.10 PLATFORM COMPANY DRILLDOWN / JOB AUDIT DETAIL
+- Click a company to see all jobs, guards, reports, proof, and live status for that company.

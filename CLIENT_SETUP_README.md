@@ -1,23 +1,21 @@
-# Co Pilot Security Marketplace v4.0.8 — Agency Live GPS Boot Fix
+# Co Pilot Security Marketplace v4.0.9 — Platform Command Center Map
 
-This is a full GitHub-ready replacement package for the separate v4 Security Uber / marketplace project.
+This package upgrades the Platform Admin dashboard into the whole-marketplace command center.
 
-## What this fixes
+## What changed
 
-v4.0.7 could freeze on **Preparing app** during startup. The cause was a Live GPS override that accidentally called itself because JavaScript function declarations are hoisted. This package fixes that boot recursion and keeps the Agency Live GPS route visibility work.
+- Platform Admin dashboard now shows a large marketplace map-style command center.
+- Map shows client properties, open marketplace jobs, accepted jobs, online guards, and assigned guard routes when GPS/location data is available.
+- Platform Admin can filter by company and job status.
+- Company Activity panel shows approved agencies, online guards, total guards, accepted jobs, and assigned jobs.
+- Job Ownership table shows the accepted company and assigned guard for every marketplace job.
 
-## Included behavior
+## Marketplace rule
 
-- Agency Admin Live GPS still shows agency guards.
-- Assigned agency guard route remains linked to the accepted marketplace job.
-- Startup now has a failsafe so the app does not sit on the loading screen forever.
+Co Pilot Security is platform oversight only. Agencies accept open jobs and assign their own guards.
 
 ## SQL
 
-No schema change is required.
+No schema change is required. Optional cache refresh file included:
 
-Optional cache refresh file:
-
-1. `RUN_AFTER_V408_AGENCY_LIVE_GPS_BOOT_FIX.sql`
-
-Run it only if you want to refresh PostgREST schema cache.
+`RUN_AFTER_V409_PLATFORM_COMMAND_CENTER_MAP.sql`

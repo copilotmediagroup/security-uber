@@ -26,6 +26,7 @@ const files = [
   'RUN_AFTER_V406_AGENCY_ASSIGNMENT_UI_FIX.sql',
   'RUN_AFTER_V407_AGENCY_LIVE_GPS_ROUTE_VISIBILITY.sql',
   'RUN_AFTER_V408_AGENCY_LIVE_GPS_BOOT_FIX.sql',
+  'RUN_AFTER_V409_PLATFORM_COMMAND_CENTER_MAP.sql',
   'RUN_IF_NEEDED_OPTIONAL_SQL_PATCHES_V1312_TO_V1322.sql'
 ];
 
@@ -41,4 +42,4 @@ for (const file of files) {
   }
 }
 
-console.log(`Co Pilot Security Marketplace v4.0.8 agency live GPS boot fix build complete. Copied ${count} files to dist/.`);
+console.log(`Co Pilot Security Marketplace v4.0.9 platform command center map build complete. Copied ${count} files to dist/.`);

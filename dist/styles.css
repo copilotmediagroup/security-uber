@@ -13284,3 +13284,141 @@ button.is-busy {
   .agency-dispatch-board-view .client-request-history-head,
   .agency-dispatch-board-view .client-request-history-row { grid-template-columns: 1fr; }
 }
+
+
+/* v4.0.9 Platform Command Center Map */
+.platform-command-center-view .workflow-finished-panel { margin-top: 0; }
+.platform-command-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: var(--gap);
+  align-items: start;
+}
+.platform-command-main,
+.platform-command-rail {
+  display: grid;
+  gap: var(--gap);
+  min-width: 0;
+}
+.platform-command-map-panel { overflow: hidden; }
+.platform-command-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.platform-command-toolbar strong { display: block; text-transform: uppercase; letter-spacing: .08em; font-size: 13px; }
+.platform-command-toolbar small { display: block; color: var(--muted); margin-top: 4px; }
+.platform-command-filters { display: grid; grid-template-columns: minmax(220px, 1fr) 190px 170px auto; gap: 8px; align-items: center; min-width: min(760px, 100%); }
+.platform-command-filters input,
+.platform-command-filters select { min-height: 38px; height: 38px; }
+.cp409-map-wrap { height: 540px; position: relative; }
+.cp409-command-map { position: relative; height: 100%; border-radius: 0; overflow: hidden; }
+.cp409-command-map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 22% 28%, rgba(46,125,255,.12), transparent 18%),
+    radial-gradient(circle at 70% 48%, rgba(55,220,114,.10), transparent 22%),
+    radial-gradient(circle at 48% 72%, rgba(255,181,61,.10), transparent 24%);
+  pointer-events: none;
+}
+.cp409-routes path { stroke: #b05cff; stroke-width: .9; fill: none; stroke-linecap: round; stroke-dasharray: 2 1.6; filter: drop-shadow(0 0 4px rgba(176,92,255,.6)); }
+.cp409-map-marker {
+  position: absolute;
+  z-index: 6;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  min-width: 22px;
+}
+.cp409-map-marker span {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.84);
+  box-shadow: 0 0 0 5px rgba(255,255,255,.08), 0 0 24px var(--pin-glow);
+  background: var(--pin-color);
+}
+.cp409-map-marker em {
+  max-width: 145px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(4, 13, 24, .82);
+  border: 1px solid rgba(114,171,233,.22);
+  font-size: 10px;
+  color: #ddecff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-style: normal;
+  opacity: .95;
+}
+.cp409-map-marker.property { --pin-color: #2e7dff; --pin-glow: rgba(46,125,255,.55); }
+.cp409-map-marker.open-job { --pin-color: #ffb53d; --pin-glow: rgba(255,181,61,.55); }
+.cp409-map-marker.accepted-job { --pin-color: #31c8ff; --pin-glow: rgba(49,200,255,.55); }
+.cp409-map-marker.active-job { --pin-color: #b05cff; --pin-glow: rgba(176,92,255,.62); }
+.cp409-map-marker.guard { --pin-color: #37dc72; --pin-glow: rgba(55,220,114,.6); z-index: 8; }
+.cp409-map-marker.guard.on-job span { border-radius: 6px; background: linear-gradient(180deg, #37dc72, #179e4d); }
+.cp409-map-legend {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  border: 1px solid rgba(114,171,233,.18);
+  background: rgba(3, 12, 22, .86);
+  backdrop-filter: blur(8px);
+}
+.cp409-map-legend span { display: inline-flex; align-items: center; gap: 6px; color: #cddff4; font-size: 11px; font-weight: 850; }
+.cp409-map-legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.cp409-map-legend i.property { background: #2e7dff; }
+.cp409-map-legend i.open-job { background: #ffb53d; }
+.cp409-map-legend i.accepted-job { background: #31c8ff; }
+.cp409-map-legend i.guard { background: #37dc72; }
+.cp409-map-legend i.route { width: 18px; height: 3px; border-radius: 99px; background: #b05cff; }
+.cp409-map-metrics { border-top: 1px solid var(--line); }
+.cp409-company-list { display: grid; gap: 9px; }
+.cp409-company-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 58px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid rgba(114,171,233,.12);
+  background: rgba(8, 22, 38, .58);
+}
+.cp409-company-row strong,
+.cp409-company-row small { display: block; }
+.cp409-company-row small { color: var(--muted); margin-top: 4px; }
+.cp409-company-row b {
+  min-width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  color: #fff;
+  background: rgba(46,125,255,.24);
+  border: 1px solid rgba(46,125,255,.32);
+}
+.cp409-company-row em { color: #91d9ff; font-style: normal; font-size: 12px; font-weight: 900; }
+.cp409-jobs-table .client-request-history-head,
+.cp409-jobs-table .client-request-history-row { grid-template-columns: 1.05fr 1.45fr .9fr 1.05fr 1.05fr; }
+.cp409-feed-panel .live-gps-feed-list { max-height: 280px; overflow: auto; }
+@media (max-width: 1180px) {
+  .platform-command-layout { grid-template-columns: 1fr; }
+  .platform-command-filters { min-width: 0; grid-template-columns: 1fr 1fr; }
+  .cp409-map-wrap { height: 420px; }
+}

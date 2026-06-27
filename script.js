@@ -1,8 +1,8 @@
 
-const CP_DEV_CACHE_BUST = '2026-06-27T03-45-v405-agency-guard-direct-add';
+const CP_DEV_CACHE_BUST = '2026-06-27T04-10-v409-platform-command-center-map';
 const BUILD = {
-  version: '4.0.7',
-  label: 'v4.0.7 AGENCY LIVE GPS ROUTE VISIBILITY'
+  version: '4.0.9',
+  label: 'v4.0.9 PLATFORM COMMAND CENTER MAP'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -12695,8 +12695,8 @@ document.addEventListener('change', e => {
    job and the map draws a mandatory route to the assignment property when
    coordinates are available. Address geocoding is cached locally so marketplace
    jobs with service addresses can route even if the property table has no lat/lng. */
-BUILD.version = '4.0.8';
-BUILD.label = 'v4.0.8 AGENCY LIVE GPS BOOT FIX';
+BUILD.version = '4.0.9';
+BUILD.label = 'v4.0.9 PLATFORM COMMAND CENTER MAP';
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = '2026-06-27T03-50-v408';
 
@@ -12751,7 +12751,7 @@ function cp407DirectCoords(row = {}) {
   if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng, source: 'direct' };
   return null;
 }
-const cp407BaseGetPropertyCoords = null; // v4.0.8: disabled self-recursive hoisted capture
+const cp407BaseGetPropertyCoords = null; // v4.0.9: disabled self-recursive hoisted capture
 function getPropertyCoords(req = {}) {
   const direct = cp407DirectCoords(req);
   if (direct) return { lat: direct.lat, lng: direct.lng };
@@ -12981,7 +12981,7 @@ function dispatchLiveGpsView() {
     </section>
   </div>`;
 }
-const cp407BaseScheduleDispatchRoutePrep = null; // v4.0.8: previous capture pointed to this override because function declarations are hoisted.
+const cp407BaseScheduleDispatchRoutePrep = null; // v4.0.9: previous capture pointed to this override because function declarations are hoisted.
 function scheduleDispatchRoutePrep() {
   if (cp407IsAgencyLiveGps()) {
     cp407ScheduleAgencyGeoPrep();
@@ -13009,3 +13009,298 @@ function scheduleDispatchRoutePrep() {
 }
 
 initialize();
+
+
+/* v4.0.9 Platform Command Center Map
+   Platform Admin dashboard now shows whole marketplace movement: agencies,
+   accepted/open jobs, online guards, assigned routes, and client properties. */
+try {
+  state.platformCommandCompanyFilter = state.platformCommandCompanyFilter || 'all';
+  state.platformCommandStatusFilter = state.platformCommandStatusFilter || 'all';
+  state.platformCommandSearch = state.platformCommandSearch || '';
+} catch {}
+
+const CP_MARKETPLACE_PLATFORM_NAV_V409 = [
+  ['dashboard', '⌂', 'Command Center'],
+  ['data-foundation', '▦', 'Data Foundation'],
+  ['agency-approvals', '✓', 'Agency Approvals'],
+  ['client-approvals', '◌', 'Client Approvals'],
+  ['marketplace-jobs', '◈', 'Marketplace Jobs'],
+  ['messages', '☵', 'Messages'],
+  ['notifications', '♧', 'Notifications'],
+  ['heading', '', 'Marketplace Oversight'],
+  ['clients', '◌', 'Clients'],
+  ['activity-log', '▦', 'Activity Log'],
+  ['report-archive', '☰', 'Report Archive'],
+  ['heading', '', 'Account'],
+  ['settings', '⚙', 'Settings']
+];
+NAV.platform_admin = CP_MARKETPLACE_PLATFORM_NAV_V409;
+NAV.admin = CP_MARKETPLACE_PLATFORM_NAV_V409;
+
+function cp409AgencyId(job = {}) { return String(job.accepted_agency_id || job.agency_id || job.provider_agency_id || ''); }
+function cp409AgencyById(id = '') { const s = String(id || ''); return (state.agencies || []).find(a => String(a.id || '') === s) || null; }
+function cp409AgencyNameById(id = '') { const a = cp409AgencyById(id); return a?.agency_name || a?.name || a?.company_name || (id ? 'Agency ' + String(id).slice(0, 6) : 'Open Marketplace'); }
+function cp409GuardById(id = '') { const s = String(id || ''); return (state.guards || []).find(g => [g.id, g.auth_user_id, g.user_id, g.profile_id].filter(Boolean).map(String).includes(s)) || null; }
+function cp409GuardNameById(id = '') { const g = cp409GuardById(id); return g?.name || g?.display_name || g?.email || (id ? 'Guard ' + String(id).slice(0, 6) : 'Unassigned'); }
+function cp409JobGuardName(job = {}) { return job.assigned_guard_name || job.guard_name || cp409GuardNameById(job.assigned_guard_id || job.guard_id || '') || 'Unassigned'; }
+function cp409JobAgencyName(job = {}) { return job.accepted_agency_name || job.agency_name || cp409AgencyNameById(cp409AgencyId(job)); }
+function cp409JobStatus(job = {}) { return marketplaceJobStatus(job); }
+function cp409IsOpenJob(job = {}) { return ['open_marketplace','pending_marketplace','marketplace_open'].includes(cp409JobStatus(job)); }
+function cp409IsAcceptedJob(job = {}) { return Boolean(cp409AgencyId(job)) || ['agency_accepted','guard_assigned','assigned','accepted','in_progress','proof_uploaded','completed','published','report_published'].includes(cp409JobStatus(job)); }
+function cp409IsAssignedJob(job = {}) { return Boolean(job.assigned_guard_id || job.guard_id) || ['guard_assigned','assigned','accepted','in_progress','proof_uploaded','completed','published','report_published'].includes(cp409JobStatus(job)); }
+function cp409IsActiveJob(job = {}) { return ['guard_assigned','assigned','accepted','in_progress','proof_uploaded'].includes(cp409JobStatus(job)); }
+function cp409JobText(job = {}) { return [job.job_number, job.id, job.client_name, job.client_email, job.property_label, job.property_name, job.property_address, job.address, job.city, job.state, cp409JobAgencyName(job), cp409JobGuardName(job), job.current_status, job.priority, job.patrol_type, job.service_type].filter(Boolean).join(' ').toLowerCase(); }
+function cp409PlatformJobsAll() {
+  const q = String(state.platformCommandSearch || '').trim().toLowerCase();
+  const agency = String(state.platformCommandCompanyFilter || 'all');
+  const status = String(state.platformCommandStatusFilter || 'all');
+  return marketplaceJobRows().map(j => ({ ...j, _status: cp409JobStatus(j) })).filter(job => {
+    if (agency !== 'all') {
+      if (agency === 'open' && cp409AgencyId(job)) return false;
+      if (agency !== 'open' && cp409AgencyId(job) !== agency) return false;
+    }
+    if (status === 'open' && !cp409IsOpenJob(job)) return false;
+    if (status === 'accepted' && !cp409IsAcceptedJob(job)) return false;
+    if (status === 'assigned' && !cp409IsAssignedJob(job)) return false;
+    if (status === 'active' && !cp409IsActiveJob(job)) return false;
+    if (status === 'completed' && !['completed','published','report_published'].includes(cp409JobStatus(job))) return false;
+    if (q && !cp409JobText(job).includes(q)) return false;
+    return true;
+  }).sort((a,b) => new Date(b.requested_at || b.created_at || 0) - new Date(a.requested_at || a.created_at || 0));
+}
+function cp409ApprovedAgencies() { return (state.agencies || []).filter(a => String(a.approval_status || a.status || '').toLowerCase() === 'approved'); }
+function cp409ActiveAgencies() { const ids = new Set(marketplaceJobRows().map(cp409AgencyId).filter(Boolean)); return cp409ApprovedAgencies().filter(a => ids.has(String(a.id || '')) || String(a.status || '').toLowerCase() === 'active'); }
+function cp409PlatformGuardsAll() { return (typeof adminAssignableGuards === 'function' ? adminAssignableGuards() : (state.guards || [])).filter(g => !['inactive','disabled','rejected','pending','denied'].includes(String(g.status || g.approval_status || 'active').toLowerCase())); }
+function cp409JobForGuard(guard = {}) {
+  const keys = dispatchGuardIdentityKeys ? dispatchGuardIdentityKeys(guard) : [guard.id, guard.email].filter(Boolean).map(v => String(v).toLowerCase());
+  return marketplaceJobRows().find(job => {
+    const assigned = [job.assigned_guard_id, job.guard_id, job.assigned_guard_auth_user_id, job.assigned_guard_email, job.guard_email].filter(Boolean).map(v => String(v).trim().toLowerCase());
+    return assigned.some(x => keys.includes(x));
+  }) || null;
+}
+function cp409PlatformOnlineGuardEntries() {
+  return cp409PlatformGuardsAll().map((guard, idx) => {
+    const linkedJob = cp409JobForGuard(guard);
+    const coords = dispatchGuardCoords(guard, idx, linkedJob);
+    return { guard, request: linkedJob || null, coords, positionSource: coords?.source || 'unknown' };
+  }).filter(entry => dispatchGuardIsOnlineForMap(entry.guard, entry.coords));
+}
+function cp409JobCoords(job = {}) {
+  const direct = getPropertyCoords ? getPropertyCoords(job) : null;
+  if (direct) return direct;
+  const raw = {
+    latitude: job.property_latitude || job.latitude || job.lat || job.service_latitude || job.location_lat,
+    longitude: job.property_longitude || job.longitude || job.lng || job.lon || job.service_longitude || job.location_lng
+  };
+  return dispatchPropertyCoords(raw);
+}
+function cp409JobLocationEntries() {
+  const jobs = cp409PlatformJobsAll().map(job => {
+    const coords = cp409JobCoords(job);
+    if (!coords) return null;
+    return { job, coords, isOpen: cp409IsOpenJob(job), isActive: cp409IsActiveJob(job), isAssigned: cp409IsAssignedJob(job) };
+  }).filter(Boolean);
+  const seen = new Set();
+  return jobs.filter(entry => {
+    const key = `${entry.job.id}:${entry.coords.lat.toFixed(5)},${entry.coords.lng.toFixed(5)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+function cp409ClientPropertyEntries() {
+  return (state.properties || []).map(property => {
+    const coords = dispatchPropertyCoords(property);
+    if (!coords) return null;
+    return { property, coords };
+  }).filter(Boolean);
+}
+function cp409Bounds(points = []) {
+  const clean = points.filter(p => p && Number.isFinite(p.lat) && Number.isFinite(p.lng));
+  if (!clean.length) return { minLat: 36.07, maxLat: 36.20, minLng: -115.30, maxLng: -115.08 };
+  let minLat = Math.min(...clean.map(p => p.lat)), maxLat = Math.max(...clean.map(p => p.lat));
+  let minLng = Math.min(...clean.map(p => p.lng)), maxLng = Math.max(...clean.map(p => p.lng));
+  const latPad = Math.max(.006, (maxLat - minLat) * .35);
+  const lngPad = Math.max(.006, (maxLng - minLng) * .35);
+  return { minLat: minLat - latPad, maxLat: maxLat + latPad, minLng: minLng - lngPad, maxLng: maxLng + lngPad };
+}
+function cp409PlatformRoutePaths(guards = [], jobEntries = [], bounds) {
+  return guards.map(entry => {
+    const job = entry.request || cp409JobForGuard(entry.guard);
+    if (!job || !entry.coords) return '';
+    const end = cp409JobCoords(job);
+    if (!end) return '';
+    const route = dispatchRouteForPoints(entry.coords, end);
+    const path = route?.points?.length ? dispatchRouteSvgPath(route.points, bounds) : '';
+    return path ? `<path d="${esc(path)}"></path>` : '';
+  }).join('');
+}
+function cp409SchedulePlatformGeoPrep() {
+  if (!isPlatformAdmin() || state.view !== 'dashboard') return;
+  if (typeof cp407GeocodeJobAddress !== 'function') return;
+  const jobs = marketplaceJobRows().filter(job => !cp409JobCoords(job)).slice(0, 6);
+  if (!jobs.length) return;
+  setTimeout(async () => {
+    let changed = false;
+    for (const job of jobs) {
+      const got = await cp407GeocodeJobAddress(job);
+      if (got) changed = true;
+    }
+    if (changed && isPlatformAdmin() && state.view === 'dashboard') { try { render(); } catch {} }
+  }, 300);
+}
+function cp409PlatformCommandKpis() {
+  const jobs = marketplaceJobRows();
+  const open = jobs.filter(cp409IsOpenJob).length;
+  const accepted = jobs.filter(cp409IsAcceptedJob).length;
+  const assigned = jobs.filter(cp409IsAssignedJob).length;
+  const online = cp409PlatformOnlineGuardEntries().length;
+  const activeCompanies = cp409ActiveAgencies().length;
+  const approvedCompanies = cp409ApprovedAgencies().length;
+  return `<section class="kpi-row platform-command-kpi-row">
+    ${kpiCard('▦','Active Companies',activeCompanies,`${approvedCompanies} approved agencies`,'#31c8ff')}
+    ${kpiCard('◈','Open Marketplace Jobs',open,'Visible to approved agencies','#ffb53d')}
+    ${kpiCard('✓','Accepted Jobs',accepted,'Locked to companies','#37dc72')}
+    ${kpiCard('⌖','Online Guards',online,`${assigned} jobs with assigned guard`,'#b05cff')}
+  </section>`;
+}
+function cp409AgencyFilterOptions() {
+  const activeId = String(state.platformCommandCompanyFilter || 'all');
+  const rows = cp409ApprovedAgencies();
+  return `<option value="all" ${activeId === 'all' ? 'selected' : ''}>All companies</option><option value="open" ${activeId === 'open' ? 'selected' : ''}>Open marketplace only</option>${rows.map(a => `<option value="${esc(a.id)}" ${activeId === String(a.id) ? 'selected' : ''}>${esc(a.agency_name || a.name || 'Agency')}</option>`).join('')}`;
+}
+function cp409PlatformMapPanel() {
+  cp409SchedulePlatformGeoPrep();
+  const properties = cp409ClientPropertyEntries();
+  const jobs = cp409JobLocationEntries();
+  const guards = cp409PlatformOnlineGuardEntries();
+  const points = [...properties.map(e => e.coords), ...jobs.map(e => e.coords), ...guards.map(e => e.coords)];
+  const bounds = cp409Bounds(points);
+  const routePaths = cp409PlatformRoutePaths(guards, jobs, bounds);
+  const propertyMarkers = properties.map(entry => {
+    const pct = mapPercentForPoint(entry.coords.lat, entry.coords.lng, bounds);
+    return `<button type="button" class="cp409-map-marker property" style="left:${pct.x.toFixed(2)}%;top:${pct.y.toFixed(2)}%"><span></span><em>${esc(propertyDisplayName(entry.property) || 'Property')}</em></button>`;
+  }).join('');
+  const jobMarkers = jobs.map(entry => {
+    const pct = mapPercentForPoint(entry.coords.lat, entry.coords.lng, bounds);
+    const cls = entry.isOpen ? 'open-job' : entry.isActive ? 'active-job' : 'accepted-job';
+    const label = entry.job.job_number || entry.job.property_label || 'Job';
+    return `<button type="button" class="cp409-map-marker ${esc(cls)}" style="left:${pct.x.toFixed(2)}%;top:${pct.y.toFixed(2)}%"><span></span><em>${esc(label)}</em></button>`;
+  }).join('');
+  const guardMarkers = guards.map(entry => {
+    const pct = mapPercentForPoint(entry.coords.lat, entry.coords.lng, bounds);
+    const name = entry.guard.name || entry.guard.display_name || entry.guard.email || 'Guard';
+    return `<button type="button" class="cp409-map-marker guard ${entry.request ? 'on-job' : ''}" style="left:${pct.x.toFixed(2)}%;top:${pct.y.toFixed(2)}%"><span></span><em>${esc(name)}</em></button>`;
+  }).join('');
+  return `<section class="panel platform-command-map-panel">
+    <div class="platform-command-toolbar">
+      <div><strong>Marketplace Live Map</strong><small>Properties, open jobs, company-owned jobs, online guards, and assigned routes.</small></div>
+      <div class="platform-command-filters"><input data-platform-command-search-v409 value="${esc(state.platformCommandSearch || '')}" placeholder="Search job, company, guard, property..." /><select data-platform-company-filter-v409>${cp409AgencyFilterOptions()}</select><select data-platform-status-filter-v409><option value="all" ${state.platformCommandStatusFilter === 'all' ? 'selected' : ''}>All statuses</option><option value="open" ${state.platformCommandStatusFilter === 'open' ? 'selected' : ''}>Open marketplace</option><option value="accepted" ${state.platformCommandStatusFilter === 'accepted' ? 'selected' : ''}>Accepted by company</option><option value="assigned" ${state.platformCommandStatusFilter === 'assigned' ? 'selected' : ''}>Guard assigned</option><option value="active" ${state.platformCommandStatusFilter === 'active' ? 'selected' : ''}>In progress / active</option><option value="completed" ${state.platformCommandStatusFilter === 'completed' ? 'selected' : ''}>Completed / published</option></select><button class="ghost-button" data-action="platform-command-refresh-v409">Refresh</button></div>
+    </div>
+    <div class="cp409-map-wrap">
+      <div class="guard302-map-fallback cp409-command-map">
+        <span class="street-name s1">Marketplace Area</span><span class="street-name s2">Agency Coverage</span><span class="street-name s3">Client Properties</span><span class="street-name s4">Live Guards</span>
+        <div class="fallback-road r1"></div><div class="fallback-road r2"></div><div class="fallback-road r3"></div><div class="fallback-road r4"></div>
+        ${routePaths ? `<svg class="guard302-fallback-route dispatch-multi-route cp409-routes" viewBox="0 0 100 100" preserveAspectRatio="none">${routePaths}</svg>` : ''}
+        ${propertyMarkers}${jobMarkers}${guardMarkers}
+        <div class="cp409-map-legend"><span><i class="property"></i>Client Properties</span><span><i class="open-job"></i>Open Jobs</span><span><i class="accepted-job"></i>Accepted Jobs</span><span><i class="guard"></i>Online Guards</span><span><i class="route"></i>Assigned Routes</span></div>
+      </div>
+    </div>
+    <div class="guard302-map-metrics cp409-map-metrics"><div><small>Client Properties</small><strong>${properties.length}</strong></div><div><small>Job Locations</small><strong>${jobs.length}</strong></div><div><small>Online Guards</small><strong>${guards.length}</strong></div><div><small>Routes</small><strong>${guards.filter(g => g.request).length}</strong></div></div>
+  </section>`;
+}
+function cp409CompanyRows() {
+  const jobs = marketplaceJobRows();
+  const guards = cp409PlatformGuardsAll();
+  const online = cp409PlatformOnlineGuardEntries();
+  const rows = cp409ApprovedAgencies().map(a => {
+    const id = String(a.id || '');
+    const companyJobs = jobs.filter(j => cp409AgencyId(j) === id);
+    const companyGuards = guards.filter(g => String(g.agency_id || g.agencyId || '') === id);
+    const onlineCount = online.filter(e => String(e.guard.agency_id || e.guard.agencyId || '') === id).length;
+    return { agency: a, jobs: companyJobs, guards: companyGuards, onlineCount, active: companyJobs.filter(cp409IsActiveJob).length, assigned: companyJobs.filter(cp409IsAssignedJob).length };
+  }).sort((a,b) => b.jobs.length - a.jobs.length || String(a.agency.agency_name || a.agency.name || '').localeCompare(String(b.agency.agency_name || b.agency.name || '')));
+  return rows;
+}
+function cp409CompanySummaryPanel() {
+  const rows = cp409CompanyRows().slice(0, 8);
+  return `<section class="panel panel-pad cp409-company-panel"><div class="panel-head"><div><h2>Company Activity</h2><p>Which licensed companies are active and what they own.</p></div><button class="ghost-button" data-view="agency-approvals">Agencies</button></div><div class="cp409-company-list">${rows.length ? rows.map(row => `<div class="cp409-company-row"><span><strong>${esc(row.agency.agency_name || row.agency.name || 'Agency')}</strong><small>${esc(row.onlineCount)} online guards · ${esc(row.guards.length)} total guards</small></span><b>${esc(row.jobs.length)}</b><em>${esc(row.assigned)} assigned</em></div>`).join('') : '<div class="empty">No approved agencies yet.</div>'}</div></section>`;
+}
+function cp409JobOwnershipTable() {
+  const rows = cp409PlatformJobsAll().slice(0, 10);
+  return `<section class="panel panel-pad cp409-jobs-panel"><div class="panel-head"><div><h2>Job Ownership</h2><p>Every job shows the company that accepted it and the guard assigned by that company.</p></div><button class="ghost-button" data-view="marketplace-jobs">Marketplace Jobs</button></div><div class="client-request-history-table cp409-jobs-table"><div class="client-request-history-head"><span>Job</span><span>Client / Property</span><span>Status</span><span>Company</span><span>Guard</span></div>${rows.length ? rows.map(job => `<div class="client-request-history-row"><span><strong>${esc(job.job_number || job.id)}</strong><small>${esc(v401Service(job))}</small></span><span><strong>${esc(job.property_label || propertyLabel(job) || 'Property')}</strong><small>${esc(v401Address(job))}</small></span><span>${displayStatusChip(cp409JobStatus(job))}</span><span><strong>${esc(cp409JobAgencyName(job))}</strong><small>${esc(cp409AgencyId(job) ? 'Accepted company' : 'Open to agencies')}</small></span><span><strong>${esc(cp409JobGuardName(job))}</strong><small>${esc(cp409IsAssignedJob(job) ? 'Assigned by agency' : 'Waiting')}</small></span></div>`).join('') : '<div class="empty">No marketplace jobs match your filters.</div>'}</div></section>`;
+}
+function cp409PlatformActivityFeed() {
+  const events = (state.jobEvents || []).slice().sort((a,b) => new Date(b.created_at || b.event_at || 0) - new Date(a.created_at || a.event_at || 0)).slice(0, 8);
+  const fallback = cp409PlatformJobsAll().slice(0, 5).map(job => ({ id: job.id, created_at: job.updated_at || job.created_at, title: statusText(cp409JobStatus(job)), message: `${cp409JobAgencyName(job)} · ${cp409JobGuardName(job)}`, job }));
+  const rows = events.length ? events : fallback;
+  return `<section class="panel panel-pad cp409-feed-panel"><div class="panel-head"><div><h2>Marketplace Activity</h2><p>Recent acceptance, assignment, proof/report, and status movement.</p></div><button class="ghost-button" data-view="activity-log">Activity</button></div><div class="live-gps-feed-list">${rows.length ? rows.map(e => `<div class="live-gps-feed-row"><i></i><span><strong>${esc(fmtTime(e.created_at || e.event_at))}</strong><p>${esc(e.event_type || e.title || 'Marketplace update')}</p><small>${esc(e.message || e.details || e.description || '')}</small></span></div>`).join('') : '<div class="empty">No marketplace activity yet.</div>'}</div></section>`;
+}
+function platformCommandCenterDashboard() {
+  const jobs = marketplaceJobRows();
+  const selectedCompany = String(state.platformCommandCompanyFilter || 'all');
+  const companyLabel = selectedCompany === 'all' ? 'All Companies' : selectedCompany === 'open' ? 'Open Marketplace' : cp409AgencyNameById(selectedCompany);
+  return `<div class="dashboard platform-command-center-view"><header class="dashboard-header"><div class="title-block"><h1>Platform Command Center</h1><p>Whole marketplace visibility: companies, guards, client properties, accepted jobs, and assigned routes.</p></div><div class="header-actions"><span class="system-pill"><i></i>${esc(companyLabel)}</span><button class="ghost-button" data-action="platform-command-refresh-v409">Refresh</button></div></header>
+    <section class="workflow-finished-panel success"><strong>Platform oversight, not dispatch</strong><p>Co Pilot sees everything moving across the marketplace. Security companies accept jobs and assign their own guards.</p></section>
+    ${cp409PlatformCommandKpis()}
+    <section class="platform-command-layout"><main class="platform-command-main">${cp409PlatformMapPanel()}${cp409JobOwnershipTable()}</main><aside class="platform-command-rail">${cp409CompanySummaryPanel()}${cp409PlatformActivityFeed()}<section class="panel panel-pad"><div class="panel-head"><div><h2>Global Totals</h2><p>Source of truth: marketplace_jobs.</p></div></div><div class="detail-grid"><span>Total Jobs</span><strong>${esc(jobs.length)}</strong><span>Open Marketplace</span><strong>${esc(jobs.filter(cp409IsOpenJob).length)}</strong><span>Accepted By Company</span><strong>${esc(jobs.filter(cp409IsAcceptedJob).length)}</strong><span>Assigned Guard</span><strong>${esc(jobs.filter(cp409IsAssignedJob).length)}</strong></div></section></aside></section>
+  </div>`;
+}
+
+function renderRoleView() {
+  if (state.view === 'dispatch-board' && isPlatformAdmin() && !isAgencyAdmin()) state.view = 'marketplace-jobs';
+  if (['pending-dispatch','scheduled-queue','guard-approvals'].includes(state.view) && isPlatformAdmin() && !isAgencyAdmin()) state.view = 'marketplace-jobs';
+  if (state.view === 'data-foundation') return dataFoundationView();
+  if (state.view === 'agency-approvals') return agencyApprovalsView();
+  if (state.view === 'client-approvals') return clientApprovalsCenterView();
+  if (state.view === 'marketplace-jobs') return marketplaceJobsView();
+  if (state.role === 'admin') {
+    if (state.view === 'dashboard') return isAgencyAdmin() ? marketplaceJobsView() : platformCommandCenterDashboard();
+    if (state.view === 'dispatch-board') return isAgencyAdmin() ? agencyDispatchBoardView() : marketplaceJobsView();
+    if (state.view === 'live-gps') return isAgencyAdmin() ? dispatchLiveGpsView() : platformCommandCenterDashboard();
+    if (state.view === 'guards') return guardsCommandCenterView();
+    if (state.view === 'clients') return adminClientsCommandCenterView();
+    if (state.view === 'activity-log') return activityLogCommandCenterView();
+    if (state.view === 'proof-review') return isAgencyAdmin() ? proofReviewCommandCenterView() : marketplaceJobsView();
+    if (state.view === 'report-builder') return isAgencyAdmin() ? reportBuilderCommandCenterView() : marketplaceJobsView();
+    if (state.view === 'report-archive') return reportArchiveCommandCenterView();
+  }
+  if (state.role === 'guard') {
+    if (state.view === 'dashboard') return guardDashboardMockup302();
+    if (state.view === 'active-job') return guardActiveJobWorkflowView();
+    if (state.view === 'completed') return guardCompletedJobsView();
+    if (state.view === 'route-gps') return guardRouteGpsLiveView();
+    if (state.view === 'upload-proof') return proofUploadView();
+  }
+  if (state.role === 'client') {
+    if (state.view === 'dashboard') return clientDashboardView();
+    if (state.view === 'properties') return clientPropertiesView();
+    if (state.view === 'patrol-requests') return clientPatrolRequestsView();
+    if (state.view === 'reports') return clientReportsView();
+  }
+  if (state.view === 'messages') return messagesView();
+  if (state.view === 'notifications') return notificationsView();
+  if (state.view === 'settings') return settingsView();
+  return state.role === 'admin' ? (isAgencyAdmin() ? marketplaceJobsView() : platformCommandCenterDashboard()) : compactDashboard(state.role);
+}
+
+document.addEventListener('input', e => {
+  const i = e.target;
+  if (i && i.hasAttribute('data-platform-command-search-v409')) { state.platformCommandSearch = i.value || ''; render(); return; }
+  if (i && i.hasAttribute('data-platform-company-filter-v409')) { state.platformCommandCompanyFilter = i.value || 'all'; render(); return; }
+  if (i && i.hasAttribute('data-platform-status-filter-v409')) { state.platformCommandStatusFilter = i.value || 'all'; render(); return; }
+});
+document.addEventListener('change', e => {
+  const i = e.target;
+  if (i && i.hasAttribute('data-platform-company-filter-v409')) { state.platformCommandCompanyFilter = i.value || 'all'; render(); return; }
+  if (i && i.hasAttribute('data-platform-status-filter-v409')) { state.platformCommandStatusFilter = i.value || 'all'; render(); return; }
+});
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button');
+  if (!b || b.disabled || b.dataset.busy === '1') return;
+  try {
+    if (b.dataset.action === 'platform-command-refresh-v409') { setActionButtonBusy(b, 'Refreshing...'); await loadData(); render(); toast('Platform command center refreshed.', 'success'); return; }
+  } catch (err) { toast(friendly(err)); }
+  finally { if (b.dataset.action === 'platform-command-refresh-v409' && document.body.contains(b)) clearActionButtonBusy(b); }
+});

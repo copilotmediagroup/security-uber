@@ -1,17 +1,17 @@
 Co Pilot Security Marketplace
-Version: 4.0.8
-Build Name: AGENCY LIVE GPS BOOT FIX
+Version: 4.0.9
+Build Name: PLATFORM COMMAND CENTER MAP
 Date: 2026-06-27
 
 Summary:
-- Fixes v4.0.7 boot freeze on “Preparing app”.
-- Removes the self-recursive Live GPS route prep override that could stop startup before login/dashboard render.
-- Removes the self-recursive property coordinate fallback created by function hoisting.
-- Keeps v4.0.7 Agency Live GPS route visibility behavior.
-- Adds boot failsafe so a startup data-load issue returns to login instead of hanging forever.
+- Platform Admin dashboard is now a live marketplace command center.
+- Adds global map-style view of online guards, client properties, open jobs, accepted jobs, and assigned guard routes.
+- Adds company-level oversight showing active/approved agencies, job ownership, assigned guards, and online guards per company.
+- Co Pilot remains platform oversight, not dispatch. Agencies accept jobs and assign their own guards.
 
 Badge:
-v4.0.8 AGENCY LIVE GPS BOOT FIX
+v4.0.9 PLATFORM COMMAND CENTER MAP
 
 SQL:
-No schema change required. Optional SQL reload file included.
+No schema change required. Optional cache refresh:
+RUN_AFTER_V409_PLATFORM_COMMAND_CENTER_MAP.sql

@@ -1,8 +1,8 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.8",
-  "buildName": "AGENCY LIVE GPS BOOT FIX",
-  "type": "marketplace-agency-live-gps-boot-fix",
+  "version": "4.0.9",
+  "buildName": "PLATFORM COMMAND CENTER MAP",
+  "type": "platform-command-center-map",
   "sql_required": false,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
@@ -10,9 +10,15 @@
     "Removes self-recursive scheduleDispatchRoutePrep override caused by function hoisting",
     "Removes self-recursive getPropertyCoords fallback caused by function hoisting",
     "Preserves Agency Live GPS route visibility for agency-owned guards and accepted marketplace jobs",
-    "Adds boot failsafe so startup timeout returns to login instead of freezing"
+    "Adds boot failsafe so startup timeout returns to login instead of freezing",
+    "Added Platform Admin Command Center dashboard as the primary marketplace oversight page",
+    "Added global map-style view for online guards, guards on assigned jobs, open jobs, accepted jobs, assigned routes, and client properties",
+    "Added company-level activity panel showing active approved agencies, job counts, online guards, and assigned jobs",
+    "Added Job Ownership table showing accepted agency and assigned guard per marketplace job",
+    "Kept platform role as oversight only; agencies still accept jobs and assign their own guards"
   ],
   "sql_files": [
-    "RUN_AFTER_V408_AGENCY_LIVE_GPS_BOOT_FIX.sql"
+    "RUN_AFTER_V408_AGENCY_LIVE_GPS_BOOT_FIX.sql",
+    "RUN_AFTER_V409_PLATFORM_COMMAND_CENTER_MAP.sql"
   ]
 }

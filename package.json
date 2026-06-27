@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-agency-live-gps-boot-fix",
-  "version": "4.0.8",
+  "name": "co-pilot-security-marketplace-platform-command-center",
+  "version": "4.0.9",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.8 boot fix for agency Live GPS route visibility startup recursion.",
+  "description": "Co Pilot Security Marketplace v4.0.9 platform command center map with global agency, guard, job, property and route visibility.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",
