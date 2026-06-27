@@ -1,15 +1,14 @@
 Co Pilot Security Marketplace
-Version: 4.0.32
-Build Name: COMPACT COMPANY CARD LOGO + MAP HEADER CLEANUP
-Package: GITHUB READY LESS THAN 20 FILES
+Version: 4.0.33
+Build Name: MAP HEADER TEXT REMOVED + AGENCY LOGO SQL HOTFIX
+Package: GITHUB READY
 Date: 2026-06-27
 
 Summary:
-- Removes the unwanted paragraph text from the Platform Admin map header.
-- Rebuilds Company Activity as a true compact side-panel card.
-- Preserves the left logo column, company name, online guards, total guards, jobs in motion, and jobs completed.
-- Adds an optional SQL patch so agency profile photos/logos persist into the agency record and appear for Platform Admin.
-- Reasserts universal image/detail-rich map cards for Admin, Agency, Guard, and Client maps.
+- Removes the Platform Admin Marketplace Visibility Map explanatory text completely.
+- Keeps the compact Company Activity side-panel card.
+- Preserves universal map card system.
+- Includes safe agency logo SQL hotfix that creates missing profile/avatar columns before backfill.
 
 Badge:
-v4.0.32 COMPACT COMPANY CARD LOGO + MAP HEADER CLEANUP
+v4.0.33 MAP HEADER TEXT REMOVED + AGENCY LOGO SQL HOTFIX

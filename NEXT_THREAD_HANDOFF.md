@@ -1,38 +1,29 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-We are building **Co Pilot Security Marketplace**, the Uber-style marketplace for licensed security agencies.
+Current latest package:
+**v4.0.33 MAP HEADER TEXT REMOVED + AGENCY LOGO SQL HOTFIX**
 
-Do not suggest Bolt AI prompts. The user has no Bolt tokens. All changes must be complete GitHub-ready ZIP replacement packages.
+Repo: security-uber
+Supabase: https://nmfvxozbptcvyaenvkxl.supabase.co
 
-Current repo: **security-uber**
+No Bolt AI prompts. Future changes must be complete GitHub-ready ZIP replacement packages.
 
-Current latest build:
-**v4.0.32 COMPACT COMPANY CARD LOGO + MAP HEADER CLEANUP**
+v4.0.33 fixes:
+- Platform Admin Marketplace Visibility Map no longer shows the explanatory text block beside the map.
+- The exact text the user wanted gone is removed completely.
+- Compact Company Activity side-panel card remains.
+- Universal map card system remains.
+- Includes safe agency-logo SQL patch to avoid the previous `profile_avatar_url does not exist` SQL failure.
 
-Supabase:
-`https://nmfvxozbptcvyaenvkxl.supabase.co`
+Run SQL only if agency logo still does not appear:
+`RUN_ONCE_V433_AGENCY_LOGO_VISIBILITY_SAFE_FIX.sql`
 
-What v4.0.32 fixed:
-- Removed the unwanted paragraph text from the Platform Admin map header.
-- Rebuilt the Company Activity card as a compact side-panel card, not a large dashboard/mockup block.
-- Company Activity card now keeps: left logo column, company name, online guards, total guards, jobs in motion, jobs completed.
-- Reasserted universal image/detail-rich map cards for Admin, Agency, Guard, and Client maps.
-- Added optional SQL patch `RUN_ONCE_V432_AGENCY_LOGO_VISIBILITY_FIX.sql` so agency profile/company photos can persist into the agency record and show in Platform Admin.
-
-Important SQL note:
-Do not rerun full consolidated SQL. Only run the v4.0.32 SQL patch if the agency logo still does not appear in Platform Admin.
-
-Previous preserved fixes:
-- v4.0.31 compact company activity sizing
-- v4.0.30 company activity card direction + map data attempt
-- v4.0.29 single source badge lock
+Preserved:
+- v4.0.32 compact company card/logo cleanup
+- v4.0.31 compact sizing
+- v4.0.30 universal map card data fix
+- v4.0.29 single-source badge lock
 - v4.0.28 universal map card system
-- v4.0.27 live GPS roster + property visibility
-- v4.0.26 global job state/map route enforcement
-- v4.0.25 agency proof review + client report delivery
-- v4.0.24 guard job-flow icon sync
-- v4.0.23 badge lock
-- v4.0.22 proof upload support
-- v4.0.21 profile photo save
-- v4.0.20 client tracker
-- v4.0.19 no-page-reload admin sync
+- v4.0.27 live GPS roster/property visibility
+- v4.0.26 global job state/map flow enforcement
+- v4.0.25 agency proof review/client report delivery

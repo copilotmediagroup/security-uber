@@ -1,12 +1,12 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.32",
-  "buildName": "COMPACT COMPANY CARD LOGO + MAP HEADER CLEANUP",
+  "version": "4.0.33",
+  "buildName": "MAP HEADER TEXT REMOVED + AGENCY LOGO SQL HOTFIX",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v432.js",
+  "entry": "index.html loads script-v433.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
   "optionalSql": "RUN_ONCE_V432_AGENCY_LOGO_VISIBILITY_FIX.sql",
   "latestImportantFixes": [

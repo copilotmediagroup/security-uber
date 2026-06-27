@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v432-compact-company-card-logo-map-header-cleanup",
-  "version": "4.0.32",
+  "name": "co-pilot-security-marketplace-v433-map-header-text-removed-agency-logo-hotfix",
+  "version": "4.0.33",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.32 removes the Platform Admin map header paragraph, keeps Company Activity as a compact side-panel card, and adds agency logo visibility support.",
+  "description": "Co Pilot Security Marketplace v4.0.33 removes the Platform Admin map header text completely and includes a safe agency logo SQL hotfix.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

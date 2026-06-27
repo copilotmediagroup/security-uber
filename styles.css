@@ -14611,3 +14611,13 @@ button.is-busy {
 .cp432-leaflet-popup .leaflet-popup-content { margin: 0 !important; width: auto !important; }
 .cp432-leaflet-popup .leaflet-popup-tip { background: rgba(4,16,30,.98) !important; border: 1px solid rgba(72,160,255,.24) !important; }
 .cp432-leaflet-popup .leaflet-popup-close-button { color: #dff1ff !important; font-size: 18px !important; right: 8px !important; top: 8px !important; z-index: 3 !important; }
+
+
+/* v4.0.33: User requested this explanatory map-header text be gone completely. */
+.platform-command-map-panel .platform-command-toolbar > div:first-child small,
+.platform-command-map-panel .platform-command-toolbar > div:first-child p {
+  display: none !important;
+}
+.platform-command-map-panel .platform-command-toolbar > div:first-child {
+  align-self: center;
+}
