@@ -14621,3 +14621,192 @@ button.is-busy {
 .platform-command-map-panel .platform-command-toolbar > div:first-child {
   align-self: center;
 }
+
+
+/* -----------------------------------------------------------------------------
+   v4.0.34 SIDEBAR NAV STACK FIX
+   Hard separates logo/profile/nav/footer on every portal so the first nav item
+   can never render underneath the user card.
+----------------------------------------------------------------------------- */
+.sidebar.global-sidebar-redesign,
+.sidebar.global-sidebar-redesign.sidebar-platform_admin,
+.sidebar.global-sidebar-redesign.sidebar-agency_admin,
+.sidebar.global-sidebar-redesign.sidebar-guard,
+.sidebar.global-sidebar-redesign.sidebar-client,
+.sidebar.global-sidebar-redesign.sidebar-admin {
+  display: grid !important;
+  grid-template-rows: auto 112px minmax(0, 1fr) auto !important;
+  row-gap: 12px !important;
+  align-content: stretch !important;
+  overflow: hidden !important;
+}
+.sidebar.global-sidebar-redesign .sidebar-brand {
+  grid-row: 1 !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+.sidebar.global-sidebar-redesign .profile-zone,
+.sidebar.global-sidebar-redesign .admin-profile-zone,
+.sidebar.global-sidebar-redesign.sidebar-admin .admin-profile-zone,
+.sidebar.global-sidebar-redesign.sidebar-platform_admin .profile-zone,
+.sidebar.global-sidebar-redesign.sidebar-agency_admin .profile-zone,
+.sidebar.global-sidebar-redesign.sidebar-guard .profile-zone,
+.sidebar.global-sidebar-redesign.sidebar-client .profile-zone {
+  grid-row: 2 !important;
+  display: block !important;
+  position: relative !important;
+  z-index: 4 !important;
+  height: 112px !important;
+  min-height: 112px !important;
+  max-height: 112px !important;
+  margin: 0 !important;
+  padding: 0 0 18px 0 !important;
+  box-sizing: border-box !important;
+  border-bottom: 1px solid rgba(113,169,232,.14) !important;
+  overflow: visible !important;
+}
+.sidebar.global-sidebar-redesign .profile-zone .profile-card,
+.sidebar.global-sidebar-redesign .admin-profile-zone .profile-card,
+.sidebar.global-sidebar-redesign.sidebar-admin .admin-profile-zone .profile-card,
+.sidebar.global-sidebar-redesign.sidebar-platform_admin .profile-card,
+.sidebar.global-sidebar-redesign.sidebar-agency_admin .profile-card,
+.sidebar.global-sidebar-redesign.sidebar-guard .profile-card,
+.sidebar.global-sidebar-redesign.sidebar-client .profile-card {
+  position: static !important;
+  z-index: auto !important;
+  width: 100% !important;
+  height: 88px !important;
+  min-height: 88px !important;
+  max-height: 88px !important;
+  margin: 0 !important;
+  padding: 11px 12px !important;
+  display: grid !important;
+  grid-template-columns: 52px minmax(0, 1fr) !important;
+  grid-template-areas: 'avatar copy' !important;
+  align-items: center !important;
+  gap: 11px !important;
+  overflow: hidden !important;
+  transform: none !important;
+  box-sizing: border-box !important;
+}
+.sidebar.global-sidebar-redesign .profile-zone .avatar,
+.sidebar.global-sidebar-redesign .admin-profile-zone .avatar,
+.sidebar.global-sidebar-redesign .profile-card .avatar {
+  grid-area: avatar !important;
+  position: static !important;
+  width: 52px !important;
+  height: 52px !important;
+  min-width: 52px !important;
+  min-height: 52px !important;
+  border-radius: 15px !important;
+  transform: none !important;
+}
+.sidebar.global-sidebar-redesign .profile-main-copy {
+  grid-area: copy !important;
+  position: static !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  transform: none !important;
+}
+.sidebar.global-sidebar-redesign .profile-card strong,
+.sidebar.global-sidebar-redesign .profile-card span,
+.sidebar.global-sidebar-redesign .profile-main-copy em {
+  max-width: 100% !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.sidebar.global-sidebar-redesign .profile-card strong {
+  font-size: 13px !important;
+  line-height: 1.12 !important;
+}
+.sidebar.global-sidebar-redesign .profile-card span {
+  margin-top: 4px !important;
+  font-size: 10.5px !important;
+  line-height: 1.1 !important;
+}
+.sidebar.global-sidebar-redesign .profile-main-copy em {
+  display: inline-flex !important;
+  width: max-content !important;
+  font-size: 10.5px !important;
+  margin-top: 6px !important;
+  line-height: 1 !important;
+}
+.sidebar.global-sidebar-redesign .profile-role-pill,
+.sidebar.global-sidebar-redesign .profile-chevron {
+  display: none !important;
+}
+.sidebar.global-sidebar-redesign .nav-scroll,
+.sidebar.global-sidebar-redesign.sidebar-admin .nav-scroll,
+.sidebar.global-sidebar-redesign.sidebar-platform_admin .nav-scroll,
+.sidebar.global-sidebar-redesign.sidebar-agency_admin .nav-scroll,
+.sidebar.global-sidebar-redesign.sidebar-guard .nav-scroll,
+.sidebar.global-sidebar-redesign.sidebar-client .nav-scroll {
+  grid-row: 3 !important;
+  position: relative !important;
+  z-index: 1 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 2px 2px 8px 0 !important;
+  border-top: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+}
+.sidebar.global-sidebar-redesign .nav-scroll::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+.sidebar.global-sidebar-redesign .nav-scroll .nav-item:first-of-type,
+.sidebar.global-sidebar-redesign .nav-scroll .nav-item:first-child {
+  margin-top: 0 !important;
+}
+.sidebar.global-sidebar-redesign .nav-item {
+  position: relative !important;
+  z-index: 1 !important;
+  transform: none !important;
+  flex-shrink: 0 !important;
+}
+.sidebar.global-sidebar-redesign .nav-item.active {
+  z-index: 2 !important;
+}
+.sidebar.global-sidebar-redesign .sidebar-footer {
+  grid-row: 4 !important;
+  position: relative !important;
+  z-index: 3 !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+@media (max-height: 760px) {
+  .sidebar.global-sidebar-redesign,
+  .sidebar.global-sidebar-redesign.sidebar-platform_admin,
+  .sidebar.global-sidebar-redesign.sidebar-agency_admin,
+  .sidebar.global-sidebar-redesign.sidebar-guard,
+  .sidebar.global-sidebar-redesign.sidebar-client,
+  .sidebar.global-sidebar-redesign.sidebar-admin {
+    grid-template-rows: auto 100px minmax(0, 1fr) auto !important;
+    row-gap: 10px !important;
+  }
+  .sidebar.global-sidebar-redesign .profile-zone,
+  .sidebar.global-sidebar-redesign .admin-profile-zone,
+  .sidebar.global-sidebar-redesign.sidebar-admin .admin-profile-zone,
+  .sidebar.global-sidebar-redesign.sidebar-platform_admin .profile-zone,
+  .sidebar.global-sidebar-redesign.sidebar-agency_admin .profile-zone,
+  .sidebar.global-sidebar-redesign.sidebar-guard .profile-zone,
+  .sidebar.global-sidebar-redesign.sidebar-client .profile-zone {
+    height: 100px !important;
+    min-height: 100px !important;
+    max-height: 100px !important;
+    padding-bottom: 12px !important;
+  }
+  .sidebar.global-sidebar-redesign .profile-zone .profile-card,
+  .sidebar.global-sidebar-redesign .admin-profile-zone .profile-card,
+  .sidebar.global-sidebar-redesign.sidebar-admin .admin-profile-zone .profile-card,
+  .sidebar.global-sidebar-redesign .profile-card {
+    height: 82px !important;
+    min-height: 82px !important;
+    max-height: 82px !important;
+  }
+}

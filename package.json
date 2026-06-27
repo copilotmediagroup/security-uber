@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v433-map-header-text-removed-agency-logo-hotfix",
-  "version": "4.0.33",
+  "name": "co-pilot-security-marketplace-v434-sidebar-nav-stack-fix",
+  "version": "4.0.34",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.33 removes the Platform Admin map header text completely and includes a safe agency logo SQL hotfix.",
+  "description": "Co Pilot Security Marketplace v4.0.34 fixes left sidebar profile/nav stacking so navigation starts below the user card on every portal.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

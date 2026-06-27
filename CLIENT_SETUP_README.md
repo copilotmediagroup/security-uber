@@ -1,22 +1,28 @@
-# Co Pilot Security Marketplace v4.0.33
+# Co Pilot Security Marketplace v4.0.34
 
-Current build:
-**v4.0.33 MAP HEADER TEXT REMOVED + AGENCY LOGO SQL HOTFIX**
+**v4.0.34 SIDEBAR NAV STACK FIX**
 
-This build fixes the Platform Admin map header text that was still visible beside the map.
+This build fixes the left sidebar overlap issue. The navigation now starts below the logo/name/user profile card on every portal.
 
-## What changed
-- Removed the text: "Platform Admin sees every mapped client property and every mapped guard record. Route lines only appear for active movement jobs."
-- Removes the old ownership-overlay header copy too.
-- Keeps the map title and controls only.
-- Keeps the compact Company Activity card in the side panel.
-- Preserves universal map cards and prior marketplace flow fixes.
+## Fixed
+
+- Platform Admin sidebar: Command Center no longer overlaps the user/profile card.
+- Agency Admin sidebar: Available Jobs/Dispatch nav starts below the user card.
+- Guard sidebar: Dashboard/Active Job nav starts below the user card.
+- Client sidebar: Dashboard/Properties nav starts below the user card.
+- Legacy Admin sidebar remains protected by the same stack rule.
+
+## Preserved
+
+- v4.0.33 map header text removal.
+- Compact Company Activity card.
+- Universal map card styling.
+- Agency logo safe SQL hotfix file remains included.
 
 ## SQL
-Do not rerun the full consolidated SQL.
 
-If the uploaded agency logo still does not show, run this safe patch once:
-`RUN_ONCE_V433_AGENCY_LOGO_VISIBILITY_SAFE_FIX.sql`
+No new SQL required for the sidebar fix. Use `RUN_ONCE_V433_AGENCY_LOGO_VISIBILITY_SAFE_FIX.sql` only for the agency logo visibility issue.
 
-Badge should read:
-`v4.0.33 MAP HEADER TEXT REMOVED + AGENCY LOGO SQL HOTFIX`
+Expected badge:
+
+`v4.0.34 SIDEBAR NAV STACK FIX`

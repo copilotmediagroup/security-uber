@@ -1,14 +1,13 @@
 Co Pilot Security Marketplace
-Version: 4.0.33
-Build Name: MAP HEADER TEXT REMOVED + AGENCY LOGO SQL HOTFIX
+Version: 4.0.34
+Build Name: SIDEBAR NAV STACK FIX
 Package: GITHUB READY
 Date: 2026-06-27
 
 Summary:
-- Removes the Platform Admin Marketplace Visibility Map explanatory text completely.
-- Keeps the compact Company Activity side-panel card.
-- Preserves universal map card system.
-- Includes safe agency logo SQL hotfix that creates missing profile/avatar columns before backfill.
+- Fixes left sidebar profile/nav overlap globally across Platform Admin, Agency Admin, Guard, Client, and Legacy Admin portals.
+- Navigation now starts below the user card, with a hard reserved profile zone.
+- Preserves v4.0.33 map header text removal and agency logo SQL hotfix.
 
 Badge:
-v4.0.33 MAP HEADER TEXT REMOVED + AGENCY LOGO SQL HOTFIX
+v4.0.34 SIDEBAR NAV STACK FIX
