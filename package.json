@@ -1,0 +1,17 @@
+{
+  "name": "co-pilot-security-marketplace-data-foundation",
+  "version": "4.0.0",
+  "private": true,
+  "description": "Co Pilot Security Marketplace foundation with licensed-agency onboarding, global marketplace_jobs backbone, job_events audit trail, and new Supabase config.",
+  "scripts": {
+    "dev": "node server.cjs",
+    "start": "node server.cjs",
+    "preview": "node server.cjs",
+    "build": "node build.cjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
