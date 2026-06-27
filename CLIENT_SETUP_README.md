@@ -1,44 +1,49 @@
-# Co Pilot Security Marketplace v4.0.0 — Marketplace Data Foundation
+# Co Pilot Security Marketplace v4.0.4 — Marketplace Role Cleanup
 
-This package starts the separate Uber-style / marketplace version of Co Pilot Security.
+This is the standalone Uber-style marketplace version, not the old v3 single-company app.
 
-## Important
-This is **not** the v3 single-company app database.
-Use the new Supabase project only:
+## New Supabase
+Use only:
 
-- Supabase URL: `https://nmfvxozbptcvyaenvkxl.supabase.co`
-- Publishable key is already configured in `config.js`.
+- `https://nmfvxozbptcvyaenvkxl.supabase.co`
 
-Do not point this package at the old v3 Supabase project.
+The publishable key is already configured in `config.js`.
 
-## SQL install order for a new Supabase
-Run these in the Supabase SQL editor in this order:
+## What changed in v4.0.4
+
+- Removed the public **Legacy Dispatch** login option.
+- Old v3 `admin` / dispatch accounts are normalized to **Platform Admin** for marketplace compatibility.
+- Platform Admin is the Co Pilot marketplace owner/operator role.
+- Agency Admin is the licensed security company role.
+- Agency Dispatch wording is renamed to **Agency Job Management**.
+- Platform Admin no longer sees old dispatch-board / pending-dispatch navigation.
+- Client jobs still flow to the open marketplace.
+- The accepting agency assigns its own guards after accepting the job.
+
+## Correct marketplace flow
+
+Client submits job → job appears in open marketplace → approved agency accepts → job locks to that agency → agency assigns its own guard → guard completes job → proof/report returns to client through the platform.
+
+## SQL order
+
+If you already ran v4.0.0 through v4.0.3 SQL, run only:
+
+1. `RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql`
+
+For a fresh Supabase, run all SQL in this order:
 
 1. `RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql`
 2. `RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql`
+3. `RUN_AFTER_V401_AGENCY_JOB_BOARD.sql`
+4. `RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql`
+5. `RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql`
+6. `RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql`
 
-The first file installs the base v3 app schema/functions that the current app still needs.
-The second file adds the v4 marketplace foundation.
+## Not added yet
 
-## What v4.0.0 adds
-- Platform Admin role
-- Agency Admin role
-- Agency signup
-- Agency verification center
-- Marketplace Jobs board
-- Marketplace Data Foundation dashboard
-- `marketplace_jobs` as the global job source of truth
-- `job_events` as the audit trail
-- agency approval/rejection RPCs
-- agency job acceptance RPC
-- client request creates open marketplace job after SQL is installed
-
-## What is intentionally not included yet
-- payments
-- Stripe split payouts
-- automatic closest-agency matching
-- client reviews
-- agency rankings
-- bidding/price competition
-
-Those come after the core data foundation is proven.
+- No payments
+- No Stripe
+- No subscriptions
+- No bidding
+- No rankings
+- No closest-agency auto-matching

@@ -1,28 +1,31 @@
 Co Pilot Security Marketplace
-Version: 4.0.0
-Build Name: MARKETPLACE DATA FOUNDATION
+Version: 4.0.4
+Build Name: MARKETPLACE ROLE CLEANUP
 Date: 2026-06-27
 
 Summary:
-- Separate v4 marketplace build for the new Supabase project.
-- New Supabase URL: https://nmfvxozbptcvyaenvkxl.supabase.co
-- Added platform_admin and agency_admin marketplace role support.
-- Added licensed agency signup path.
-- Added Platform Admin Agency Verification Center.
-- Added Marketplace Jobs board.
-- Added Marketplace Data Foundation dashboard.
-- Added SQL foundation for agencies, agency_members, agency_service_areas, marketplace_jobs, marketplace_job_claims, and job_events.
-- marketplace_jobs is the source of truth.
-- job_events is the audit/timeline backbone.
-- Client request now creates an open marketplace job after v4 SQL is installed.
-- Approved agencies can accept open marketplace jobs after v4 SQL is installed.
-- Preserved v3.0.77 client recent report thumbnail fix and prior report/proof/dashboard sync work.
+- Builds on v4.0.3 Agency Dispatch + Client Location Fix.
+- Removes the public Legacy Dispatch login option.
+- Normalizes legacy v3 admin/dispatch accounts to Platform Admin in the v4 marketplace UI.
+- Platform Admin is now the Co Pilot marketplace owner/operator role.
+- Agency Admin is the licensed security company role.
+- Agency Dispatch is renamed in the UI to Agency Job Management.
+- Accepted marketplace jobs remain locked to the accepting agency.
+- The accepting agency assigns one of its own guards.
+- Platform Admin no longer sees old dispatch-board/pending-dispatch navigation.
+- Co Pilot Security remains the platform/software layer, not the licensed guard provider.
 
 Badge:
-v4.0.0 MARKETPLACE DATA FOUNDATION
+v4.0.4 MARKETPLACE ROLE CLEANUP
 
 SQL:
-New SQL required.
 For a brand-new Supabase project, run:
 1. RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql
 2. RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql
+3. RUN_AFTER_V401_AGENCY_JOB_BOARD.sql
+4. RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql
+5. RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql
+6. RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql
+
+If v4.0.0 through v4.0.3 SQL were already run, only run:
+RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql
