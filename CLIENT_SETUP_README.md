@@ -1,38 +1,36 @@
-# Co Pilot Security Marketplace v4.0.21 — Profile Photo Save Fix
+# Co Pilot Security Marketplace v4.0.22 — Proof Upload RLS Fix
 
-This is a complete GitHub-ready replacement package for **security-uber**.
+This is a complete GitHub-ready replacement package for **Co Pilot Security Marketplace**.
 
-## Current build
-**v4.0.21 PROFILE PHOTO SAVE FIX**
+## Build
+**v4.0.22 PROOF UPLOAD RLS FIX**
 
-## What this fixes
-Profile photos in Settings were only previewing after upload. They were not being saved to Supabase or persisted back to the user profile.
+## Why this build exists
+The guard proof-upload modal showed:
 
-v4.0.21 fixes that flow:
+`new row violates row-level security policy`
 
-1. User chooses a device image in Settings > Profile.
-2. Preview appears immediately.
-3. User clicks **Save Changes**.
-4. File uploads to Supabase Storage bucket `profile-photos`.
-5. App calls `cp_update_my_profile`.
-6. `avatar_url` is saved and reflected back into the logged-in profile.
-7. Matching guard/client avatar fields update in the local UI immediately.
+The issue is Supabase Storage RLS. Earlier proof storage policy allowed object paths that started with a legacy `patrol_request_id`, but marketplace proof uploads use `marketplace_job_id/file-name`. This build adds a targeted SQL patch so assigned marketplace guards can upload proof to the `patrol-proof` bucket.
 
-## Supabase
-Use the marketplace Supabase only:
+## What to upload
+Upload this whole ZIP to GitHub/Bolt as the replacement package.
 
-- URL: `https://nmfvxozbptcvyaenvkxl.supabase.co`
-- Publishable key is already in `config.js`
+## SQL for existing Supabase project
+Because your screenshot shows a real RLS policy block, run this file **once** in Supabase SQL Editor:
 
-## SQL
-No new SQL was added in this package. The consolidated SQL already contains the profile photo bucket, `avatar_url` columns, and `cp_update_my_profile` function.
+`RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql`
 
-Do **not** rerun SQL unless Supabase returns a missing bucket/table/function/RPC error.
+Do **not** rerun the full consolidated SQL on an existing project unless the database is fresh or missing older tables/RPCs.
 
-## Preserved from earlier builds
-- v4.0.19 quiet admin live sync, no page reload loop.
-- v4.0.20 Client Marketplace Status Tracker.
-- Root server entry lock behavior.
+## Fresh Supabase project only
+For a fresh project, use:
+
+`RUN_IF_NEEDED_ALL_SQL_V400_TO_V422_CONSOLIDATED.sql`
 
 ## Expected badge
-`v4.0.21 PROFILE PHOTO SAVE FIX`
+`v4.0.22 PROOF UPLOAD RLS FIX`
+
+## Preserved fixes
+- v4.0.19 quiet admin live sync / no page reload
+- v4.0.20 Client Marketplace Status Tracker
+- v4.0.21 Profile Photo Save Fix

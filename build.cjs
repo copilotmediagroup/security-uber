@@ -4,20 +4,21 @@ const path = require('path');
 const root = __dirname;
 const dist = path.join(root, 'dist');
 const files = [
-  'index.html',
-  'styles.css',
-  'script-v421.js',
-  'script.js',
-  'supabase-client.js',
-  'config.js',
-  'server.cjs',
-  'package.json',
-  'build.cjs',
-  'VERSION.txt',
-  'CONSOLIDATED_MANIFEST.json',
-  'NEXT_THREAD_HANDOFF.md',
-  'CLIENT_SETUP_README.md',
-  'RUN_IF_NEEDED_ALL_SQL_V400_TO_V417_CONSOLIDATED.sql'
+  "index.html",
+  "styles.css",
+  "script-v422.js",
+  "script.js",
+  "supabase-client.js",
+  "config.js",
+  "server.cjs",
+  "package.json",
+  "build.cjs",
+  "VERSION.txt",
+  "CONSOLIDATED_MANIFEST.json",
+  "NEXT_THREAD_HANDOFF.md",
+  "CLIENT_SETUP_README.md",
+  "RUN_IF_NEEDED_ALL_SQL_V400_TO_V422_CONSOLIDATED.sql",
+  "RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql"
 ];
 
 fs.rmSync(dist, { recursive: true, force: true });
@@ -32,4 +33,4 @@ for (const file of files) {
   }
 }
 
-console.log(`Co Pilot Security Marketplace v4.0.21 PROFILE PHOTO SAVE FIX build complete. Copied ${count} files to dist/.`);
+console.log(`Co Pilot Security Marketplace v4.0.22 PROOF UPLOAD RLS FIX build complete. Copied ${count} files to dist/.`);

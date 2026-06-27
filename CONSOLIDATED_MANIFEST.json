@@ -1,20 +1,21 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.21",
-  "buildName": "PROFILE PHOTO SAVE FIX",
+  "version": "4.0.22",
+  "buildName": "PROOF UPLOAD RLS FIX",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v421.js",
+  "entry": "index.html loads script-v422.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
-  "sql": "RUN_IF_NEEDED_ALL_SQL_V400_TO_V417_CONSOLIDATED.sql",
+  "sql": "RUN_IF_NEEDED_ALL_SQL_V400_TO_V422_CONSOLIDATED.sql plus targeted RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql",
+  "runSqlNow": "Run RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql once if proof upload shows new row violates row-level security policy.",
   "latestImportantFixes": [
-    "v4.0.21 fixes Settings profile photo preview-only behavior",
-    "Device-uploaded profile photos now upload to profile-photos storage bucket",
-    "Save Changes persists avatar_url through cp_update_my_profile",
-    "Local profile, matching guard, and matching client avatar fields update immediately after save",
-    "v4.0.19 quiet admin live sync remains preserved",
-    "v4.0.20 client marketplace status tracker remains preserved"
+    "v4.0.22 fixes marketplace proof upload Storage RLS policy for marketplace_job_id object paths",
+    "Existing projects should run RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql once",
+    "Friendly upload error now tells user which SQL patch to run if RLS still blocks upload",
+    "v4.0.21 profile photo save fix remains preserved",
+    "v4.0.20 client marketplace status tracker remains preserved",
+    "v4.0.19 quiet admin live sync/no page reload remains preserved"
   ]
 }

@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v421-profile-photo-save-fix",
-  "version": "4.0.21",
+  "name": "co-pilot-security-marketplace-v422-proof-upload-rls-fix",
+  "version": "4.0.22",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.21 fixes profile photo uploads/saves while preserving quiet admin sync and client tracker.",
+  "description": "Co Pilot Security Marketplace v4.0.22 fixes marketplace proof upload storage RLS while preserving profile photo save, quiet admin sync, and client tracker.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

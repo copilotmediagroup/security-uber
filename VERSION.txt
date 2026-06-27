@@ -1,16 +1,16 @@
 Co Pilot Security Marketplace
-Version: 4.0.21
-Build Name: PROFILE PHOTO SAVE FIX
+Version: 4.0.22
+Build Name: PROOF UPLOAD RLS FIX
 Package: GITHUB READY LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Fixes profile photos in Settings so upload is no longer preview-only.
-- Profile photos are uploaded to the profile-photos Supabase Storage bucket.
-- Save Changes persists avatar_url through cp_update_my_profile and updates local profile/guard/client avatar fields.
-- Keeps v4.0.19 quiet Platform Admin sync with no page reload loop.
+- Fixes marketplace proof uploads blocked by Supabase Storage RLS.
+- Adds RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql for existing Supabase projects showing row-level security policy errors.
+- Updates patrol-proof storage upload/read helper functions to allow marketplace_job_id proof paths assigned to the guard.
+- Keeps v4.0.21 profile photo save fix.
 - Keeps v4.0.20 Client Marketplace Status Tracker.
-- No new SQL file required unless the profile-photos bucket/RPC is missing from Supabase.
+- Keeps v4.0.19 quiet Platform Admin sync with no page reload loop.
 
 Badge:
-v4.0.21 PROFILE PHOTO SAVE FIX
+v4.0.22 PROOF UPLOAD RLS FIX
