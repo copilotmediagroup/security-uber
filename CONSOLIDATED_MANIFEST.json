@@ -1,19 +1,19 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.11",
-  "buildName": "GUARD MARKETPLACE JOB FLOW",
-  "type": "guard-marketplace-job-flow",
-  "sql_required": true,
+  "version": "4.0.12",
+  "buildName": "PLATFORM LIFECYCLE SYNC FIX",
+  "type": "platform-lifecycle-sync-fix",
+  "sql_required": false,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Guard Active Job now prioritizes assigned marketplace_jobs for the logged-in guard",
-    "Guard lifecycle includes assigned, accept job, en route, arrived, in progress, proof uploaded, and completed",
-    "Guard status actions update marketplace_jobs.current_status instead of inventing local-only status",
-    "Every status action writes job_events for agency/platform/client status tracking",
-    "Proof uploads can attach directly to marketplace_job_id",
-    "Completed guard marketplace jobs appear in the guard Completed view"
+    "Platform Command Center reads the v4.0.11 guard lifecycle statuses",
+    "Auto-refreshes Platform Command Center while open",
+    "Normalizes marketplace_jobs with latest job_events and proof_items",
+    "Job Ownership table shows live guard step and last update",
+    "Marketplace Activity feed shows guard accepted/en route/arrived/in progress/proof/completed events",
+    "Company Activity panel shows in-motion and completed counts by agency"
   ],
   "sql_files": [
-    "RUN_AFTER_V411_GUARD_MARKETPLACE_JOB_FLOW.sql"
+    "RUN_AFTER_V412_PLATFORM_LIFECYCLE_SYNC_FIX.sql"
   ]
 }
