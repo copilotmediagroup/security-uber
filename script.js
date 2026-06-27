@@ -1,8 +1,8 @@
 
-const CP_DEV_CACHE_BUST = '2026-06-27T04-10-v409-platform-command-center-map';
+const CP_DEV_CACHE_BUST = '2026-06-27T04-11-guard-marketplace-job-flow';
 const BUILD = {
-  version: '4.0.10',
-  label: 'v4.0.10 PLATFORM REAL MAP ALIGNMENT'
+  version: '4.0.11',
+  label: 'v4.0.11 GUARD MARKETPLACE JOB FLOW'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -13422,3 +13422,402 @@ document.addEventListener('click', async e => {
   } catch (err) { toast(friendly(err)); }
   finally { if (b.dataset.action === 'platform-command-refresh-v409' && document.body.contains(b)) clearActionButtonBusy(b); }
 });
+
+
+/* -----------------------------------------------------------------------------
+   v4.0.11 GUARD MARKETPLACE JOB FLOW
+   Guard Active Job now reads assigned marketplace_jobs first. Guard actions move
+   the single global marketplace_jobs.current_status lifecycle forward and write
+   job_events, so Agency Admin + Platform Admin + Client status can all read the
+   same source of truth.
+----------------------------------------------------------------------------- */
+(function cp411GuardMarketplaceJobFlow(){
+  const MARKETPLACE_GUARD_STATUSES = ['guard_assigned','assigned','guard_accepted','accepted','en_route','arrived','in_progress','active','proof_uploaded','completed','report_published','published'];
+  const COMPLETED_MARKETPLACE_STATUSES = ['completed','report_published','published'];
+  const WORKFLOW_STAGES_411 = ['assigned','accepted','on_way','arrived','checking','upload_proof','complete'];
+
+  function cp411GuardIdentitySet() {
+    const rec = typeof activeGuardRecord === 'function' ? activeGuardRecord() : null;
+    return [
+      rec?.id, rec?.auth_user_id, rec?.user_id, rec?.profile_id,
+      state.profile?.guard_id, state.profile?.id, state.profile?.auth_user_id, state.profile?.user_id
+    ].map(v => String(v || '')).filter(Boolean);
+  }
+  function cp411ActiveGuardEmail() { return String((typeof activeGuardEmail === 'function' ? activeGuardEmail() : state.profile?.email) || '').trim().toLowerCase(); }
+  function cp411JobGuardEmail(job = {}) {
+    const guard = typeof guardById === 'function' ? guardById(job.assigned_guard_id || job.guard_id) : null;
+    return String(job.assigned_guard_email || guard?.email || '').trim().toLowerCase();
+  }
+  function cp411JobAssignedToMe(job = {}) {
+    const ids = cp411GuardIdentitySet();
+    const jobIds = [job.assigned_guard_id, job.guard_id, job.assigned_guard_profile_id, job.guard_profile_id].map(v => String(v || '')).filter(Boolean);
+    if (ids.length && jobIds.some(id => ids.includes(id))) return true;
+    const myEmail = cp411ActiveGuardEmail();
+    const jobEmail = cp411JobGuardEmail(job);
+    return Boolean(myEmail && jobEmail && myEmail === jobEmail);
+  }
+  function cp411NormalizeMarketplaceJob(job = {}) {
+    const status = String(job.current_status || job.status || 'guard_assigned').toLowerCase();
+    return {
+      ...job,
+      _source: 'marketplace_jobs',
+      marketplace_job_id: job.id,
+      job_id: job.id,
+      request_number: job.job_number || job.request_number || job.id,
+      status,
+      current_status: status,
+      request_type: job.patrol_type || job.service_type || 'Marketplace Patrol',
+      patrol_type: job.patrol_type || job.service_type || 'Marketplace Patrol',
+      notes: job.request_notes || job.notes || '',
+      instructions: job.request_notes || job.instructions || job.notes || '',
+      guard_id: job.assigned_guard_id || job.guard_id || '',
+      assigned_guard_id: job.assigned_guard_id || job.guard_id || '',
+      assigned_at: job.guard_assigned_at || job.assigned_at || job.agency_accepted_at || job.created_at,
+      accepted_at: job.guard_accepted_at || job.accepted_at || null,
+      started_at: job.started_at || null,
+      completed_at: job.completed_at || null,
+      updated_at: job.updated_at || job.created_at,
+      created_at: job.created_at || job.requested_at || new Date().toISOString()
+    };
+  }
+  function cp411MarketplaceGuardJobs() {
+    return (state.marketplaceJobs || [])
+      .map(cp411NormalizeMarketplaceJob)
+      .filter(job => cp411JobAssignedToMe(job))
+      .filter(job => MARKETPLACE_GUARD_STATUSES.includes(String(job.current_status || job.status || '').toLowerCase()))
+      .sort((a,b) => new Date(b.updated_at || b.guard_assigned_at || b.created_at || 0) - new Date(a.updated_at || a.guard_assigned_at || a.created_at || 0));
+  }
+  function cp411ActiveMarketplaceGuardJobs() { return cp411MarketplaceGuardJobs().filter(job => !COMPLETED_MARKETPLACE_STATUSES.includes(String(job.current_status || job.status || '').toLowerCase())); }
+  function cp411CompletedMarketplaceGuardJobs() { return cp411MarketplaceGuardJobs().filter(job => COMPLETED_MARKETPLACE_STATUSES.includes(String(job.current_status || job.status || '').toLowerCase())); }
+  function cp411JobById(id = '') {
+    const target = String(id || '');
+    return cp411MarketplaceGuardJobs().find(job => String(job.id || job.marketplace_job_id || '') === target)
+      || (state.patrolRequests || []).find(r => String(r.id || '') === target)
+      || null;
+  }
+  function cp411IsMarketplaceJob(req = {}) { return String(req?._source || req?.source || '') === 'marketplace_jobs' || Boolean(req?.marketplace_job_id && req?.job_number); }
+  function cp411MarketplaceStageFromStatus(status = '') {
+    const s = String(status || '').toLowerCase();
+    if (['completed','report_published','published'].includes(s)) return 'complete';
+    if (s === 'proof_uploaded') return 'upload_proof';
+    if (['in_progress','active'].includes(s)) return 'checking';
+    if (s === 'arrived') return 'arrived';
+    if (s === 'en_route') return 'on_way';
+    if (['guard_accepted','accepted'].includes(s)) return 'accepted';
+    return 'assigned';
+  }
+  function cp411StatusForStep(step = '') {
+    return ({ assigned: 'guard_assigned', accepted: 'guard_accepted', on_way: 'en_route', arrived: 'arrived', checking: 'in_progress', upload_proof: 'proof_uploaded', complete: 'completed' })[String(step || '')] || 'guard_assigned';
+  }
+  function cp411EventTitleForStep(step = '') {
+    return ({ accepted: 'Guard accepted marketplace job', on_way: 'Guard is en route', arrived: 'Guard arrived on site', checking: 'Guard started patrol', upload_proof: 'Guard uploaded proof', complete: 'Guard completed marketplace job' })[String(step || '')] || 'Marketplace guard update';
+  }
+  function cp411StageIndex(stage = '') { return Math.max(0, WORKFLOW_STAGES_411.indexOf(String(stage || 'assigned'))); }
+
+  guard302CurrentRequest = function() {
+    const marketJob = cp411ActiveMarketplaceGuardJobs()[0];
+    if (marketJob) return marketJob;
+    return (activeRequests().filter(requestMatchesActiveGuard)[0] || activeRequests()[0] || null);
+  };
+
+  requestTitle = function(req = {}) {
+    if (cp411IsMarketplaceJob(req)) return `Job ${String(req.job_number || req.request_number || req.id || '').slice(0, 18)}`;
+    return `Request #${String(req.request_number || req.id || '').slice(0, 8)}`;
+  };
+  propertyLabel = function(req = {}) {
+    if (req.property_label || req.property_name) return req.property_label || req.property_name;
+    const p = propertyById(req.property_id);
+    return p.label || p.name || 'Property';
+  };
+  propertyAddress = function(req = {}) {
+    if (req.property_address || req.address) return req.property_address || req.address;
+    const p = propertyById(req.property_id);
+    return [p.address || p.address_line1, p.city, p.state, p.zip_code].filter(Boolean).join(', ') || 'Address unavailable';
+  };
+  requestClientName = function(req = {}) {
+    if (req.client_name) return req.client_name;
+    const c = clientById(req.client_id);
+    return c.name || c.display_name || c.email || 'Client';
+  };
+  requestGuardName = function(req = {}) {
+    if (req.assigned_guard_name) return req.assigned_guard_name;
+    const g = guardById(req.guard_id || req.assigned_guard_id);
+    return g.name || g.display_name || g.email || 'Unassigned';
+  };
+  proofForRequest = function(id) {
+    const target = String(id || '');
+    const combined = [...(state.proofItems || []), ...readLocalProofItems()];
+    const seen = new Set();
+    return combined
+      .filter(item => String(proofRequestIdValue(item)) === target || String(item.marketplace_job_id || item.job_id || '') === target)
+      .filter(item => {
+        const key = proofIdentity(item);
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .sort((a,b) => new Date(b.uploaded_at || b.created_at || 0) - new Date(a.uploaded_at || a.created_at || 0));
+  };
+  requestCompletedAt = function(req = {}) { return req.completed_at || req.report_published_at || req.closed_at || req.updated_at || req.created_at || null; };
+  guardCompletedRequestsBase = function() {
+    const market = cp411CompletedMarketplaceGuardJobs();
+    const old = completedRequests().filter(requestMatchesActiveGuard);
+    return [...market, ...old];
+  };
+
+  guardWorkflowValidStages = function() { return WORKFLOW_STAGES_411.slice(); };
+  guardWorkflowStage = function(req) {
+    if (!req) return 'assigned';
+    const statusStage = cp411IsMarketplaceJob(req) ? cp411MarketplaceStageFromStatus(req.current_status || req.status) : (String(req.status) === 'completed' ? 'complete' : String(req.status) === 'in_progress' ? 'checking' : 'accepted');
+    const stored = sessionStorage.getItem(guardWorkflowStorageKey(req));
+    if (guardWorkflowValidStages().includes(stored) && cp411StageIndex(stored) > cp411StageIndex(statusStage)) return stored;
+    return statusStage;
+  };
+  guardWorkflowStageText = function(stage) {
+    return ({ assigned: 'Guard Assigned', accepted: 'Guard Accepted', on_way: 'En Route', arrived: 'Arrived', checking: 'Patrol In Progress', upload_proof: 'Proof Uploaded', complete: 'Complete' })[stage] || 'Guard Assigned';
+  };
+  guardWorkflowInstruction = function(stage) {
+    return ({
+      assigned: 'This marketplace job is assigned to you by your agency. Accept it to start the field workflow.',
+      accepted: 'Job accepted. When you leave for the property, mark En Route.',
+      on_way: 'You are currently en route. Your agency and Platform Command Center can monitor the route.',
+      arrived: 'You are on site. Start the patrol when the property check begins.',
+      checking: 'Complete the property check, then upload proof photos or video.',
+      upload_proof: 'Proof is attached to the marketplace job. Complete the job when finished.',
+      complete: 'Job completed. Agency and Platform Admin can move to proof/report review.'
+    })[stage] || 'Continue through the marketplace job lifecycle.';
+  };
+  guardWorkflowIndex = function(stage) { return cp411StageIndex(stage); };
+  guardWorkflowStageState = function(req, targetStage) {
+    const currentIndex = cp411StageIndex(guardWorkflowStage(req));
+    const targetIndex = cp411StageIndex(targetStage);
+    if (targetIndex < currentIndex) return 'locked';
+    if (targetIndex === currentIndex) return 'current';
+    return 'default';
+  };
+
+  activeJobWorkflowPanel = function(req) {
+    const steps = [
+      ['assigned', '▤', 'Assigned'],
+      ['accepted', '✓', 'Accept Job'],
+      ['on_way', '➜', 'En Route'],
+      ['arrived', '⌖', 'Arrived'],
+      ['checking', '⌕', 'Start Patrol'],
+      ['upload_proof', '⇧', 'Upload Proof'],
+      ['complete', '✓', 'Complete']
+    ];
+    const stage = guardWorkflowStage(req);
+    const stageMeta = actionStage => {
+      const stateName = guardWorkflowStageState(req, actionStage);
+      return {
+        stateName,
+        cls: stateName === 'current' ? 'current-stage' : stateName === 'locked' ? 'locked-stage' : 'default-stage',
+        label: stateName === 'current' ? 'Current' : stateName === 'locked' ? 'Locked' : 'Next',
+        disabled: stateName === 'locked' || actionStage === 'assigned' ? 'disabled aria-disabled="true"' : 'aria-disabled="false"'
+      };
+    };
+    const actionClass = actionStage => `active-job-action ${stageMeta(actionStage).cls}`;
+    const actionDisabled = actionStage => stageMeta(actionStage).disabled;
+    return `<section class="panel panel-pad active-workflow-panel cp411-marketplace-flow">
+      <div class="panel-head"><div><h2>Marketplace Job Lifecycle</h2><p>Every guard action updates marketplace_jobs.current_status and writes a job_events audit record.</p></div></div>
+      <div class="active-stepper cp411-active-stepper">${steps.map(([key, icon, label]) => { const meta = stageMeta(key); return `<button type="button" class="active-step ${meta.cls}" ${meta.disabled} data-action="guard-workflow-step" data-request-id="${esc(req.id)}" data-step="${esc(key)}"><i>${esc(icon)}</i><strong>${esc(label)}</strong><small>${esc(meta.label)}</small></button>`; }).join('')}</div>
+      <div class="active-workflow-status"><strong>Current Status: <b>${esc(guardWorkflowStageText(stage))}</b></strong><p>${esc(guardWorkflowInstruction(stage))}</p></div>
+      <div class="active-job-action-row">
+        <button type="button" class="${actionClass('accepted')}" ${actionDisabled('accepted')} data-action="guard-workflow-step" data-request-id="${esc(req.id)}" data-step="accepted"><i>✓</i>Accept Job</button>
+        <button type="button" class="${actionClass('on_way')}" ${actionDisabled('on_way')} data-action="guard-workflow-step" data-request-id="${esc(req.id)}" data-step="on_way"><i>➜</i>Mark En Route</button>
+        <button type="button" class="${actionClass('arrived')}" ${actionDisabled('arrived')} data-action="guard-workflow-step" data-request-id="${esc(req.id)}" data-step="arrived"><i>⌖</i>Mark Arrived</button>
+        <button type="button" class="${actionClass('checking')}" ${actionDisabled('checking')} data-action="guard-workflow-step" data-request-id="${esc(req.id)}" data-step="checking"><i>⌕</i>Start Patrol</button>
+        <button type="button" class="${actionClass('upload_proof')}" ${actionDisabled('upload_proof')} data-action="guard-workflow-step" data-request-id="${esc(req.id)}" data-step="upload_proof"><i>⇧</i>Upload Proof</button>
+        <button type="button" class="${actionClass('complete')}" ${actionDisabled('complete')} data-action="guard-workflow-step" data-request-id="${esc(req.id)}" data-step="complete"><i>✓</i>Complete Job</button>
+      </div>
+    </section>`;
+  };
+
+  callGuardStatusRpc = async function(req, nextStatus) {
+    if (cp411IsMarketplaceJob(req)) {
+      const result = await supabase.rpc('cp_guard_update_marketplace_job_status', { p_job_id: req.id || req.marketplace_job_id, p_next_status: nextStatus });
+      if (!result?.ok) throw new Error(result?.message || 'Marketplace job status could not be updated.');
+      return cp411NormalizeMarketplaceJob(result.job || req);
+    }
+    const result = await supabase.rpc('cp_guard_update_patrol_request_status', { p_request_id: req.id, p_next_status: nextStatus });
+    if (!result?.ok) throw new Error(result?.message || 'Workflow status could not be updated.');
+    return result.request || null;
+  };
+
+  updateGuardWorkflowStep = async function(requestId, step) {
+    const req = cp411JobById(requestId);
+    if (!req) throw new Error('Active job not found.');
+    if (step === 'assigned') { toast('This job is assigned to you. Click Accept Job to begin.', 'success'); return; }
+    const currentStage = guardWorkflowStage(req);
+    if (cp411StageIndex(step) < cp411StageIndex(currentStage)) {
+      toast(`${guardWorkflowStageText(step)} is locked. Continue from ${guardWorkflowStageText(currentStage)}.`, 'error');
+      return;
+    }
+    if (step === 'upload_proof') {
+      closeCompleteWithoutProofModal();
+      setGuardWorkflowLocalStage(req, 'upload_proof');
+      addGuardWorkflowLocalLog(req, 'Opened Inline Proof Upload', `${propertyLabel(req)} proof upload opened inside Active Job`);
+      syncGuardWorkflowDom(req, 'upload_proof');
+      launchInlineProofPicker(req);
+      return;
+    }
+    if (step === 'complete') {
+      const uploadState = readProofUploadStatus(req.id);
+      if (uploadState.status === 'uploading') { toast('Proof is still uploading. Please wait before completing the job.', 'error'); return; }
+      const proofCount = proofForRequest(req.id).length;
+      if (!proofCount) { showCompleteWithoutProofModal(req); return; }
+      await finishGuardJob(req, { withoutProof: false });
+      return;
+    }
+    const nextStatus = cp411StatusForStep(step);
+    await callGuardStatusRpc(req, nextStatus);
+    setGuardWorkflowLocalStage(req, step);
+    addGuardWorkflowLocalLog(req, cp411EventTitleForStep(step), `${propertyLabel(req)} · ${guardWorkflowStageText(step)}`);
+    await loadData();
+    state.view = 'active-job';
+    render();
+    toast(`${guardWorkflowStageText(step)} saved.`, 'success');
+  };
+
+  async function cp411UploadMarketplaceProof(job, files = [], note = '') {
+    const list = Array.from(files || []);
+    const validation = validateProofFiles(list);
+    if (!validation.ok) throw new Error(validation.errors[0] || 'Proof upload validation failed.');
+    const uploaded = [];
+    saveProofUploadStatus(job.id, { status: 'uploading', count: list.length, message: `Uploading ${list.length} proof file${list.length === 1 ? '' : 's'}…`, started_at: new Date().toISOString() });
+    for (const file of list) {
+      const kind = proofKindForFile(file);
+      const safe = String(file.name || 'proof').replace(/[^a-zA-Z0-9._-]/g, '_').slice(-90) || `${kind}-proof`;
+      const objectPath = `${job.id}/${Date.now()}-${Math.random().toString(16).slice(2)}-${safe}`;
+      await supabase.uploadStorageObject('patrol-proof', objectPath, file, { upsert: false });
+      const publicUrl = supabase.getPublicUrl('patrol-proof', objectPath);
+      const result = await supabase.rpc('cp_guard_register_marketplace_proof', {
+        p_job_id: job.id,
+        p_bucket_id: 'patrol-proof',
+        p_object_path: objectPath,
+        p_file_name: safe,
+        p_file_type: file.type || kind,
+        p_file_size: file.size || 0,
+        p_public_url: publicUrl,
+        p_note: note
+      });
+      const proof = result?.proof || {};
+      uploaded.push({
+        ...proof,
+        marketplace_job_id: proof.marketplace_job_id || job.id,
+        request_id: proof.request_id || job.patrol_request_id || job.id,
+        bucket_id: proof.bucket_id || 'patrol-proof',
+        object_path: proof.object_path || objectPath,
+        file_name: proof.file_name || safe,
+        file_type: proof.file_type || file.type || kind,
+        file_size: proof.file_size || file.size || 0,
+        public_url: proof.public_url || publicUrl,
+        note: proof.note || note,
+        uploaded_at: proof.uploaded_at || new Date().toISOString(),
+        created_at: proof.created_at || new Date().toISOString(),
+        review_status: proof.review_status || proof.status || 'pending'
+      });
+    }
+    addLocalProofItems(job.id, uploaded);
+    saveProofUploadStatus(job.id, { status: 'success', count: uploaded.length, message: `${uploaded.length} proof file${uploaded.length === 1 ? '' : 's'} uploaded successfully.`, completed_at: new Date().toISOString() });
+    return uploaded;
+  }
+
+  confirmInlineProofUpload = async function() {
+    const req = cp411JobById(inlineProof.requestId);
+    if (!req) throw new Error('Active job not found for proof upload.');
+    const modal = document.querySelector('.inline-proof-modal');
+    const note = modal?.querySelector('textarea[name="inline_proof_note"]')?.value?.trim() || '';
+    const files = inlineProof.files.slice();
+    const btn = modal?.querySelector('[data-action="confirm-inline-proof"]');
+    const stateBox = modal?.querySelector('.inline-proof-upload-state');
+    const validation = validateProofFiles(files);
+    if (!validation.ok) { saveProofUploadStatus(req.id, { status: 'failed', message: validation.errors[0], failed_at: new Date().toISOString() }); toast(validation.errors[0], 'error'); return; }
+    try {
+      if (btn) { btn.disabled = true; btn.textContent = 'Uploading…'; }
+      if (stateBox) stateBox.innerHTML = '<strong>Uploading proof…</strong><span>Please wait. Do not complete the job yet.</span>';
+      saveProofUploadStatus(req.id, { status: 'uploading', count: files.length, message: 'Uploading proof…', started_at: new Date().toISOString() });
+      const uploaded = cp411IsMarketplaceJob(req) ? await cp411UploadMarketplaceProof(req, files, note) : await uploadProofFiles(req.id, files, note);
+      setGuardWorkflowLocalStage(req, 'upload_proof');
+      addGuardWorkflowLocalLog(req, 'Proof uploaded', note || `${uploaded.length} proof item${uploaded.length === 1 ? '' : 's'} uploaded`);
+      closeInlineProofModal();
+      await loadData();
+      state.view = 'active-job';
+      render();
+      toast(`${uploaded.length} proof file${uploaded.length === 1 ? '' : 's'} uploaded successfully. You can now complete the job.`, 'success');
+    } catch (err) {
+      const message = friendly(err);
+      saveProofUploadStatus(req.id, { status: 'failed', message, failed_at: new Date().toISOString() });
+      if (btn) { btn.disabled = false; btn.textContent = 'Try Upload Again'; }
+      if (stateBox) stateBox.innerHTML = `<strong>Upload failed</strong><span>${esc(message)}</span>`;
+      toast(message || 'Proof upload failed.', 'error');
+    }
+  };
+
+  finishGuardJob = async function(req, options = {}) {
+    if (!req) throw new Error('Active job not found.');
+    if (cp411IsMarketplaceJob(req)) {
+      await callGuardStatusRpc(req, 'completed');
+      setGuardWorkflowLocalStage(req, 'complete');
+      addGuardWorkflowLocalLog(req, options.withoutProof ? 'Guard completed marketplace job without proof' : 'Guard completed marketplace job', `${propertyLabel(req)} · marketplace patrol completed`);
+      clearProofUploadStatus(req.id);
+      liveGps.propertyLat = null; liveGps.propertyLng = null; liveGps.propertyAddress = ''; liveGps.routePoints = []; liveGps.routeDistanceMiles = null; liveGps.routeEtaMin = null; liveGps.selectedMapCard = null;
+      await loadData();
+      state.view = 'completed'; state.selectedCompletedRequestId = req.id || '';
+      render();
+      const count = proofForRequest(req.id).length;
+      toast(count ? `Marketplace job completed. ${count} proof file${count === 1 ? '' : 's'} attached for agency review.` : 'Marketplace job completed without proof. Agency can still build a no-proof report.', 'success');
+      return;
+    }
+    let latest = req;
+    const beforeStatus = String(latest.status || 'assigned');
+    if (beforeStatus === 'assigned') latest = (await callGuardStatusRpc(latest, 'accepted')) || latest;
+    if (String(latest.status) === 'accepted') latest = (await callGuardStatusRpc(latest, 'in_progress')) || latest;
+    if (String(latest.status) !== 'completed') await callGuardStatusRpc(latest, 'completed');
+    setGuardWorkflowLocalStage(req, 'complete');
+    addGuardWorkflowLocalLog(req, options.withoutProof ? 'Guard completed job without proof' : 'Guard completed job', `${propertyLabel(req)} · patrol completed`);
+    clearProofUploadStatus(req.id);
+    await loadData(); state.view = 'completed'; state.selectedCompletedRequestId = req.id || ''; render();
+    toast('Job completed.', 'success');
+  };
+
+  showCompleteWithoutProofModal = function(req) {
+    if (!req) return;
+    document.querySelectorAll('.complete-without-proof-modal').forEach(el => el.remove());
+    const status = readProofUploadStatus(req.id);
+    const failed = status.status === 'failed';
+    const actionName = cp411IsMarketplaceJob(req) ? 'complete-marketplace-without-proof-v411' : 'complete-without-proof';
+    const modal = document.createElement('div');
+    modal.className = 'inline-proof-modal complete-without-proof-modal';
+    modal.innerHTML = `<div class="inline-proof-backdrop" data-action="cancel-complete-without-proof"></div>
+      <section class="inline-proof-dialog complete-without-proof-dialog" role="dialog" aria-modal="true" aria-label="Complete job without proof">
+        <div class="inline-proof-head"><div><p class="eyebrow">Complete Job</p><h2>${failed ? 'Proof upload failed' : 'No proof attached yet'}</h2><span>${esc(requestTitle(req))} · ${esc(propertyLabel(req))}</span></div><button type="button" data-action="cancel-complete-without-proof">×</button></div>
+        <div class="proof-upload-warning"><strong>${failed ? 'The last upload did not finish.' : 'This job has no photo or video proof attached.'}</strong><p>You can upload proof now, or complete the marketplace job without proof. The agency can still build a no-proof report.</p>${status.message ? `<small>${esc(status.message)}</small>` : ''}</div>
+        <div class="inline-proof-actions"><button type="button" class="ghost-button" data-action="cancel-complete-without-proof">Cancel</button><button type="button" class="ghost-button" data-action="guard-workflow-step" data-request-id="${esc(req.id)}" data-step="upload_proof">Upload Proof</button><button type="button" class="primary-button danger" data-action="${actionName}" data-request-id="${esc(req.id)}">Complete Without Proof</button></div>
+      </section>`;
+    document.body.appendChild(modal);
+  };
+
+  document.addEventListener('click', async function(event) {
+    const button = event.target.closest('[data-action="complete-marketplace-without-proof-v411"]');
+    if (!button) return;
+    event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
+    try {
+      const req = cp411JobById(button.dataset.requestId);
+      closeCompleteWithoutProofModal();
+      await finishGuardJob(req, { withoutProof: true });
+    } catch (err) { toast(friendly(err)); }
+  }, true);
+
+  activeJobDetailsCard = function(req) {
+    return `<section class="panel panel-pad active-rail-card">
+      <div class="active-rail-head"><h2>Marketplace Job Details</h2></div>
+      <div class="active-detail-list"><span>Job #</span><strong>${esc(String(req.job_number || req.request_number || req.id || '').slice(0, 18))}</strong><span>Property</span><strong>${esc(propertyLabel(req))}</strong><span>Address</span><strong>${esc(propertyAddress(req))}</strong><span>Client</span><strong>${esc(requestClientName(req))}</strong><span>Agency</span><strong>${esc(req.accepted_agency_name || 'Agency')}</strong><span>Assigned Guard</span><strong>${esc(requestGuardName(req))}</strong></div>
+      <button class="ghost-button active-full-width" data-view="route-gps">Open Route / GPS</button>
+    </section>`;
+  };
+
+  BUILD.version = '4.0.11';
+  BUILD.label = 'v4.0.11 GUARD MARKETPLACE JOB FLOW';
+  window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
+})();

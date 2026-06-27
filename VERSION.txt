@@ -1,13 +1,17 @@
 Co Pilot Security Marketplace
-Version: 4.0.10
-Build Name: PLATFORM REAL MAP ALIGNMENT
+Version: 4.0.11
+Build Name: GUARD MARKETPLACE JOB FLOW
 Date: 2026-06-27
 
 Summary:
-- Replaced the mock Platform Command Center map with the same real Leaflet/OpenStreetMap style used by the guard, client, and agency GPS maps.
-- Platform Admin now sees client properties, open jobs, accepted jobs, online guards, and assigned guard routes on a real street map.
-- Kept company ownership, job ownership, activity feed, and marketplace totals from v4.0.9.
-- No database schema changes required.
+- Guard Active Job now uses assigned marketplace_jobs first, not legacy dispatch-only patrol requests.
+- Guard can accept assigned marketplace jobs, mark en route, arrived, in progress, upload proof, and complete the job.
+- Each guard lifecycle action updates marketplace_jobs.current_status and writes a job_events audit record.
+- Proof uploads can attach directly to marketplace_job_id.
+- Agency Admin and Platform Admin can read the same global job lifecycle.
 
 Badge:
-v4.0.10 PLATFORM REAL MAP ALIGNMENT
+v4.0.11 GUARD MARKETPLACE JOB FLOW
+
+SQL:
+Run only RUN_AFTER_V411_GUARD_MARKETPLACE_JOB_FLOW.sql after v4.0.10.

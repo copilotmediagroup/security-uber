@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-platform-real-map-alignment",
-  "version": "4.0.10",
+  "name": "co-pilot-security-marketplace-guard-marketplace-job-flow",
+  "version": "4.0.11",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.10 platform dashboard real street map alignment patch.",
+  "description": "Co Pilot Security Marketplace v4.0.11 guard marketplace job lifecycle flow with marketplace_jobs status updates and job_events audit trail.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

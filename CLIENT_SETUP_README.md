@@ -1,23 +1,16 @@
-# Co Pilot Security Marketplace v4.0.10 — Platform Real Map Alignment
+# Co Pilot Security Marketplace v4.0.11 — Guard Marketplace Job Flow
 
-This package fixes the Platform Admin Command Center map so it uses the same real street-map system as the other GPS views.
-
-## What changed
-- Replaced the mock diagram-style command center map.
-- Added a real Leaflet/OpenStreetMap platform map.
-- Platform Admin can see:
-  - client property markers
-  - open marketplace job markers
-  - accepted/active job markers
-  - online guard markers
-  - assigned guard routes to jobs
-- Company activity and job ownership panels remain.
+This is a full GitHub-ready replacement package.
 
 ## SQL
-No schema change is required.
+If you already ran SQL through v4.0.10, run only:
 
-Optional cache refresh only:
-`RUN_AFTER_V410_PLATFORM_REAL_MAP_ALIGNMENT.sql`
+`RUN_AFTER_V411_GUARD_MARKETPLACE_JOB_FLOW.sql`
 
-## Badge
-`v4.0.10 PLATFORM REAL MAP ALIGNMENT`
+## What changed
+- Assigned marketplace jobs now appear in the guard Active Job page.
+- Guards can accept the job, mark en route, arrived, start patrol, upload proof, and complete the job.
+- The lifecycle updates `marketplace_jobs.current_status` and writes `job_events`.
+- Proof can attach to `marketplace_job_id`.
+
+Do not rerun old foundation SQL unless Supabase reports missing tables.

@@ -1,18 +1,19 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.10",
-  "buildName": "PLATFORM REAL MAP ALIGNMENT",
-  "type": "platform-real-map-alignment",
-  "sql_required": false,
+  "version": "4.0.11",
+  "buildName": "GUARD MARKETPLACE JOB FLOW",
+  "type": "guard-marketplace-job-flow",
+  "sql_required": true,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Replaced Platform Command Center mock map with real Leaflet/OpenStreetMap street map",
-    "Platform Admin map now matches the style/behavior of guard, client, and agency GPS maps",
-    "Shows client properties, open marketplace jobs, accepted jobs, online guards, and assigned guard routes on the real map",
-    "Preserves company activity, job ownership table, marketplace activity feed, and global totals",
-    "No SQL schema change required"
+    "Guard Active Job now prioritizes assigned marketplace_jobs for the logged-in guard",
+    "Guard lifecycle includes assigned, accept job, en route, arrived, in progress, proof uploaded, and completed",
+    "Guard status actions update marketplace_jobs.current_status instead of inventing local-only status",
+    "Every status action writes job_events for agency/platform/client status tracking",
+    "Proof uploads can attach directly to marketplace_job_id",
+    "Completed guard marketplace jobs appear in the guard Completed view"
   ],
   "sql_files": [
-    "RUN_AFTER_V410_PLATFORM_REAL_MAP_ALIGNMENT.sql"
+    "RUN_AFTER_V411_GUARD_MARKETPLACE_JOB_FLOW.sql"
   ]
 }
