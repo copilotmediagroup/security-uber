@@ -7,6 +7,8 @@ const files = [
   'index.html',
   'styles.css',
   'script.js',
+  'script-v416.js',
+  'script-v417.js',
   'supabase-client.js',
   'config.js',
   'server.cjs',
@@ -31,6 +33,10 @@ const files = [
   'RUN_AFTER_V411_GUARD_MARKETPLACE_JOB_FLOW.sql',
   'RUN_AFTER_V412_PLATFORM_LIFECYCLE_SYNC_FIX.sql',
   'RUN_AFTER_V413_BUILD_LABEL_LOCK_FIX.sql',
+  'RUN_AFTER_V414_MARKETPLACE_ACTIVITY_GUARD_STATUS_FEED.sql',
+  'RUN_AFTER_V415_BADGE_HARD_LOCK_ACTIVITY_FEED.sql',
+  'RUN_AFTER_V416_SCRIPT_CACHE_KILLER_ACTIVITY_FEED.sql',
+  'RUN_AFTER_V417_SERVER_ROOT_ENTRY_LOCK_ACTIVITY_FEED.sql',
   'RUN_IF_NEEDED_OPTIONAL_SQL_PATCHES_V1312_TO_V1322.sql'
 ];
 
@@ -46,4 +52,4 @@ for (const file of files) {
   }
 }
 
-console.log(`Co Pilot Security Marketplace v4.0.13 build label lock fix build complete. Copied ${count} files to dist/.`);
+console.log(`Co Pilot Security Marketplace v4.0.17 server root entry lock + activity feed build complete. Copied ${count} files to dist/.`);

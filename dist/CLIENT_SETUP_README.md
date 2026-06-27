@@ -1,18 +1,20 @@
-# Co Pilot Security Marketplace v4.0.13 — Build Label Lock Fix
+# Co Pilot Security Marketplace v4.0.17 — Server Root Entry Lock + Activity Feed
 
-This package fixes the issue where GitHub showed v4.0.12 but Bolt still displayed the v4.0.10 badge.
+This patch fixes the problem where Bolt kept showing the old v4.0.13 badge because the server was choosing stale `dist/index.html` before the updated root `index.html`.
 
-## Root cause
-Old module-level code inside `script.js` still reset the active build label to v4.0.10 and v4.0.11 after the file started loading. If a later lifecycle patch hit an error or initialized late, the visible badge could stay downgraded even though the repo had the new files.
+## What changed
 
-## Fix
-- Removed the stale v4.0.10 build-label override.
-- Removed the stale v4.0.11 build-label override.
-- Added a final v4.0.13 build-label lock.
-- Kept the v4.0.12 Platform Lifecycle Sync Fix.
+- `server.cjs` now always serves the root project folder.
+- Root `index.html` loads `script-v417.js` with a new cache buster.
+- `dist/` is still included and regenerated, but it is no longer allowed to override the root app during Bolt preview.
+- The Marketplace Activity guard status feed is preserved.
+
+## Expected badge
+
+`v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED`
 
 ## SQL
-No real schema change required.
-Optional only:
 
-`RUN_AFTER_V413_BUILD_LABEL_LOCK_FIX.sql`
+No real schema change required. Optional only:
+
+`RUN_AFTER_V417_SERVER_ROOT_ENTRY_LOCK_ACTIVITY_FEED.sql`

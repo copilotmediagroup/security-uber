@@ -1,18 +1,18 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.15",
-  "buildName": "BADGE HARD LOCK + ACTIVITY FEED",
-  "type": "badge-hard-lock-activity-feed",
+  "version": "4.0.17",
+  "buildName": "SERVER ROOT ENTRY LOCK + ACTIVITY FEED",
+  "type": "server-root-entry-lock-activity-feed",
   "sql_required": false,
-  "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Primary BUILD object starts at v4.0.15 so the app cannot boot with the v4.0.13 badge.",
-    "Neutralizes older v4.0.13/v4.0.14 build label overrides by forcing the current label after all modules load.",
-    "Keeps Platform Command Center marketplace guard activity feed from v4.0.14.",
-    "Marketplace Activity shows guard accepted, en route, arrived, checking property, proof uploaded, completed, and report published.",
-    "No schema change required."
+    "Forces Bolt preview server to serve root index.html instead of stale dist/index.html",
+    "Adds script-v417.js as the current app entry file with v4.0.17 cache buster",
+    "Includes regenerated dist folder but prevents dist from overriding root during dev preview",
+    "Preserves marketplace guard lifecycle activity feed for Platform Admin",
+    "Preserves Platform Command Center real map and company/job ownership overlays"
   ],
+  "expectedBadge": "v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED",
   "sql_files": [
-    "RUN_AFTER_V415_BADGE_HARD_LOCK_ACTIVITY_FEED.sql"
+    "RUN_AFTER_V417_SERVER_ROOT_ENTRY_LOCK_ACTIVITY_FEED.sql"
   ]
 }

@@ -1,18 +1,26 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-Latest package: **v4.0.13 BUILD LABEL LOCK FIX**
+Latest package: v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED
 
-The user is building through GitHub-ready ZIP replacement packages only. Do not suggest Bolt AI prompts.
+Important instruction:
+Do not suggest Bolt AI prompts. The user has no Bolt tokens. All future changes must be complete GitHub-ready ZIP replacement packages.
 
 Current issue fixed:
-- GitHub root `script.js` showed v4.0.12, but Bolt preview still showed v4.0.10.
-- Root cause was stale mid-file build-label overrides from v4.0.10/v4.0.11 inside `script.js`.
-- v4.0.13 removes those stale overrides and locks the current badge label at the end of the script.
+- User uploaded later builds, but the visible badge stayed on v4.0.13.
+- GitHub showed `/dist/index.html` was still v4.0.13.
+- Root files were newer, but `server.cjs` preferred `dist/index.html` when present.
+- v4.0.17 changes `server.cjs` to always serve root files and locks the entry to `script-v417.js`.
 
-v4 retained behavior:
-- v4.0.11 Guard Marketplace Job Flow.
-- v4.0.12 Platform Lifecycle Sync Fix.
-- Platform Admin Command Center should sync guard lifecycle updates from `marketplace_jobs.current_status`, `job_events`, and proof records.
+Current expected badge:
+`v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED`
 
-Next direction:
-- After confirming the badge reads v4.0.13 and lifecycle sync works, continue with client marketplace status tracker.
+Current marketplace model:
+- Platform Admin sees the whole marketplace command center.
+- Agency Admin sees only their agency jobs/guards.
+- Client requests jobs into open marketplace.
+- Approved agency accepts job and assigns own guard.
+- Guard moves job through lifecycle.
+- Platform Admin activity should show guard status feed updates.
+
+Next likely build:
+v4.0.18 CLIENT MARKETPLACE STATUS TRACKER or deeper activity feed QA if Platform Activity still misses guard steps.

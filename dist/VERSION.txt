@@ -1,18 +1,20 @@
 Co Pilot Security Marketplace
-Version: 4.0.13
-Build Name: BUILD LABEL LOCK FIX
+Version: 4.0.17
+Build Name: SERVER ROOT ENTRY LOCK + ACTIVITY FEED
 Date: 2026-06-27
 
 Summary:
-- Fixes stale badge/version downgrade caused by old v4.0.10/v4.0.11 build-label overrides still inside script.js.
-- Keeps v4.0.12 Platform Lifecycle Sync Fix behavior.
-- Platform Command Center continues to sync with marketplace_jobs.current_status, job_events, and proof records.
-- Guard lifecycle flow remains active.
-- No database schema change required.
+- Fixes the issue where Bolt kept serving stale /dist/index.html and the visible app badge remained v4.0.13.
+- server.cjs now always serves root index.html instead of preferring dist/index.html.
+- Root index.html loads script-v417.js with a v4.0.17 cache buster.
+- dist/ is still generated fresh for GitHub/static reference, but it is no longer the server entry source.
+- Preserves the v4.0.14/v4.0.15/v4.0.16 marketplace activity feed work.
+- Platform Admin Marketplace Activity should show guard lifecycle actions including accepted, en route, arrived, checking property, proof uploaded, completed, and report published.
 
 Badge:
-v4.0.13 BUILD LABEL LOCK FIX
+v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED
 
 SQL:
-No real SQL change. Optional cache refresh only:
-RUN_AFTER_V413_BUILD_LABEL_LOCK_FIX.sql
+No real schema change required.
+Optional cache refresh:
+RUN_AFTER_V417_SERVER_ROOT_ENTRY_LOCK_ACTIVITY_FEED.sql

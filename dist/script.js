@@ -1,8 +1,8 @@
 
-const CP_DEV_CACHE_BUST = '2026-06-27T05-13-build-label-lock';
+const CP_DEV_CACHE_BUST = '2026-06-27T05-55-v416-script-cache-killer';
 const BUILD = {
-  version: '4.0.13',
-  label: 'v4.0.13 BUILD LABEL LOCK FIX'
+  version: '4.0.17',
+  label: 'v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -14098,18 +14098,276 @@ document.addEventListener('click', async e => {
   setTimeout(() => { try { cp412NormalizePlatformLifecycleState(); if (cp412IsPlatformCommand()) render(); } catch {} }, 900);
   setTimeout(() => { try { if (cp412IsPlatformCommand()) cp412RefreshPlatformLifecycle('boot'); } catch {} }, 2500);
 
-  BUILD.version = '4.0.13';
-  BUILD.label = 'v4.0.13 BUILD LABEL LOCK FIX';
+  BUILD.version = '4.0.16';
+  BUILD.label = 'v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED';
   window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
-  window.CP_DEV_CACHE_BUST = '2026-06-27T05-13-build-label-lock';
+  window.CP_DEV_CACHE_BUST = '2026-06-27T05-55-v416-script-cache-killer-activity-feed';
 })();
 
 
 /* v4.0.13 final build-label lock: keeps old module patches from downgrading badge after import/cache refresh. */
 try {
-  BUILD.version = '4.0.13';
-  BUILD.label = 'v4.0.13 BUILD LABEL LOCK FIX';
+  BUILD.version = '4.0.16';
+  BUILD.label = 'v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED';
   window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
-  window.CP_DEV_CACHE_BUST = '2026-06-27T05-13-build-label-lock';
+  window.CP_DEV_CACHE_BUST = '2026-06-27T05-55-v416-script-cache-killer-activity-feed';
   if (typeof ensureBadge === 'function') setTimeout(ensureBadge, 0);
 } catch {}
+
+
+/* -----------------------------------------------------------------------------
+   v4.0.14 MARKETPLACE ACTIVITY GUARD STATUS FEED
+   Platform Command Center Marketplace Activity now shows every guard lifecycle
+   step: accepted, en route, arrived, checking property, proof uploaded, completed.
+   It builds the feed from job_events, marketplace_jobs timestamps, and proof rows
+   so admin sees the guard movement even if a single source is sparse.
+----------------------------------------------------------------------------- */
+(function cp414MarketplaceActivityGuardStatusFeed(){
+  const CP414_VERSION = '4.0.16';
+  const CP414_LABEL = 'v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED';
+  const CP414_CACHE = '2026-06-27T05-55-v416-script-cache-killer-activity-feed';
+  const CP414_STAGE_RANK = {
+    open_marketplace: 1,
+    pending_marketplace: 1,
+    marketplace_open: 1,
+    agency_accepted: 2,
+    accepted_by_agency: 2,
+    guard_assigned: 3,
+    assigned: 3,
+    guard_accepted: 4,
+    accepted: 4,
+    en_route: 5,
+    arrived: 6,
+    in_progress: 7,
+    active: 7,
+    checking_property: 7,
+    proof_uploaded: 8,
+    completed: 9,
+    report_published: 10,
+    published: 10
+  };
+  const CP414_COPY = {
+    open_marketplace: ['Client Request Opened', 'Client request entered the open marketplace'],
+    agency_accepted: ['Agency Accepted Job', 'Company accepted the marketplace job'],
+    guard_assigned: ['Agency Assigned Guard', 'Company assigned one of its own guards'],
+    guard_accepted: ['Guard Accepted Job', 'Guard accepted the assigned marketplace job'],
+    en_route: ['Guard En Route', 'Guard is traveling to the property'],
+    arrived: ['Guard Arrived On Site', 'Guard reached the client property'],
+    in_progress: ['Checking Property', 'Guard started checking the property'],
+    proof_uploaded: ['Proof Uploaded', 'Guard uploaded photo/video proof'],
+    completed: ['Job Completed', 'Guard completed the marketplace job'],
+    report_published: ['Report Published', 'Client report has been published']
+  };
+  function cp414Status(value = '') {
+    const raw = String(value || '').trim().toLowerCase().replace(/\s+/g, '_');
+    if (!raw) return '';
+    if (['marketplace_open','pending_marketplace','client_request','requested','new_request'].includes(raw)) return 'open_marketplace';
+    if (['accepted_by_agency','accepted_agency'].includes(raw)) return 'agency_accepted';
+    if (['assigned','guard_assignment','agency_assigned_guard','guard_assigned_job'].includes(raw)) return 'guard_assigned';
+    if (['accepted','guard_accept','accepted_by_guard'].includes(raw)) return 'guard_accepted';
+    if (['on_way','on_route','on-route','traveling','travel'].includes(raw)) return 'en_route';
+    if (['on_site','onsite'].includes(raw)) return 'arrived';
+    if (['active','started','patrol_started','checking','checking_property','start_patrol'].includes(raw)) return 'in_progress';
+    if (['upload_proof','proof_upload','uploaded_proof'].includes(raw)) return 'proof_uploaded';
+    if (['complete','finished'].includes(raw)) return 'completed';
+    if (['published','report_released'].includes(raw)) return 'report_published';
+    return raw;
+  }
+  function cp414Rank(status = '') { return CP414_STAGE_RANK[cp414Status(status)] || 0; }
+  function cp414Label(status = '') { return (CP414_COPY[cp414Status(status)] || [statusText(status || 'Update'), 'Marketplace update'])[0]; }
+  function cp414Sub(status = '') { return (CP414_COPY[cp414Status(status)] || [statusText(status || 'Update'), 'Marketplace update'])[1]; }
+  function cp414EventStatus(e = {}) {
+    const text = [e.event_status, e.current_status, e.next_status, e.event_type, e.title, e.action, e.details, e.message, e.description].filter(Boolean).join(' ').toLowerCase();
+    if (/report.*publish|publish.*report|released.*report/.test(text)) return 'report_published';
+    if (/complete|completed|finished/.test(text)) return 'completed';
+    if (/proof.*upload|upload.*proof|proof_uploaded|photo proof|video proof/.test(text)) return 'proof_uploaded';
+    if (/checking property|started patrol|start.*patrol|patrol started|in_progress|in progress|checking/.test(text)) return 'in_progress';
+    if (/arrived|on site|onsite/.test(text)) return 'arrived';
+    if (/en.route|en_route|on way|on_route|traveling|destination/.test(text)) return 'en_route';
+    if (/guard.*accept|accepted patrol|guard_accepted/.test(text)) return 'guard_accepted';
+    if (/assign.*guard|guard.*assigned|guard_assigned|assigned guard/.test(text)) return 'guard_assigned';
+    if (/agency.*accept|accepted job|agency_accepted/.test(text)) return 'agency_accepted';
+    if (/client.*request|request.*created|open marketplace|open_marketplace/.test(text)) return 'open_marketplace';
+    return cp414Status(e.event_status || e.event_type || e.current_status || '');
+  }
+  function cp414JobId(job = {}) { return String(job.id || job.marketplace_job_id || job.job_id || '').trim(); }
+  function cp414EventJobId(e = {}) { return String(e.job_id || e.marketplace_job_id || e.marketplace_job || '').trim(); }
+  function cp414EventTime(e = {}) { return e.created_at || e.event_at || e.updated_at || e.inserted_at || ''; }
+  function cp414JobStatus(job = {}) { return cp414Status(job._platform_lifecycle_status || job.current_status || job.status || 'open_marketplace'); }
+  function cp414JobTime(job = {}, fields = []) {
+    for (const field of fields) if (job[field]) return job[field];
+    return '';
+  }
+  function cp414JobNumber(job = {}) { return job.job_number || String(job.id || '').slice(0, 12) || 'Marketplace Job'; }
+  function cp414Property(job = {}) { return job.property_label || propertyLabel(job) || job.client_name || 'Client property'; }
+  function cp414Agency(job = {}) { return (typeof cp409JobAgencyName === 'function' ? cp409JobAgencyName(job) : '') || job.accepted_agency_name || job.agency_name || 'Open Marketplace'; }
+  function cp414Guard(job = {}) { return (typeof cp409JobGuardName === 'function' ? cp409JobGuardName(job) : '') || job.assigned_guard_name || job.guard_name || job.assigned_guard_email || 'Unassigned'; }
+  function cp414ProofTimeForJob(job = {}) {
+    const id = cp414JobId(job);
+    const pr = String(job.patrol_request_id || '');
+    const rows = (state.proofItems || []).filter(p => String(p.marketplace_job_id || p.job_id || '') === id || (pr && String(p.request_id || p.patrol_request_id || '') === pr));
+    rows.sort((a,b) => new Date(b.uploaded_at || b.created_at || 0) - new Date(a.uploaded_at || a.created_at || 0));
+    return rows[0]?.uploaded_at || rows[0]?.created_at || '';
+  }
+  function cp414Key(row = {}) {
+    const time = row.time ? new Date(row.time) : null;
+    const minute = time && Number.isFinite(time.getTime()) ? `${time.getFullYear()}-${time.getMonth()}-${time.getDate()}-${time.getHours()}-${time.getMinutes()}` : 'notime';
+    return `${row.jobId || row.id || 'global'}::${cp414Status(row.status)}::${minute}`;
+  }
+  function cp414Add(rows, row = {}) {
+    const s = cp414Status(row.status);
+    if (!s) return;
+    const time = row.time || row.created_at || row.updated_at || '';
+    if (!time) return;
+    rows.push({
+      id: row.id || `${row.jobId || 'job'}-${s}-${time}`,
+      jobId: row.jobId || '',
+      status: s,
+      time,
+      title: row.title || cp414Label(s),
+      message: row.message || cp414Sub(s),
+      agency: row.agency || '',
+      guard: row.guard || '',
+      jobNumber: row.jobNumber || '',
+      property: row.property || '',
+      source: row.source || 'synthetic'
+    });
+  }
+  function cp414EventRows(jobMap = new Map()) {
+    const rows = [];
+    (state.jobEvents || []).forEach(e => {
+      const jid = cp414EventJobId(e);
+      const status = cp414EventStatus(e);
+      const job = jobMap.get(jid) || {};
+      const actor = e.actor_name || e.guard_name || '';
+      const guard = actor || cp414Guard(job);
+      const agency = e.actor_agency_name || e.agency_name || cp414Agency(job);
+      const jobNumber = job.job_number || e.job_number || jid;
+      const property = cp414Property(job);
+      const baseMessage = e.details || e.message || e.description || '';
+      cp414Add(rows, {
+        id: e.id || `${jid}-${cp414EventTime(e)}-${status}`,
+        jobId: jid,
+        status,
+        time: cp414EventTime(e),
+        title: cp414Label(status),
+        message: baseMessage || `${guard} · ${agency} · ${jobNumber}`,
+        guard,
+        agency,
+        jobNumber,
+        property,
+        source: 'job_events'
+      });
+    });
+    return rows;
+  }
+  function cp414JobRows(job = {}) {
+    const rows = [];
+    const id = cp414JobId(job);
+    if (!id) return rows;
+    const current = cp414JobStatus(job);
+    const common = {
+      jobId: id,
+      agency: cp414Agency(job),
+      guard: cp414Guard(job),
+      jobNumber: cp414JobNumber(job),
+      property: cp414Property(job)
+    };
+    const stages = [
+      { status: 'open_marketplace', fields: ['requested_at','created_at'] },
+      { status: 'agency_accepted', fields: ['agency_accepted_at','accepted_at'] },
+      { status: 'guard_assigned', fields: ['assigned_at','guard_assigned_at'] },
+      { status: 'guard_accepted', fields: ['guard_accepted_at','accepted_at'] },
+      { status: 'en_route', fields: ['en_route_at'] },
+      { status: 'arrived', fields: ['arrived_at'] },
+      { status: 'in_progress', fields: ['started_at','in_progress_at'] },
+      { status: 'proof_uploaded', fields: ['proof_uploaded_at','last_proof_at'] },
+      { status: 'completed', fields: ['completed_at'] },
+      { status: 'report_published', fields: ['report_published_at','published_at','released_at'] }
+    ];
+    stages.forEach(stage => {
+      let time = cp414JobTime(job, stage.fields);
+      if (stage.status === 'proof_uploaded') time = time || cp414ProofTimeForJob(job);
+      if (!time && cp414Status(current) === stage.status) time = job.updated_at || job.completed_at || job.created_at || '';
+      if (!time) return;
+      cp414Add(rows, {
+        ...common,
+        status: stage.status,
+        time,
+        title: cp414Label(stage.status),
+        message: `${common.guard} · ${common.agency} · ${common.property}`,
+        source: 'marketplace_jobs'
+      });
+    });
+    return rows;
+  }
+  function cp414BuildFeedRows() {
+    const jobs = (typeof cp409PlatformJobsAll === 'function' ? cp409PlatformJobsAll() : (state.marketplaceJobs || [])).slice();
+    const jobMap = new Map(jobs.map(job => [cp414JobId(job), job]));
+    const all = [];
+    all.push(...cp414EventRows(jobMap));
+    jobs.forEach(job => all.push(...cp414JobRows(job)));
+    const best = new Map();
+    all.forEach(row => {
+      const key = cp414Key(row);
+      const old = best.get(key);
+      if (!old || row.source === 'job_events' || new Date(row.time || 0) > new Date(old.time || 0)) best.set(key, row);
+    });
+    return Array.from(best.values()).sort((a,b) => new Date(b.time || 0) - new Date(a.time || 0)).slice(0, 20);
+  }
+  function cp414FeedRow(row = {}) {
+    const status = cp414Status(row.status);
+    const guard = row.guard && row.guard !== 'Unassigned' ? row.guard : '';
+    const meta = [guard, row.agency, row.jobNumber, row.property].filter(Boolean).join(' · ');
+    const msg = row.message && !String(row.message).includes('undefined') ? row.message : meta;
+    return `<div class="live-gps-feed-row cp414-feed-row cp414-feed-${esc(status)}"><i></i><span><strong>${esc(fmtTime(row.time))}</strong><p>${esc(row.title || cp414Label(status))}</p><small>${esc(msg || meta || cp414Sub(status))}</small></span></div>`;
+  }
+  if (typeof cp409PlatformActivityFeed === 'function') {
+    cp409PlatformActivityFeed = function cp414MarketplaceActivityFeed() {
+      const rows = cp414BuildFeedRows();
+      const lastSync = state.platformLifecycleLastSyncAt ? `Synced ${timeAgo(state.platformLifecycleLastSyncAt)}` : 'Live sync';
+      return `<section class="panel panel-pad cp409-feed-panel cp412-feed-panel cp414-feed-panel"><div class="panel-head"><div><h2>Marketplace Activity</h2><p>Live guard status feed: accepted, en route, arrived, checking property, proof uploaded, and completed.</p></div><button class="ghost-button" data-action="platform-command-refresh-v409">${esc(lastSync)}</button></div><div class="live-gps-feed-list">${rows.length ? rows.map(cp414FeedRow).join('') : '<div class="empty">No marketplace guard activity yet.</div>'}</div></section>`;
+    };
+  }
+  window.CP414_MARKETPLACE_ACTIVITY_FEED = { buildRows: cp414BuildFeedRows };
+  try {
+    BUILD.version = CP414_VERSION;
+    BUILD.label = CP414_LABEL;
+    window.CP_ACTIVE_BUILD_LABEL = CP414_LABEL;
+    window.CP_DEV_CACHE_BUST = CP414_CACHE;
+    if (typeof ensureBadge === 'function') setTimeout(ensureBadge, 0);
+  } catch {}
+})();
+
+/* v4.0.14 final build-label lock. */
+try {
+  BUILD.version = '4.0.16';
+  BUILD.label = 'v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED';
+  window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
+  window.CP_DEV_CACHE_BUST = '2026-06-27T05-55-v416-script-cache-killer-activity-feed';
+  if (typeof ensureBadge === 'function') setTimeout(ensureBadge, 0);
+} catch {}
+
+
+/* v4.0.17 absolute badge hard lock: updates every visible build label after all patches load. */
+(function cp415AbsoluteBadgeHardLock(){
+  const LABEL = 'v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED';
+  const VERSION = '4.0.16';
+  const CACHE = '2026-06-27T05-55-v416-script-cache-killer-activity-feed';
+  function lock() {
+    try {
+      BUILD.version = VERSION;
+      BUILD.label = LABEL;
+      window.CP_ACTIVE_BUILD_LABEL = LABEL;
+      window.CP_DEV_CACHE_BUST = CACHE;
+      document.querySelectorAll('.cp-build-badge,.version-mini').forEach(el => { el.textContent = LABEL; });
+      const meta = document.querySelector('meta[name="app-version"]');
+      if (meta) meta.setAttribute('content', '4.0.16-script-cache-killer-activity-feed');
+    } catch {}
+  }
+  lock();
+  setTimeout(lock, 0);
+  setTimeout(lock, 300);
+  setTimeout(lock, 1000);
+  setInterval(lock, 5000);
+})();

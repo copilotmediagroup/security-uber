@@ -1,22 +1,18 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.13",
-  "buildName": "BUILD LABEL LOCK FIX",
-  "type": "build-label-lock-fix",
+  "version": "4.0.17",
+  "buildName": "SERVER ROOT ENTRY LOCK + ACTIVITY FEED",
+  "type": "server-root-entry-lock-activity-feed",
   "sql_required": false,
-  "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Platform Command Center reads the v4.0.11 guard lifecycle statuses",
-    "Auto-refreshes Platform Command Center while open",
-    "Normalizes marketplace_jobs with latest job_events and proof_items",
-    "Job Ownership table shows live guard step and last update",
-    "Marketplace Activity feed shows guard accepted/en route/arrived/in progress/proof/completed events",
-    "Company Activity panel shows in-motion and completed counts by agency",
-    "Removed stale v4.0.10/v4.0.11 build-label overrides so Bolt cannot keep showing the old v4.0.10 badge after importing current GitHub files",
-    "Kept v4.0.12 Platform Lifecycle Sync Fix behavior intact"
+    "Forces Bolt preview server to serve root index.html instead of stale dist/index.html",
+    "Adds script-v417.js as the current app entry file with v4.0.17 cache buster",
+    "Includes regenerated dist folder but prevents dist from overriding root during dev preview",
+    "Preserves marketplace guard lifecycle activity feed for Platform Admin",
+    "Preserves Platform Command Center real map and company/job ownership overlays"
   ],
+  "expectedBadge": "v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED",
   "sql_files": [
-    "RUN_AFTER_V412_PLATFORM_LIFECYCLE_SYNC_FIX.sql",
-    "RUN_AFTER_V413_BUILD_LABEL_LOCK_FIX.sql"
+    "RUN_AFTER_V417_SERVER_ROOT_ENTRY_LOCK_ACTIVITY_FEED.sql"
   ]
 }

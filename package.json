@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v415-badge-hard-lock-activity-feed",
-  "version": "4.0.15",
+  "name": "co-pilot-security-marketplace-v417-server-root-entry-lock-activity-feed",
+  "version": "4.0.17",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.15 with badge hard lock and marketplace guard activity feed.",
+  "description": "Co Pilot Security Marketplace v4.0.17 forcing Bolt to serve root entry files while preserving marketplace guard activity feed.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

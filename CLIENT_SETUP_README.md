@@ -1,16 +1,20 @@
-# Co Pilot Security Marketplace v4.0.15 — Badge Hard Lock + Activity Feed
+# Co Pilot Security Marketplace v4.0.17 — Server Root Entry Lock + Activity Feed
 
-This package fixes the issue where the visible badge could stay on v4.0.13 even after uploading v4.0.14.
+This patch fixes the problem where Bolt kept showing the old v4.0.13 badge because the server was choosing stale `dist/index.html` before the updated root `index.html`.
 
 ## What changed
-- Primary `BUILD` label now starts as `v4.0.15 BADGE HARD LOCK + ACTIVITY FEED`.
-- Older internal badge locks are neutralized.
-- A final hard-lock updates `.cp-build-badge` and `.version-mini` labels after all code loads.
-- The v4.0.14 Platform Command Center Marketplace Activity feed remains included.
+
+- `server.cjs` now always serves the root project folder.
+- Root `index.html` loads `script-v417.js` with a new cache buster.
+- `dist/` is still included and regenerated, but it is no longer allowed to override the root app during Bolt preview.
+- The Marketplace Activity guard status feed is preserved.
+
+## Expected badge
+
+`v4.0.17 SERVER ROOT ENTRY LOCK + ACTIVITY FEED`
 
 ## SQL
-No real schema change is required. Optional cache refresh only:
 
-`RUN_AFTER_V415_BADGE_HARD_LOCK_ACTIVITY_FEED.sql`
+No real schema change required. Optional only:
 
-Do not rerun older foundation SQL unless Supabase reports a missing table/function.
+`RUN_AFTER_V417_SERVER_ROOT_ENTRY_LOCK_ACTIVITY_FEED.sql`

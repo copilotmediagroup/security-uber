@@ -2,7 +2,9 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const root = fs.existsSync(path.join(__dirname, 'dist', 'index.html')) ? path.join(__dirname, 'dist') : __dirname;
+// v4.0.17: Always serve root files. Do NOT prefer /dist,
+// because stale dist/index.html was keeping Bolt locked on older badges.
+const root = __dirname;
 const port = process.env.PORT || 5173;
 
 function readBuildLabel() {
@@ -54,7 +56,7 @@ http.createServer((req, res) => {
           res.writeHead(404);
           return res.end('Not found');
         }
-        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' });
         res.end(html);
       });
       return;
@@ -62,7 +64,9 @@ http.createServer((req, res) => {
 
     res.writeHead(200, {
       'Content-Type': types[path.extname(target)] || 'application/octet-stream',
-      'Cache-Control': 'no-store'
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      Pragma: 'no-cache',
+      Expires: '0'
     });
     res.end(data);
   });
