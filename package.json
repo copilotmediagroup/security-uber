@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-activity-guard-status-feed",
-  "version": "4.0.14",
+  "name": "co-pilot-security-marketplace-v415-badge-hard-lock-activity-feed",
+  "version": "4.0.15",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.14 Platform Marketplace Activity guard status feed with accepted/en route/arrived/checking/proof/completed updates.",
+  "description": "Co Pilot Security Marketplace v4.0.15 with badge hard lock and marketplace guard activity feed.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

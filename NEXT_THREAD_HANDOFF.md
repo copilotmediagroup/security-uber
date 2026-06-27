@@ -1,23 +1,21 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
 Latest package:
-v4.0.14 MARKETPLACE ACTIVITY GUARD STATUS FEED
+v4.0.15 BADGE HARD LOCK + ACTIVITY FEED
 
 Important instruction:
-The user has no Bolt tokens. Do not suggest Bolt AI prompts. Build complete GitHub-ready ZIP replacement packages only.
+The user is building through GitHub ZIP uploads into Bolt. Do not suggest Bolt AI prompts because the user does not have Bolt tokens. All future changes must be complete GitHub-ready ZIP replacement packages.
 
-Project model:
-Co Pilot Security Marketplace is an Uber-style marketplace for licensed/certified security agencies. Clients request jobs. Approved agencies accept jobs. Agency Admin assigns its own guard. Co Pilot is platform oversight, not dispatch.
+Current issue fixed:
+After v4.0.14 upload, the app still showed the v4.0.13 badge because old internal badge-lock code could keep the visible label on v4.0.13. v4.0.15 sets the primary BUILD label at the top and adds an absolute final badge hard-lock after all patches load.
 
-What v4.0.14 fixed:
-- Platform Command Center Marketplace Activity now shows guard lifecycle status updates.
-- Activity feed now includes Guard Accepted, En Route, Arrived On Site, Checking Property, Proof Uploaded, Completed, and Report Published.
-- Feed merges `job_events`, `marketplace_jobs` lifecycle timestamps, and proof records.
-- Keeps v4.0.13 build-label lock and v4.0.12 platform lifecycle sync.
+Current marketplace direction:
+Platform Admin Command Center should show whole-marketplace activity: active agencies, online guards, accepted jobs, assigned guards, client properties, and live guard lifecycle updates.
 
-SQL:
-No real schema change. Optional cache refresh only:
-RUN_AFTER_V414_MARKETPLACE_ACTIVITY_GUARD_STATUS_FEED.sql
+Included behavior:
+- Marketplace Activity shows guard accepted, en route, arrived, checking property, proof uploaded, completed, and report published.
+- Activity feed builds from job_events, marketplace_jobs lifecycle timestamps, and proof records.
+- No SQL schema change required beyond optional cache refresh.
 
-Recommended next build:
-v4.0.15 CLIENT MARKETPLACE STATUS TRACKER — client sees the same lifecycle: open marketplace, agency accepted, guard assigned, accepted, en route, arrived, checking property, proof uploaded, completed, report published.
+Next recommended build:
+v4.0.16 CLIENT MARKETPLACE STATUS TRACKER — client sees the same lifecycle from request through agency accepted, guard assigned, en route, arrived, in progress, completed, report published.

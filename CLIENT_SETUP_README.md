@@ -1,20 +1,16 @@
-# Co Pilot Security Marketplace v4.0.14 — Marketplace Activity Guard Status Feed
+# Co Pilot Security Marketplace v4.0.15 — Badge Hard Lock + Activity Feed
 
-This build keeps the Uber-style security agency marketplace model and improves Platform Admin visibility.
+This package fixes the issue where the visible badge could stay on v4.0.13 even after uploading v4.0.14.
 
 ## What changed
-- Platform Command Center Marketplace Activity now shows guard lifecycle updates.
-- Admin can see: Guard Accepted, En Route, Arrived On Site, Checking Property, Proof Uploaded, Completed, and Report Published.
-- The feed reads from `job_events`, `marketplace_jobs` lifecycle timestamps, and proof rows so the activity panel updates even if one source is sparse.
-- v4.0.13 build-label lock remains in place.
+- Primary `BUILD` label now starts as `v4.0.15 BADGE HARD LOCK + ACTIVITY FEED`.
+- Older internal badge locks are neutralized.
+- A final hard-lock updates `.cp-build-badge` and `.version-mini` labels after all code loads.
+- The v4.0.14 Platform Command Center Marketplace Activity feed remains included.
 
 ## SQL
-No real schema change required. Optional cache refresh file:
+No real schema change is required. Optional cache refresh only:
 
-`RUN_AFTER_V414_MARKETPLACE_ACTIVITY_GUARD_STATUS_FEED.sql`
+`RUN_AFTER_V415_BADGE_HARD_LOCK_ACTIVITY_FEED.sql`
 
-## Test
-1. Login as guard.
-2. Move assigned job through Accept, En Route, Arrived, Start Patrol, Upload Proof, Complete.
-3. Login as Platform Admin.
-4. Command Center → Marketplace Activity should show those guard lifecycle statuses.
+Do not rerun older foundation SQL unless Supabase reports a missing table/function.

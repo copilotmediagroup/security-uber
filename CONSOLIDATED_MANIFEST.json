@@ -1,25 +1,18 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.14",
-  "buildName": "MARKETPLACE ACTIVITY GUARD STATUS FEED",
-  "type": "marketplace-activity-guard-status-feed",
+  "version": "4.0.15",
+  "buildName": "BADGE HARD LOCK + ACTIVITY FEED",
+  "type": "badge-hard-lock-activity-feed",
   "sql_required": false,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Platform Command Center reads the v4.0.11 guard lifecycle statuses",
-    "Auto-refreshes Platform Command Center while open",
-    "Normalizes marketplace_jobs with latest job_events and proof_items",
-    "Job Ownership table shows live guard step and last update",
-    "Marketplace Activity feed shows guard accepted/en route/arrived/in progress/proof/completed events",
-    "Company Activity panel shows in-motion and completed counts by agency",
-    "Removed stale v4.0.10/v4.0.11 build-label overrides so Bolt cannot keep showing the old v4.0.10 badge after importing current GitHub files",
-    "Kept v4.0.12 Platform Lifecycle Sync Fix behavior intact",
-    "Platform Command Center Marketplace Activity shows guard statuses: accepted, en route, arrived, checking property, proof uploaded, completed, and report published",
-    "Marketplace activity feed reads job_events, marketplace_jobs timestamps, and proof records so Platform Admin sees the same guard lifecycle"
+    "Primary BUILD object starts at v4.0.15 so the app cannot boot with the v4.0.13 badge.",
+    "Neutralizes older v4.0.13/v4.0.14 build label overrides by forcing the current label after all modules load.",
+    "Keeps Platform Command Center marketplace guard activity feed from v4.0.14.",
+    "Marketplace Activity shows guard accepted, en route, arrived, checking property, proof uploaded, completed, and report published.",
+    "No schema change required."
   ],
   "sql_files": [
-    "RUN_AFTER_V412_PLATFORM_LIFECYCLE_SYNC_FIX.sql",
-    "RUN_AFTER_V413_BUILD_LABEL_LOCK_FIX.sql",
-    "RUN_AFTER_V414_MARKETPLACE_ACTIVITY_GUARD_STATUS_FEED.sql"
+    "RUN_AFTER_V415_BADGE_HARD_LOCK_ACTIVITY_FEED.sql"
   ]
 }
