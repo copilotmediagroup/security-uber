@@ -1,37 +1,47 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-We are building **Co Pilot Security Marketplace**, the Uber-style marketplace version of the security patrol app. Do not suggest Bolt AI prompts. The user has no Bolt tokens. All future changes must be complete GitHub-ready ZIP replacement packages.
+We are building **Co Pilot Security Marketplace**, the Uber-style marketplace version of the security patrol app. Do not suggest Bolt AI prompts because the user does not have Bolt tokens. All future changes must be complete GitHub-ready ZIP replacement packages.
 
-Current repo: **security-uber**
+This is separate from the old v3 single-company app called **Co Pilot Security OS**.
 
-Current latest package:
-**v4.0.24 GUARD JOB FLOW ICON SYNC**
+Current latest working package:
+**v4.0.25 AGENCY PROOF REVIEW + CLIENT REPORT DELIVERY**
+
+Repo:
+**security-uber**
 
 Supabase:
 `https://nmfvxozbptcvyaenvkxl.supabase.co`
 
 Publishable key is already in `config.js`.
 
-Recent build history:
-- v4.0.19 fixed Platform Admin reload loop with quiet sync.
-- v4.0.20 added Client Marketplace Status Tracker.
-- v4.0.21 fixed profile photo save.
-- v4.0.22 added proof upload RLS app changes and `RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql`.
-- v4.0.23 fixed old badge lock forcing the badge back to v4.0.21.
-- v4.0.24 fixes Guard Dashboard Job Flow icons not matching the real current stage.
+Important marketplace model:
+- Co Pilot Security is the platform/software marketplace layer, not the licensed security provider.
+- Clients request patrol jobs.
+- Approved licensed/certified agencies accept marketplace jobs.
+- The accepting agency assigns its own guard.
+- Guard works the lifecycle.
+- Agency Admin reviews proof and publishes the client-facing report.
+- Platform Admin audits the marketplace, but does not dispatch or publish reports for agencies.
 
-What v4.0.24 specifically fixed:
-- If guard status says **Arrived**, the **Arrived** icon/stage now lights up correctly.
-- Previous steps show complete/locked after moving forward.
-- Share GPS shows complete when GPS is live/shared or the workflow has passed en route.
-- Guard workflow stage is saved in localStorage/sessionStorage to prevent the UI from falling backward after render.
-- Marketplace statuses `en_route`, `arrived`, `in_progress`, `proof_uploaded`, and `completed` map cleanly to the visible guard flow.
+Latest build status:
+- v4.0.25 adds Agency Proof Review + Client Report Delivery.
+- v4.0.24 guard job-flow icon sync is preserved.
+- v4.0.23 badge lock is preserved.
+- v4.0.22 proof upload RLS app changes and SQL patch file are preserved.
+- v4.0.21 profile photo save is preserved.
+- v4.0.20 client marketplace tracker is preserved.
+- v4.0.19 quiet admin live sync/no-page-reload is preserved.
 
-Important note:
-If proof upload still gives `new row violates row-level security policy`, the Supabase SQL patch still needs to be run once:
-`RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql`
+Testing order:
+1. Confirm badge reads `v4.0.25 AGENCY PROOF REVIEW + CLIENT REPORT DELIVERY`.
+2. Guard completes job and uploads proof.
+3. Agency Admin opens Proof Review and approves/includes proof.
+4. Agency Admin opens Report Builder and publishes report.
+5. Client opens Reports/status tracker and sees Report Published.
+6. Platform Admin should be able to audit activity but should not look like the dispatcher/report publisher.
 
-Next likely work after testing v4.0.24:
-- Verify guard flow icons now match: En Route → Arrived → Checking → Proof Uploaded → Complete.
-- Verify Platform Admin and Client tracker also see each stage clearly.
-- Then build agency proof review / client report delivery or pricing/platform fee logic.
+Next likely build after this:
+**v4.0.26 MARKETPLACE PRICING + PLATFORM FEE DISPLAY**
+
+That should add client price, agency payout, Co Pilot platform fee, and job economics before agency earnings/payment flows.

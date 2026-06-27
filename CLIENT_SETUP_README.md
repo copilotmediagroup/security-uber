@@ -1,19 +1,21 @@
-# Co Pilot Security Marketplace v4.0.24 — Guard Job Flow Icon Sync
+# Co Pilot Security Marketplace v4.0.25 — Agency Proof Review + Client Report Delivery
 
-This package fixes the Guard Dashboard **Job Flow** display where the text status could say **Arrived** while the step icons still looked like they had not advanced.
+This package adds the next marketplace handoff layer: the **accepted agency** reviews guard proof, builds/publishes the final report, and the **client** sees the delivered report/status.
 
 ## Current build
-**v4.0.24 GUARD JOB FLOW ICON SYNC**
+**v4.0.25 AGENCY PROOF REVIEW + CLIENT REPORT DELIVERY**
 
 ## What changed
-- Guard Dashboard job-flow icons now use the same workflow stage as the Active Job buttons.
-- `Arrived` now lights up immediately when the guard marks arrived.
-- Earlier stages lock/show complete correctly after moving forward.
-- `Share GPS` now shows complete when GPS has been shared or the guard has reached the arrived stage.
-- Guard workflow stage is saved in `localStorage` and `sessionStorage`, so the UI stays in sync after render/refresh.
-- Marketplace job statuses such as `en_route`, `arrived`, `in_progress`, `proof_uploaded`, and `completed` map cleanly to the guard flow.
+- Agency Admin Proof Review is framed as agency-owned work, not platform dispatch work.
+- Agency Admin sees proof tied to its accepted/assigned marketplace jobs.
+- Report Builder is framed as **Agency Report Builder**.
+- Published reports include agency/guard/client/job context.
+- Publish attempts the existing Supabase report RPC first so the client can receive the report from `patrol_reports`.
+- If Supabase blocks or the legacy request row is missing, the app also saves a marketplace delivery copy locally so the client tracker/report screen can still reflect the handoff during Bolt testing.
+- Report-published audit events use **Agency Admin** language.
 
 ## Preserved from prior builds
+- v4.0.24 guard job-flow icon sync
 - v4.0.23 badge lock fix
 - v4.0.22 proof upload RLS app changes and SQL patch file
 - v4.0.21 profile photo save fix
@@ -21,8 +23,8 @@ This package fixes the Guard Dashboard **Job Flow** display where the text statu
 - v4.0.19 quiet admin live sync / no page reload
 
 ## SQL
-No new SQL is required for v4.0.24.
+No new SQL is required for v4.0.25.
 
-If proof upload still shows `new row violates row-level security policy`, run this existing SQL patch once:
+If proof upload still shows `new row violates row-level security policy`, run the existing SQL patch once:
 
 `RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql`

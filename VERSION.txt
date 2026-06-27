@@ -1,15 +1,13 @@
 Co Pilot Security Marketplace
-Version: 4.0.24
-Build Name: GUARD JOB FLOW ICON SYNC
+Version: 4.0.25
+Build Name: AGENCY PROOF REVIEW + CLIENT REPORT DELIVERY
 Package: GITHUB READY LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Fixes Guard Dashboard Job Flow icons not matching the current guard workflow stage.
-- If the status says Arrived, the Arrived step now lights up and prior steps show complete/locked.
-- Share GPS now reflects shared/live GPS or any stage after en route.
-- Workflow stage persists in localStorage/sessionStorage so the UI does not fall backward after render.
-- Preserves proof upload RLS fix, profile photo save, client tracker, quiet admin sync, and badge lock.
+- Agency Admin reviews guard proof and publishes client-facing reports.
+- Client report delivery/tracker now has a report handoff path after agency publish.
+- Preserves guard job-flow icon sync, proof upload RLS app changes, badge lock, profile photo save, client status tracker, and no-page-reload admin sync.
 
 Badge:
-v4.0.24 GUARD JOB FLOW ICON SYNC
+v4.0.25 AGENCY PROOF REVIEW + CLIENT REPORT DELIVERY
