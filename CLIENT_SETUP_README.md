@@ -1,37 +1,36 @@
-# Co Pilot Security Marketplace v4.0.28 — Universal Map Card System
+# Co Pilot Security Marketplace v4.0.29 — Single Source Badge Lock
 
-This is a complete GitHub-ready replacement package for the **security-uber** repo.
+Current build:
+**v4.0.29 SINGLE SOURCE BADGE LOCK**
 
-## Current build
-**v4.0.28 UNIVERSAL MAP CARD SYSTEM**
+This is a GitHub-ready replacement package for the `security-uber` repo.
 
 ## What changed
-- The compact professional **Agency Admin map card** is now the universal map card style across every map.
-- Platform Admin maps, Agency Admin maps, Guard maps, and Client maps now use the same card structure.
-- Guard cards show:
-  - Company name
-  - Guard name
-  - Guard current address
-- Client/property cards show:
-  - Client name
-  - Property name
-  - Property address
 
-## Preserved from prior builds
-- v4.0.27 Agency Live GPS roster + Platform Admin property visibility
-- v4.0.26 global job state + map flow route enforcement
-- v4.0.25 agency proof review + client report delivery
-- v4.0.24 guard job-flow icon sync
-- v4.0.23 badge lock
+v4.0.29 fixes the badge jumping issue where stacked older build-lock patches could briefly force the visible badge back to v4.0.25 or v4.0.27 after reload.
+
+All badge lock routines now point to one current label:
+**v4.0.29 SINGLE SOURCE BADGE LOCK**
+
+The app still preserves:
+- v4.0.28 Universal Map Card System
+- v4.0.27 Live GPS roster + property visibility
+- v4.0.26 global job state + route flow enforcement
+- v4.0.25 Agency proof review + client report delivery
+- v4.0.24 Guard job-flow icon sync
+- v4.0.23 badge/cache protection
 - v4.0.22 proof upload RLS app support
 - v4.0.21 profile photo save
-- v4.0.20 client marketplace tracker
+- v4.0.20 client tracker
 - v4.0.19 no-page-reload admin sync
 
 ## SQL
-No new SQL is required for v4.0.28.
 
-If proof upload still shows a Supabase row-level security error, run the included `RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql` once.
+No new SQL is required for v4.0.29.
+
+If proof upload still shows a Supabase RLS error, run the included:
+`RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql`
 
 ## Expected badge
-**v4.0.28 UNIVERSAL MAP CARD SYSTEM**
+
+**v4.0.29 SINGLE SOURCE BADGE LOCK**

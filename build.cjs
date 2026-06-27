@@ -33,4 +33,4 @@ for (const file of files) {
   }
 }
 
-console.log(`Co Pilot Security Marketplace v4.0.28 UNIVERSAL MAP CARD SYSTEM build complete. Copied ${count} files to dist/.`);
+console.log(`Co Pilot Security Marketplace v4.0.29 SINGLE SOURCE BADGE LOCK build complete. Copied ${count} files to dist/.`);

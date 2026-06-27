@@ -1,20 +1,19 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.28",
-  "buildName": "UNIVERSAL MAP CARD SYSTEM",
-  "packageType": "github-ready",
+  "version": "4.0.29",
+  "buildName": "SINGLE SOURCE BADGE LOCK",
+  "packageType": "github-ready-replacement",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v428.js",
+  "entry": "index.html loads script-v429.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
-  "sql": "No new SQL required for v4.0.28. Existing v4.0.22 proof upload RLS SQL remains included if needed.",
+  "sql": "No new SQL required for v4.0.29. V4.0.22 proof upload RLS SQL remains included if needed.",
   "latestImportantFixes": [
-    "Agency Admin compact map card is now the universal map card style",
-    "Guard map cards show company name, guard name, and current address",
-    "Client/property map cards show client name, property name, and property address",
-    "Platform Admin, Agency Admin, Guard, and Client maps share the same card structure",
-    "v4.0.27 Live GPS roster/property visibility is preserved",
-    "v4.0.26 global map flow route enforcement is preserved"
+    "All older stacked badge locks now resolve to v4.0.29",
+    "Prevents badge jumping backward to v4.0.25 or v4.0.27 after reload",
+    "Preserves v4.0.28 universal map cards",
+    "Preserves v4.0.27 Live GPS roster/property visibility",
+    "Preserves v4.0.26 global job state/map route enforcement"
   ]
 }

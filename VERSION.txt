@@ -1,14 +1,13 @@
 Co Pilot Security Marketplace
-Version: 4.0.28
-Build Name: UNIVERSAL MAP CARD SYSTEM
-Package: GITHUB READY ZIP
+Version: 4.0.29
+Build Name: SINGLE SOURCE BADGE LOCK
+Package: GITHUB READY
 Date: 2026-06-27
 
 Summary:
-- Makes the Agency Admin compact map cards the universal card system across every map.
-- Guard cards show company name, guard name, and guard current address.
-- Client/property cards show client name, property name, and property address.
-- Preserves v4.0.27 Live GPS roster/property visibility and all prior marketplace fixes.
+- Fixes badge jumping between v4.0.25, v4.0.27, and v4.0.28.
+- Makes all stacked badge lock routines use one current label.
+- Preserves universal map card system and all prior marketplace fixes.
 
 Badge:
-v4.0.28 UNIVERSAL MAP CARD SYSTEM
+v4.0.29 SINGLE SOURCE BADGE LOCK
