@@ -1,39 +1,37 @@
-# Co Pilot Security Marketplace v4.0.25 — Agency Proof Review + Client Report Delivery
+# Co Pilot Security Marketplace v4.0.27
 
-This package adds the next marketplace handoff layer: the **accepted agency** reviews guard proof, builds/publishes the final report, and the **client** sees the delivered report/status.
+## Build
+**v4.0.27 LIVE GPS ROSTER + PROPERTY VISIBILITY FIX**
 
-## Current build
-**v4.0.26 GLOBAL JOB STATE + MAP FLOW ENFORCEMENT**
+This package is a complete GitHub-ready replacement package for the `security-uber` repo.
 
 ## What changed
-- Agency Admin Proof Review is framed as agency-owned work, not platform dispatch work.
-- Agency Admin sees proof tied to its accepted/assigned marketplace jobs.
-- Report Builder is framed as **Agency Report Builder**.
-- Published reports include agency/guard/client/job context.
-- Publish attempts the existing Supabase report RPC first so the client can receive the report from `patrol_reports`.
-- If Supabase blocks or the legacy request row is missing, the app also saves a marketplace delivery copy locally so the client tracker/report screen can still reflect the handoff during Bolt testing.
-- Report-published audit events use **Agency Admin** language.
 
-## Preserved from prior builds
-- v4.0.24 guard job-flow icon sync
-- v4.0.23 badge lock fix
-- v4.0.22 proof upload RLS app changes and SQL patch file
-- v4.0.21 profile photo save fix
+- Agency Admin **Live GPS** is now roster-based.
+- Agency Live GPS shows every approved guard signed up under that agency in the roster.
+- Online/GPS-visible agency guards appear on the map.
+- Agency routes appear only when the guard is in an active movement stage.
+- Completed, arrived, checking, proof uploaded, and report published jobs do not keep stale route lines.
+- Platform Admin visibility now includes all active guard records with coordinates and all mapped client properties.
+- Platform Admin still sees marketplace jobs and active routes, but route lines remain tied to the lifecycle rules from v4.0.26.
+
+## Preserved from earlier builds
+
+- v4.0.26 global job state + map flow enforcement
+- v4.0.25 agency proof review + client report delivery
+- v4.0.24 guard job flow icon sync
+- v4.0.23 badge lock
+- v4.0.22 proof upload RLS app fix
+- v4.0.21 profile photo save
 - v4.0.20 client marketplace status tracker
-- v4.0.19 quiet admin live sync / no page reload
+- v4.0.19 no-page-reload admin sync
 
 ## SQL
-No new SQL is required for v4.0.25.
 
-If proof upload still shows `new row violates row-level security policy`, run the existing SQL patch once:
+No new SQL is required for v4.0.27.
 
-`RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql`
+Only run `RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql` if proof uploads still show a Supabase row-level security error.
 
+## Expected badge
 
-## v4.0.26 GLOBAL JOB STATE + MAP FLOW ENFORCEMENT
-- All live maps obey the same marketplace job lifecycle.
-- Route lines only show while a guard is actively moving to the property.
-- Arrived, checking property, proof uploaded, completed, and report published remove the guard-to-property route line.
-- Guard map cards are compact: company name, guard name, current address.
-- Client/property cards are compact: client name, property name, address.
-- No new SQL required.
+`v4.0.27 LIVE GPS ROSTER + PROPERTY VISIBILITY FIX`

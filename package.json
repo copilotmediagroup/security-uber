@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v426-global-job-state-map-flow-enforcement",
-  "version": "4.0.26",
+  "name": "co-pilot-security-marketplace-v427-live-gps-roster-property-visibility-fix",
+  "version": "4.0.27",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.26 enforces global job state across all maps and adds compact professional map cards.",
+  "description": "Co Pilot Security Marketplace v4.0.27 fixes Agency Live GPS roster visibility and Platform Admin guard/property visibility while preserving lifecycle route rules.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

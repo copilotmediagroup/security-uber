@@ -1,31 +1,19 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.26",
-  "buildName": "GLOBAL JOB STATE + MAP FLOW ENFORCEMENT",
+  "version": "4.0.27",
+  "buildName": "LIVE GPS ROSTER + PROPERTY VISIBILITY FIX",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v426.js",
+  "entry": "index.html loads script-v427.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
-  "sql": [
-    "RUN_IF_NEEDED_ALL_SQL_V400_TO_V422_CONSOLIDATED.sql",
-    "RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql"
-  ],
+  "sql": "No new SQL required for v4.0.27. Keep RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql only if proof upload RLS is missing.",
   "latestImportantFixes": [
-    "v4.0.26 enforces global job state across all maps",
-    "Route lines show only during active movement: guard accepted / en route",
-    "Arrived, checking property, proof uploaded, completed, and report published no longer show guard-to-property route lines",
-    "Map cards are compact and professional for guards, companies, clients, properties, and addresses",
-    "v4.0.25 Agency Proof Review + Client Report Delivery preserved",
-    "Agency Admin proof/reports are framed as agency-owned, not platform dispatch-owned",
-    "Report publish attempts the existing Supabase report RPC and also writes a marketplace delivery copy for Bolt testing continuity",
-    "Client reports/tracker can read delivered report records after agency publish",
-    "v4.0.24 guard job-flow icon sync preserved",
-    "v4.0.23 badge lock fix preserved",
-    "v4.0.22 proof upload RLS app changes preserved",
-    "v4.0.21 profile photo save fix preserved",
-    "v4.0.20 client marketplace status tracker preserved",
-    "v4.0.19 quiet admin live sync/no page reload preserved"
+    "Agency Live GPS now shows the agency guard roster independent of active jobs",
+    "Agency map shows GPS-visible agency guards and active movement routes only",
+    "Platform Admin map visibility now includes all guard records with coordinates and all mapped client properties",
+    "Route lines remain lifecycle-controlled and disappear after arrived/checking/proof/completed/report stages",
+    "Compact professional map cards preserved for guard and client/property markers"
   ]
 }

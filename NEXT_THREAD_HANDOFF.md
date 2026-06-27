@@ -1,56 +1,65 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-We are building **Co Pilot Security Marketplace**, the Uber-style marketplace version of the security patrol app. Do not suggest Bolt AI prompts because the user does not have Bolt tokens. All future changes must be complete GitHub-ready ZIP replacement packages.
+We are building **Co Pilot Security Marketplace**, the Uber-style marketplace version of the security patrol app.
+
+Do **not** suggest Bolt AI prompts. The user has no Bolt tokens. All future changes must be complete **GitHub-ready ZIP replacement packages**.
 
 This is separate from the old v3 single-company app called **Co Pilot Security OS**.
 
-Current latest working package:
-**v4.0.26 GLOBAL JOB STATE + MAP FLOW ENFORCEMENT**
+## Current repo
+`security-uber`
 
-Repo:
-**security-uber**
-
-Supabase:
+## Supabase
 `https://nmfvxozbptcvyaenvkxl.supabase.co`
 
-Publishable key is already in `config.js`.
+Publishable key is already inside `config.js`.
 
-Important marketplace model:
-- Co Pilot Security is the platform/software marketplace layer, not the licensed security provider.
-- Clients request patrol jobs.
-- Approved licensed/certified agencies accept marketplace jobs.
-- The accepting agency assigns its own guard.
-- Guard works the lifecycle.
-- Agency Admin reviews proof and publishes the client-facing report.
-- Platform Admin audits the marketplace, but does not dispatch or publish reports for agencies.
+## Current latest build
+**v4.0.27 LIVE GPS ROSTER + PROPERTY VISIBILITY FIX**
 
-Latest build status:
-- v4.0.25 adds Agency Proof Review + Client Report Delivery.
-- v4.0.24 guard job-flow icon sync is preserved.
-- v4.0.23 badge lock is preserved.
-- v4.0.22 proof upload RLS app changes and SQL patch file are preserved.
-- v4.0.21 profile photo save is preserved.
-- v4.0.20 client marketplace tracker is preserved.
-- v4.0.19 quiet admin live sync/no-page-reload is preserved.
+## Current marketplace model
 
-Testing order:
-1. Confirm badge reads `v4.0.26 GLOBAL JOB STATE + MAP FLOW ENFORCEMENT`.
-2. Guard completes job and uploads proof.
-3. Agency Admin opens Proof Review and approves/includes proof.
-4. Agency Admin opens Report Builder and publishes report.
-5. Client opens Reports/status tracker and sees Report Published.
-6. Platform Admin should be able to audit activity but should not look like the dispatcher/report publisher.
+Co Pilot Security is the platform/software marketplace layer, not the licensed security provider.
 
-Next likely build after this:
-**v4.0.26 MARKETPLACE PRICING + PLATFORM FEE DISPLAY**
+Client requests patrol job → open marketplace → approved licensed agency accepts → job locks to that agency → agency assigns its own guard → guard works lifecycle → agency reviews proof and publishes report → client sees tracker/report → platform admin audits marketplace.
 
-That should add client price, agency payout, Co Pilot platform fee, and job economics before agency earnings/payment flows.
+## Important latest fix
 
+v4.0.27 fixed the Live GPS visibility model:
 
-## v4.0.26 GLOBAL JOB STATE + MAP FLOW ENFORCEMENT
-- All live maps obey the same marketplace job lifecycle.
-- Route lines only show while a guard is actively moving to the property.
-- Arrived, checking property, proof uploaded, completed, and report published remove the guard-to-property route line.
-- Guard map cards are compact: company name, guard name, current address.
-- Client/property cards are compact: client name, property name, address.
-- No new SQL required.
+- Agency Admin Live GPS is now roster-based, not job-only.
+- Agency Admin sees every approved guard signed up under that agency in the roster.
+- Online/GPS-visible agency guards appear on the map.
+- Agency routes appear only for active movement jobs.
+- Completed/arrived/checking/proof/report stages do not keep stale guard-to-property route lines.
+- Platform Admin visibility now includes all active guard records with coordinates and all mapped client properties.
+- Compact professional map cards remain:
+  - Guard card: company name, guard name, guard current address.
+  - Client/property card: client name, property name, address.
+
+## Preserved fixes
+
+- v4.0.26 global job state + map flow enforcement
+- v4.0.25 agency proof review + client report delivery
+- v4.0.24 guard job flow icon sync
+- v4.0.23 badge lock
+- v4.0.22 proof upload RLS app fix
+- v4.0.21 profile photo save
+- v4.0.20 client marketplace status tracker
+- v4.0.19 quiet admin sync/no page reload
+
+## SQL
+
+No new SQL is required for v4.0.27.
+
+Only run `RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql` if proof uploads still show a Supabase RLS error.
+
+## Next likely direction
+
+After testing v4.0.27:
+
+1. Confirm Agency Live GPS shows agency guard roster even before active jobs.
+2. Confirm online guards appear on Agency map.
+3. Confirm routes only show while a guard is actually moving toward a job.
+4. Confirm Platform Admin sees all mapped guards and all mapped client properties.
+5. Then build marketplace pricing/platform fee logic and agency earnings dashboard.

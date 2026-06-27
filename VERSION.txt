@@ -1,15 +1,15 @@
 Co Pilot Security Marketplace
-Version: 4.0.26
-Build Name: GLOBAL JOB STATE + MAP FLOW ENFORCEMENT
-Package: GITHUB READY LESS THAN 20 FILES
+Version: 4.0.27
+Build Name: LIVE GPS ROSTER + PROPERTY VISIBILITY FIX
+Package: GITHUB READY
 Date: 2026-06-27
 
 Summary:
-- All maps now obey the global marketplace job lifecycle instead of stale route/cache logic.
-- Guard-to-property route lines only show during active movement stages.
-- Arrived, checking property, proof uploaded, completed, and report published stop showing live route lines.
-- Map cards are more compact and professional: guard cards show company, guard, and current address; client/property cards show client, property, and address.
-- Preserves agency proof review/report delivery, guard job-flow icon sync, proof upload RLS app changes, profile photo save, client tracker, and quiet admin sync.
+- Fixes Agency Admin Live GPS so it is roster-based, not job-only.
+- Agency Live GPS shows the agency private guard roster and online GPS-visible guards.
+- Agency job routes only appear for active movement jobs.
+- Platform Admin visibility now uses all active guard records and all client properties that have/resolved coordinates.
+- Preserves v4.0.26 global lifecycle map route rules and compact professional map cards.
 
 Badge:
-v4.0.26 GLOBAL JOB STATE + MAP FLOW ENFORCEMENT
+v4.0.27 LIVE GPS ROSTER + PROPERTY VISIBILITY FIX
