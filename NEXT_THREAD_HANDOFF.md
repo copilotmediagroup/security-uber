@@ -5,7 +5,7 @@ We are building **Co Pilot Security Marketplace**, the Uber-style marketplace ve
 Current repo: **security-uber**
 
 Latest package:
-**v4.0.30 COMPANY ACTIVITY + UNIVERSAL MAP CARD DATA FIX**
+**v4.0.31 COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX**
 
 Supabase:
 `https://nmfvxozbptcvyaenvkxl.supabase.co`
@@ -22,7 +22,7 @@ Important marketplace model:
 - Agency Admin reviews proof and publishes the client report.
 - Platform Admin sees and audits everything but does not dispatch for agencies.
 
-Latest v4.0.30 changes:
+Latest v4.0.31 changes:
 - Built the approved Company Activity card layout.
 - Left side of each company card is a tall logo/image column.
 - Right side shows company name, online guards, total guards, jobs in motion, and jobs completed.
@@ -33,6 +33,14 @@ Latest v4.0.30 changes:
 - Preserves v4.0.29 single source badge lock and earlier flow fixes.
 
 Expected badge:
-**v4.0.30 COMPANY ACTIVITY + UNIVERSAL MAP CARD DATA FIX**
+**v4.0.31 COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX**
 
 No new SQL required.
+
+
+## v4.0.31 Update
+- Company Activity card is now compact for the side panel, about a small card height instead of a large block.
+- Left logo column remains, but resized to fit the rail.
+- Right-side stats show company name, online guards, total guards, jobs in motion, and jobs completed.
+- Universal image/detail map cards were reapplied globally for Platform Admin, Agency Admin, Guard, and Client maps.
+- No SQL required.

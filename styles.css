@@ -13947,7 +13947,7 @@ button.is-busy {
 }
 
 /* -----------------------------------------------------------------------------
-   v4.0.30 COMPANY ACTIVITY + UNIVERSAL MAP CARD DATA FIX
+   v4.0.31 COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX
 ----------------------------------------------------------------------------- */
 .cp430-company-panel .panel-head,
 .cp430-company-panel-head {
@@ -14255,4 +14255,161 @@ button.is-busy {
   .cp430-company-activity-card { grid-template-columns: 1fr; }
   .cp430-company-logo-col { border-right: 0; border-bottom: 1px solid rgba(126, 186, 255, .18); }
   .cp430-company-job-chips { grid-template-columns: 1fr; }
+}
+
+
+/* -----------------------------------------------------------------------------
+   v4.0.31 COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX
+   Side rail company cards must be compact. The mockup was design direction, not
+   a large dashboard block. This compresses the same layout into a professional
+   rail card and reapplies universal map-card sizing.
+----------------------------------------------------------------------------- */
+.cp430-company-panel { overflow: hidden; }
+.cp430-company-panel .panel-head,
+.cp430-company-panel-head { gap: 10px; }
+.cp430-company-panel .panel-head h2 { font-size: 14px; letter-spacing: .12em; }
+.cp430-company-panel .panel-head p { font-size: 12px; line-height: 1.25; }
+.cp430-company-list { gap: 8px !important; margin-top: 10px !important; }
+.cp430-company-activity-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  min-height: 88px !important;
+  grid-template-columns: 58px minmax(0, 1fr) !important;
+  gap: 8px !important;
+  align-items: stretch !important;
+  padding: 8px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(circle at 10% 40%, rgba(46, 125, 255, .18), transparent 38%),
+    linear-gradient(145deg, rgba(7, 28, 52, .94), rgba(2, 12, 24, .98)) !important;
+  box-shadow: inset 0 0 0 1px rgba(148, 203, 255, .04), 0 10px 22px rgba(0,0,0,.24), 0 0 16px rgba(46, 125, 255, .07) !important;
+}
+.cp430-company-logo-col {
+  min-width: 0 !important;
+  padding: 5px 6px !important;
+  gap: 4px !important;
+  align-content: center !important;
+  border-right: 1px solid rgba(126, 186, 255, .18) !important;
+}
+.cp430-company-logo-frame {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 13px !important;
+  box-shadow: 0 0 0 3px rgba(46, 125, 255, .08), 0 0 16px rgba(56, 148, 255, .22) !important;
+}
+.cp430-company-monogram { font-size: 15px !important; letter-spacing: .06em !important; }
+.cp430-company-logo-col small {
+  font-size: 7px !important;
+  letter-spacing: .12em !important;
+  line-height: 1 !important;
+  max-width: 52px !important;
+  white-space: nowrap !important;
+}
+.cp430-company-info-col {
+  min-width: 0 !important;
+  gap: 5px !important;
+  align-content: center !important;
+}
+.cp430-company-title-row { align-items: center !important; gap: 6px !important; }
+.cp430-company-title-row h3 {
+  font-size: 15px !important;
+  line-height: 1.05 !important;
+  max-width: 118px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.cp430-company-title-row span {
+  height: 18px !important;
+  padding: 0 6px !important;
+  font-size: 7px !important;
+  letter-spacing: .06em !important;
+  max-width: 78px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.cp430-company-stat-lines {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 5px !important;
+  padding: 0 !important;
+  border-bottom: 0 !important;
+}
+.cp430-company-stat-line {
+  min-width: 0 !important;
+  grid-template-columns: 18px minmax(0, 1fr) 24px !important;
+  gap: 4px !important;
+  align-items: center !important;
+  border-radius: 8px !important;
+}
+.cp430-company-stat-line i {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 10px !important;
+}
+.cp430-company-stat-line span {
+  font-size: 9px !important;
+  line-height: 1.05 !important;
+  white-space: normal !important;
+  overflow: hidden !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+}
+.cp430-company-stat-line b {
+  width: 24px !important;
+  height: 22px !important;
+  min-width: 24px !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+}
+.cp430-company-job-chips { grid-template-columns: 1fr 1fr !important; gap: 5px !important; }
+.cp430-company-job-chip {
+  min-height: 28px !important;
+  grid-template-columns: 18px minmax(0, 1fr) auto !important;
+  gap: 4px !important;
+  padding: 4px 6px !important;
+  border-radius: 9px !important;
+}
+.cp430-company-job-chip i {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 10px !important;
+}
+.cp430-company-job-chip span { font-size: 8px !important; line-height: 1.05 !important; }
+.cp430-company-job-chip strong { font-size: 13px !important; }
+
+.cp430-map-card,
+.cp431-map-card {
+  width: min(292px, calc(100vw - 42px)) !important;
+  grid-template-columns: 56px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  padding: 10px 34px 10px 10px !important;
+  border-radius: 14px !important;
+}
+.cp430-map-card.popup,
+.cp431-map-card.popup { width: 292px !important; padding: 10px !important; }
+.cp430-map-media,
+.cp431-map-media {
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 14px !important;
+}
+.cp430-map-media.guard,
+.cp431-map-media.guard { border-radius: 999px !important; }
+.cp430-map-copy strong,
+.cp431-map-copy strong { font-size: 14px !important; }
+.cp430-map-copy small,
+.cp431-map-copy small { font-size: 12px !important; }
+.cp430-map-copy p,
+.cp431-map-copy p { font-size: 11px !important; -webkit-line-clamp: 2 !important; }
+.cp430-map-label,
+.cp431-map-label { font-size: 8px !important; }
+
+@media (max-width: 720px) {
+  .cp430-company-activity-card { grid-template-columns: 58px minmax(0, 1fr) !important; }
+  .cp430-company-logo-col { border-right: 1px solid rgba(126, 186, 255, .18) !important; border-bottom: 0 !important; }
+  .cp430-company-job-chips { grid-template-columns: 1fr 1fr !important; }
 }

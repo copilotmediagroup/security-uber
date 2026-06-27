@@ -1,21 +1,18 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.30",
-  "buildName": "COMPANY ACTIVITY + UNIVERSAL MAP CARD DATA FIX",
+  "version": "4.0.31",
+  "buildName": "COMPACT COMPANY ACTIVITY + UNIVERSAL MAP CARD FIX",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v430.js",
+  "entry": "index.html loads script-v431.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
   "latestImportantFixes": [
-    "Company Activity panel uses the approved large logo-left card layout",
-    "Company Activity card shows company logo/name, online guards, total guards, jobs in motion, and jobs completed",
-    "Platform Admin Leaflet map markers now open image/detail-rich universal cards instead of thin text-only tooltips",
-    "Admin, Agency, Guard, and Client map cards use the same compact professional universal card markup",
-    "Guard cards show company, guard name, guard image when present, and current address",
-    "Client/property cards show client, property name, property image when present, and address",
-    "Preserves v4.0.29 single source badge lock and all previous marketplace flow fixes"
+    "Company Activity card is compact side-panel height instead of oversized dashboard block",
+    "Universal map card system reapplied after old map-card overrides",
+    "Platform Admin marker popups pull image/detail card data for guards and properties",
+    "Preserves global job-state map flow enforcement and prior marketplace fixes"
   ],
   "sql": "No new SQL required. Existing RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql remains included for proof-upload RLS if needed."
 }

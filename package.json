@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v430-company-activity-universal-map-card-data-fix",
-  "version": "4.0.30",
+  "name": "co-pilot-security-marketplace-v431-compact-company-activity-universal-map-card-fix",
+  "version": "4.0.31",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.30 adds the approved Company Activity card and fixes universal map cards so admin, agency, guard, and client maps use the same image/detail-rich layout.",
+  "description": "Co Pilot Security Marketplace v4.0.31 makes the Company Activity card compact for the side panel and locks every map to the same image/detail-rich universal card system.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",
