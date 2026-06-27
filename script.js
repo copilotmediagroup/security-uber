@@ -1,8 +1,8 @@
 
-const CP_DEV_CACHE_BUST = '2026-06-27T01-35-v4000';
+const CP_DEV_CACHE_BUST = '2026-06-27T03-45-v405-agency-guard-direct-add';
 const BUILD = {
-  version: '4.0.0',
-  label: 'v4.0.0 MARKETPLACE DATA FOUNDATION'
+  version: '4.0.7',
+  label: 'v4.0.7 AGENCY LIVE GPS ROUTE VISIBILITY'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -31,6 +31,13 @@ const state = {
   activeAgencyId: '',
   guardSignups: [],
   clientSignups: [],
+  clientApprovalSearch: '',
+  clientApprovalTab: 'pending',
+  selectedClientApprovalId: '',
+  agencyDispatchSearch: '',
+  agencyDispatchTab: 'unassigned',
+  selectedAgencyDispatchJobId: '',
+  agencyDispatchGuardSelections: {},
   properties: [],
   patrolRequests: [],
   proofItems: [],
@@ -2187,13 +2194,17 @@ function renderPublic() {
         <div class="button-row"><button class="btn success" type="submit">Submit Agency Application</button></div>
       </form>`;
   } else if (tab === 'client-signup') {
-    content = `<p class="eyebrow">Client Application</p><h2>Client Sign Up</h2><p class="auth-note">Create a client login. Dispatch approves the account before access.</p>
+    content = `<p class="eyebrow">Client Application</p><h2>Client Sign Up</h2><p class="auth-note">Create a client login and service location. Platform Admin approves the account before marketplace access.</p>
       <form class="form-grid" data-form="client-signup">
         <label>Full Name<input name="name" required placeholder="Client name"></label>
         <label>Email<input name="email" type="email" required placeholder="client@email.com"></label>
         <label>Create Password<input name="password" type="password" minlength="6" required></label>
-        <label>Phone<input name="phone" placeholder="(702) 555-0000"></label>
-        <label>Notes<textarea name="notes" placeholder="Optional notes for Dispatch"></textarea></label>
+        <label>Phone<input name="phone" placeholder="(555) 555-0000"></label>
+        <label>Property / Business Name<input name="property_label" required placeholder="Example: Sunset Plaza, Unit 12, Main Office"></label>
+        <label>Service Address<input name="address_line1" required placeholder="Street address where patrol is needed"></label>
+        <div class="form-row"><label>City<input name="city" required placeholder="Miami"></label><label>State<input name="state" required value="FL" placeholder="FL"></label></div>
+        <label>ZIP Code<input name="zip_code" required placeholder="33101"></label>
+        <label>Notes<textarea name="notes" placeholder="Gate code, property type, security concern, preferred patrol notes."></textarea></label>
         <div class="button-row"><button class="btn success" type="submit">Submit Client Application</button></div>
       </form>`;
   } else if (tab === 'owner-setup') {
@@ -2201,7 +2212,7 @@ function renderPublic() {
       <form class="form-grid" data-form="owner-setup">
         <label>Marketplace Name<input name="business" required placeholder="Co Pilot Security Marketplace"></label>
         <label>Owner / Platform Name<input name="name" required placeholder="Platform Admin"></label>
-        <label>Email<input name="email" type="email" required placeholder="dispatch@email.com"></label>
+        <label>Email<input name="email" type="email" required placeholder="owner@email.com"></label>
         <label>Create Password<input name="password" type="password" minlength="6" required></label>
         <div class="button-row"><button class="btn success" type="submit">Create Platform Account</button></div>
       </form>`;
@@ -11133,6 +11144,8 @@ document.addEventListener('click', async event => {
       await supabase.rpc('cp_agency_accept_marketplace_job', { p_job_id: button.dataset.jobId });
       await loadData();
       state.view = 'marketplace-jobs';
+      state.agencyJobBoardTab = 'accepted';
+      state.selectedMarketplaceJobId = button.dataset.jobId || state.selectedMarketplaceJobId;
       render();
       toast('Marketplace job accepted and locked to your agency.', 'success');
       return;
@@ -11699,4 +11712,1259 @@ document.addEventListener('change', event => {
 });
 
 setInterval(ensureBadge, 1000);
+/* initialize moved to end after v4 marketplace overrides */
+
+
+/* v4.0.1 Agency Job Board override */
+function v401ActiveAgencyRecord(){const id=String(state.activeAgencyId||state.profile?.agency_id||'');return (state.agencies||[]).find(a=>String(a.id||'')===id)||(isAgencyAdmin()?(state.agencies||[])[0]:null)||null;}
+function v401ActiveAgencyId(){return String(state.activeAgencyId||state.profile?.agency_id||v401ActiveAgencyRecord()?.id||'');}
+function v401AgencyApproved(){const a=v401ActiveAgencyRecord();return String(a?.approval_status||a?.status||'').toLowerCase()==='approved';}
+function v401DeclinedSet(){const agencyId=v401ActiveAgencyId();const ids=new Set();(state.jobEvents||[]).forEach(e=>{const type=String(e.event_type||'').toLowerCase();const status=String(e.event_status||'').toLowerCase();const actor=String(e.actor_agency_id||e.agency_id||'');if(actor===agencyId&&(type==='agency_declined'||status==='declined'))ids.add(String(e.job_id||''));});try{const x=JSON.parse(localStorage.getItem('cp_security_marketplace_declined_jobs_v401')||'{}');(x[agencyId]||[]).forEach(id=>ids.add(String(id)));}catch{}return ids;}
+function v401SaveDecline(jobId=''){const agencyId=v401ActiveAgencyId();if(!agencyId||!jobId)return;try{const k='cp_security_marketplace_declined_jobs_v401';const x=JSON.parse(localStorage.getItem(k)||'{}');const set=new Set((x[agencyId]||[]).map(String));set.add(String(jobId));x[agencyId]=[...set];localStorage.setItem(k,JSON.stringify(x));}catch{}}
+function v401Owner(job={}){const agencyId=v401ActiveAgencyId();const accepted=String(job.accepted_agency_id||job.agency_id||'');if(accepted&&agencyId&&accepted===agencyId)return 'mine';if(accepted)return 'other';return 'open';}
+function v401CityState(job={}){return [job.property_city||job.city||job.property?.city||'',job.property_state||job.state||job.property?.state||'',job.property_zip_code||job.zip_code||job.property?.zip_code||''].filter(Boolean).join(', ').replace(', ,',',');}
+function v401Address(job={}){const line=job.property_address||job.address||job.address_line1||propertyAddress(job)||'';const cs=v401CityState(job);return line&&cs&&!String(line).toLowerCase().includes(String(cs).toLowerCase())?`${line} · ${cs}`:(line||cs||'Address pending');}
+function v401Service(job={}){return statusText(job.patrol_type||job.service_type||job.request_type||'standard patrol');}
+function v401Notes(job={}){return job.request_notes||job.instructions||job.notes||job.schedule_notes||'No client notes added yet.';}
+function v401SearchText(job={}){return [job.job_number,job.id,job.client_name,job.property_label,job.property_address,job.city,job.state,job.patrol_type,job.priority,job.current_status,job.request_notes,job.instructions,job.notes,job.accepted_agency_name,job.assigned_guard_name].filter(Boolean).join(' ').toLowerCase();}
+function v401Counts(){const declined=v401DeclinedSet();const rows=marketplaceJobRows().map(j=>({status:marketplaceJobStatus(j),owner:v401Owner(j),declined:declined.has(String(j.id||''))}));return{total:rows.length,available:rows.filter(j=>['open_marketplace','pending_marketplace','marketplace_open'].includes(j.status)&&j.owner==='open'&&!j.declined).length,acceptedMine:rows.filter(j=>j.owner==='mine').length,declined:rows.filter(j=>j.declined).length,lockedOther:rows.filter(j=>j.owner==='other').length,open:rows.filter(j=>['open_marketplace','pending_marketplace','marketplace_open'].includes(j.status)).length,accepted:rows.filter(j=>['agency_accepted','guard_assigned','assigned','accepted','in_progress','proof_uploaded','completed'].includes(j.status)).length,events:(state.jobEvents||[]).length};}
+function v401Rows(){const declined=v401DeclinedSet();const q=String(state.agencyJobBoardSearch||'').trim().toLowerCase();const tab=state.agencyJobBoardTab||(isAgencyAdmin()?'available':'all');return marketplaceJobRows().sort((a,b)=>new Date(b.requested_at||b.created_at||0)-new Date(a.requested_at||a.created_at||0)).map(j=>({...j,_status:marketplaceJobStatus(j),_owner:v401Owner(j),_declined:declined.has(String(j.id||''))})).filter(j=>{if(q&&!v401SearchText(j).includes(q))return false;if(isAgencyAdmin()){const open=['open_marketplace','pending_marketplace','marketplace_open'].includes(j._status)&&j._owner==='open';if(tab==='available')return open&&!j._declined;if(tab==='accepted')return j._owner==='mine';if(tab==='declined')return j._declined;if(tab==='locked')return j._owner==='other';return true;}if(tab==='open')return ['open_marketplace','pending_marketplace','marketplace_open'].includes(j._status);if(tab==='accepted')return ['agency_accepted','guard_assigned','assigned','accepted','in_progress','proof_uploaded','completed'].includes(j._status);return true;});}
+function v401Detail(job){if(!job||!job.id)return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Job Detail</h2><p>Select a job to review the full request before accepting.</p></div></div><div class="empty">No marketplace job selected.</div></section></aside>`;const status=marketplaceJobStatus(job),owner=v401Owner(job),open=['open_marketplace','pending_marketplace','marketplace_open'].includes(status),declined=v401DeclinedSet().has(String(job.id||'')),canAccept=isAgencyAdmin()&&v401AgencyApproved()&&open&&owner==='open',canDecline=canAccept&&!declined,agency=job.accepted_agency_name||(owner==='mine'?v401ActiveAgencyRecord()?.agency_name:'')||'Not accepted yet';return `<aside class="dashboard-right"><section class="panel panel-pad marketplace-job-detail"><div class="panel-head"><div><h2>Job Detail</h2><p>Source of truth: marketplace_jobs</p></div>${displayStatusChip(status)}</div><div class="detail-grid"><span>Job Number</span><strong>${esc(job.job_number||job.id)}</strong><span>Property</span><strong>${esc(job.property_label||propertyLabel(job)||'Property')}</strong><span>Address</span><strong>${esc(v401Address(job))}</strong><span>Service Type</span><strong>${esc(v401Service(job))}</strong><span>Urgency</span><strong>${esc(statusText(job.priority||'normal'))}</strong><span>Requested</span><strong>${esc(fmtDate(job.requested_at||job.created_at))}</strong><span>Accepted Agency</span><strong>${esc(agency)}</strong></div><div class="note-box"><strong>Client request notes</strong><p>${esc(v401Notes(job))}</p></div><div class="button-row">${canAccept?`<button class="primary-button" data-action="agency-accept-job" data-job-id="${esc(job.id)}">Accept Job</button>`:''}${canDecline?`<button class="ghost-button" data-action="agency-decline-job-v401" data-job-id="${esc(job.id)}">Decline</button>`:''}${declined?`<span class="workflow-stage-chip red"><b>Declined By Your Agency</b><small>Hidden from available jobs</small></span>`:''}${owner==='other'?`<span class="workflow-stage-chip amber"><b>Locked</b><small>Accepted by another agency</small></span>`:''}${owner==='mine'?`<button class="ghost-button" data-view="dispatch-board">Open Dispatch</button>`:''}</div></section><section class="panel panel-pad"><div class="panel-head"><div><h2>Lifecycle Rule</h2><p>This board does not invent status. It reads marketplace_jobs.current_status.</p></div></div><div class="priority-list">${priorityRow('Client job request','Source',1,'#2f83ff','data-foundation')}${priorityRow('Agency accept locks ownership',owner==='mine'?'Mine':owner==='other'?'Locked':'Open',owner==='open'?0:1,'#37dc72','marketplace-jobs')}${priorityRow('Next build assigns agency guard','v4.0.3',job.assigned_guard_id?1:0,'#b05cff','dispatch-board')}</div></section></aside>`;}
+function marketplaceJobsView(){const counts=v401Counts();const rows=v401Rows();const selected=rows.find(j=>String(j.id||'')===String(state.selectedMarketplaceJobId||''))||rows[0]||marketplaceJobRows()[0]||null;if(selected&&String(state.selectedMarketplaceJobId||'')!==String(selected.id||''))state.selectedMarketplaceJobId=selected.id||'';const approved=!isAgencyAdmin()||v401AgencyApproved();const agency=v401ActiveAgencyRecord();const tabs=isAgencyAdmin()?[["available","Available",counts.available],["accepted","Accepted By Us",counts.acceptedMine],["declined","Declined",counts.declined],["locked","Locked",counts.lockedOther],["all","All",counts.total]]:[["all","All",counts.total],["open","Open",counts.open],["accepted","Accepted",counts.accepted]];const title=isAgencyAdmin()?'Agency Job Board':'Marketplace Jobs';const subtitle=isAgencyAdmin()?'Approved agencies can review open client jobs, accept work, or decline jobs they do not want.':'Platform view of every marketplace job connected to the global job record.';return `<div class="dashboard marketplace-jobs-view agency-job-board-view"><header class="dashboard-header"><div class="title-block"><h1>${esc(title)}</h1><p>${esc(subtitle)}</p></div><div class="header-actions"><span class="system-pill"><i></i>${esc(roleLabel(activeMarketplaceRole()))}</span><button class="ghost-button" data-action="marketplace-jobs-refresh-v401">Refresh</button></div></header>${isAgencyAdmin()&&!approved?`<section class="workflow-finished-panel warning"><strong>Agency verification required</strong><p>${esc(agency?.agency_name||'Your agency')} must be approved by Platform Admin before accepting marketplace jobs.</p></section>`:''}<section class="kpi-row">${kpiCard('◈',isAgencyAdmin()?'Available':'Open Jobs',isAgencyAdmin()?counts.available:counts.open,'Open marketplace jobs','#2f83ff')}${kpiCard('✓',isAgencyAdmin()?'Accepted By Us':'Accepted',isAgencyAdmin()?counts.acceptedMine:counts.accepted,'Locked to an agency','#37dc72')}${kpiCard('−',isAgencyAdmin()?'Declined':'Locked Other',isAgencyAdmin()?counts.declined:counts.lockedOther,'Agency responses','#ff5973')}${kpiCard('☰','Job Events',counts.events,'Global audit trail','#ffb53d')}</section><section class="dashboard-grid"><div class="dashboard-left"><section class="panel panel-pad"><div class="panel-head"><div><h2>${isAgencyAdmin()?'Open Marketplace Work':'All Marketplace Work'}</h2><p>Property, address, request notes, urgency, service type, and status stay attached to the same job.</p></div></div><div class="button-row job-board-tabs">${tabs.map(t=>`<button class="ghost-button ${state.agencyJobBoardTab===t[0]?'active':''}" data-job-board-tab-v401="${esc(t[0])}">${esc(t[1])} <b>${esc(t[2])}</b></button>`).join('')}</div><div class="filters-row"><input data-agency-job-search-v401 value="${esc(state.agencyJobBoardSearch||'')}" placeholder="Search job number, property, city, service, notes..." /></div><div class="client-request-history-table agency-job-table"><div class="client-request-history-head"><span>Job</span><span>Property / Address</span><span>Service</span><span>Urgency</span><span>Status</span><span>Action</span></div>${rows.length?rows.map(j=>{const status=marketplaceJobStatus(j),owner=v401Owner(j),open=['open_marketplace','pending_marketplace','marketplace_open'].includes(status),declined=v401DeclinedSet().has(String(j.id||'')),canAccept=isAgencyAdmin()&&approved&&open&&owner==='open';return `<div class="client-request-history-row ${String(state.selectedMarketplaceJobId)===String(j.id)?'selected':''}"><span><strong>${esc(j.job_number||j.id)}</strong><small>${esc(j.client_name||'Client request')}</small></span><span><strong>${esc(j.property_label||propertyLabel(j)||'Property')}</strong><small>${esc(v401Address(j))}</small></span><span>${esc(v401Service(j))}</span><span>${esc(statusText(j.priority||'normal'))}</span><span>${declined?workflowStageChip('rejected','Declined'):displayStatusChip(status)}</span><span class="button-row"><button class="ghost-button" data-action="view-marketplace-job-v401" data-job-id="${esc(j.id)}">View</button>${canAccept&&!declined?`<button class="primary-button" data-action="agency-accept-job" data-job-id="${esc(j.id)}">Accept</button><button class="ghost-button" data-action="agency-decline-job-v401" data-job-id="${esc(j.id)}">Decline</button>`:''}${owner==='mine'?`<button class="ghost-button" data-view="dispatch-board">Dispatch</button>`:''}</span></div>`}).join(''):'<div class="empty">No jobs match this view. New client requests will appear here after the marketplace SQL is installed.</div>'}</div></section></div>${v401Detail(selected)}</section></div>`;}
+
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||b.disabled||b.dataset.busy==='1')return;try{if(b.dataset.jobBoardTabV401){state.agencyJobBoardTab=b.dataset.jobBoardTabV401||'available';state.selectedMarketplaceJobId='';render();return;}if(b.dataset.action==='view-marketplace-job-v401'){state.selectedMarketplaceJobId=b.dataset.jobId||'';render();return;}if(b.dataset.action==='marketplace-jobs-refresh-v401'){await loadData();render();toast('Marketplace jobs refreshed.','success');return;}if(b.dataset.action==='agency-decline-job-v401'){const jobId=b.dataset.jobId||'';try{await supabase.rpc('cp_agency_decline_marketplace_job',{p_job_id:jobId,p_response_notes:''});}catch(err){v401SaveDecline(jobId);state.agencyJobBoardTab='available';render();toast('Decline saved locally. Run v4.0.1 SQL patch to persist declines in Supabase.','error');return;}v401SaveDecline(jobId);await loadData();state.agencyJobBoardTab='available';state.selectedMarketplaceJobId='';render();toast('Job declined and removed from Available.','success');return;}}catch(err){toast(friendly(err));}});
+document.addEventListener('input',e=>{const i=e.target;if(i&&i.hasAttribute('data-agency-job-search-v401')){state.agencyJobBoardSearch=i.value||'';state.selectedMarketplaceJobId='';render();}});
+
+
+/* v4.0.3 Client Approval Center override */
+try {
+  [['platform_admin','agency-approvals'], ['admin','guard-approvals']].forEach(([role, after]) => {
+    const nav = NAV[role] || [];
+    if (!nav.some(item => item[0] === 'client-approvals')) {
+      const idx = nav.findIndex(item => item[0] === after);
+      const item = ['client-approvals', '◌', 'Client Approvals'];
+      if (idx >= 0) nav.splice(idx + 1, 0, item); else nav.splice(2, 0, item);
+    }
+  });
+} catch {}
+
+function v402ClientSignupStatus(row = {}) {
+  return String(row.status || row.approval_status || 'pending').toLowerCase() || 'pending';
+}
+function v402PendingClientApprovals() {
+  return (state.clientSignups || []).filter(c => ['pending','new','requested','prospect',''].includes(v402ClientSignupStatus(c)));
+}
+function navBadge(view) {
+  if (view === 'messages') return unreadMessagesCount();
+  if (view === 'notifications') return unreadNotificationsCount();
+  if (view === 'pending-dispatch') return pendingRequests().length;
+  if (view === 'guard-approvals') return guardApprovals().length;
+  if (view === 'client-approvals') return v402PendingClientApprovals().length;
+  if (view === 'proof-review') return proofWaiting().length;
+  if (view === 'completed' && state.role === 'guard') return guardCompletedJobsForFilter('today').length;
+  return '';
+}
+function v402ClientApprovalRows() {
+  const q = String(state.clientApprovalSearch || '').trim().toLowerCase();
+  const tab = state.clientApprovalTab || 'pending';
+  let rows = (state.clientSignups || []).map((c, idx) => ({ ...c, _idx: idx, _status: v402ClientSignupStatus(c) }));
+  if (tab === 'pending') rows = rows.filter(c => ['pending','new','requested','prospect',''].includes(c._status));
+  if (tab === 'approved') rows = rows.filter(c => c._status === 'approved');
+  if (tab === 'rejected') rows = rows.filter(c => c._status === 'rejected');
+  if (q) rows = rows.filter(c => [c.name, c.display_name, c.full_name, c.email, c.phone, c.notes, c.id].filter(Boolean).join(' ').toLowerCase().includes(q));
+  return rows.sort((a,b) => new Date(b.created_at || b.updated_at || 0) - new Date(a.created_at || a.updated_at || 0));
+}
+function v402ClientApprovalCounts() {
+  const rows = state.clientSignups || [];
+  return {
+    pending: rows.filter(c => ['pending','new','requested','prospect',''].includes(v402ClientSignupStatus(c))).length,
+    approved: rows.filter(c => v402ClientSignupStatus(c) === 'approved').length,
+    rejected: rows.filter(c => v402ClientSignupStatus(c) === 'rejected').length,
+    active: (state.clients || []).filter(c => String(c.status || 'active').toLowerCase() === 'active').length
+  };
+}
+function v402ClientApprovalName(c = {}) { return c.business_name || c.company_name || c.name || c.display_name || c.full_name || c.email || 'Client Applicant'; }
+function v402ClientApprovalSelected() {
+  const rows = v402ClientApprovalRows();
+  const any = (state.clientSignups || []);
+  let row = rows.find(c => String(c.id || '') === String(state.selectedClientApprovalId || '')) || rows[0] || any[0] || null;
+  if (row && String(row.id || '') !== String(state.selectedClientApprovalId || '')) state.selectedClientApprovalId = row.id || '';
+  return row;
+}
+function v402ClientApprovalStatusChip(row = {}) {
+  const status = v402ClientSignupStatus(row);
+  if (status === 'approved') return workflowStageChip('published', 'Client active');
+  if (status === 'rejected') return workflowStageChip('rejected', 'Application locked');
+  return workflowStageChip('pending_dispatch', 'Needs platform review');
+}
+function v402ClientApprovalTabs() {
+  const c = v402ClientApprovalCounts();
+  const tabs = [['pending','Pending',c.pending], ['approved','Approved',c.approved], ['rejected','Rejected',c.rejected], ['all','All',(state.clientSignups || []).length]];
+  return `<div class="button-row job-board-tabs client-approval-tabs">${tabs.map(t => `<button class="ghost-button ${state.clientApprovalTab === t[0] ? 'active' : ''}" data-client-approval-tab-v402="${esc(t[0])}">${esc(t[1])} <b>${esc(t[2])}</b></button>`).join('')}</div>`;
+}
+function v402ClientApprovalRow(c = {}) {
+  const status = v402ClientSignupStatus(c);
+  const pending = ['pending','new','requested','prospect',''].includes(status);
+  return `<div class="client-request-history-row ${String(state.selectedClientApprovalId || '') === String(c.id || '') ? 'selected' : ''}">
+    <span><strong>${esc(v402ClientApprovalName(c))}</strong><small>${esc(c.id || 'new client')}</small></span>
+    <span><strong>${esc(c.email || '')}</strong><small>${esc(c.phone || 'No phone listed')}</small></span>
+    <span>${v402ClientApprovalStatusChip(c)}</span>
+    <span>${esc(fmtDate(c.created_at || c.updated_at))}</span>
+    <span class="button-row"><button class="ghost-button" data-action="view-client-approval-v402" data-client-approval-id="${esc(c.id)}">View</button>${pending ? `<button class="primary-button" data-action="approve-client-v402" data-client-approval-id="${esc(c.id)}">Accept Client</button><button class="ghost-button" data-action="reject-client-v402" data-client-approval-id="${esc(c.id)}">Reject</button>` : `<button class="ghost-button" data-view="clients">Clients</button>`}</span>
+  </div>`;
+}
+function v402ClientApprovalDetail(row = null) {
+  if (!row) return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Client Detail</h2><p>Select a client application.</p></div></div><div class="empty">No client application selected.</div></section></aside>`;
+  const pending = ['pending','new','requested','prospect',''].includes(v402ClientSignupStatus(row));
+  const activeClient = (state.clients || []).find(c => String(c.email || '').toLowerCase() === String(row.email || '').toLowerCase());
+  return `<aside class="dashboard-right"><section class="panel panel-pad client-approval-detail"><div class="panel-head"><div><h2>Client Application</h2><p>Platform Admin approval gate</p></div>${v402ClientApprovalStatusChip(row)}</div>
+    <div class="detail-grid"><span>Name</span><strong>${esc(v402ClientApprovalName(row))}</strong><span>Email</span><strong>${esc(row.email || '—')}</strong><span>Phone</span><strong>${esc(row.phone || '—')}</strong><span>Submitted</span><strong>${esc(fmtDate(row.created_at || row.updated_at))}</strong><span>Active Client</span><strong>${esc(activeClient ? 'Yes' : 'Not yet')}</strong></div>
+    <div class="note-box"><strong>Client notes</strong><p>${esc(row.notes || 'No notes were submitted by this client.')}</p></div>
+    <div class="workflow-finished-panel blue"><strong>Marketplace rule</strong><p>Clients can request patrols only after Platform Admin approval creates/activates their client profile.</p></div>
+    <div class="button-row">${pending ? `<button class="primary-button" data-action="approve-client-v402" data-client-approval-id="${esc(row.id)}">Accept Client</button><button class="ghost-button" data-action="reject-client-v402" data-client-approval-id="${esc(row.id)}">Reject Client</button>` : ''}<button class="ghost-button" data-view="clients">Open Active Clients</button></div>
+  </section></aside>`;
+}
+function clientApprovalsCenterView() {
+  const counts = v402ClientApprovalCounts();
+  const rows = v402ClientApprovalRows();
+  const selected = v402ClientApprovalSelected();
+  return `<div class="dashboard client-approval-center"><header class="dashboard-header"><div class="title-block"><h1>Client Approval Center</h1><p>Review client signups before they can enter the marketplace and create patrol jobs.</p></div><div class="header-actions"><span class="system-pill"><i></i>Platform Admin</span><button class="ghost-button" data-action="client-approvals-refresh-v402">Refresh</button></div></header>
+  <section class="kpi-row">${kpiCard('⏳','Pending Clients',counts.pending,'Need platform approval','#ffb53d')}${kpiCard('✓','Approved Signups',counts.approved,'Accepted applications','#37dc72')}${kpiCard('−','Rejected',counts.rejected,'Locked applications','#ff5973')}${kpiCard('◌','Active Clients',counts.active,'Can create requests','#2f83ff')}</section>
+  <section class="dashboard-grid"><div class="dashboard-left"><section class="panel panel-pad"><div class="panel-head"><div><h2>Client Applications</h2><p>Accepting a client creates/activates the client record and unlocks the client portal login.</p></div></div>${v402ClientApprovalTabs()}<div class="filters-row"><input data-client-approval-search-v402 value="${esc(state.clientApprovalSearch || '')}" placeholder="Search name, email, phone, notes..." /></div><div class="client-request-history-table client-approval-table"><div class="client-request-history-head"><span>Client</span><span>Contact</span><span>Status</span><span>Submitted</span><span>Actions</span></div>${rows.length ? rows.map(v402ClientApprovalRow).join('') : '<div class="empty">No client applications match this view.</div>'}</div></section></div>${v402ClientApprovalDetail(selected)}</section></div>`;
+}
+async function v402ApproveClient(id = '') {
+  if (!id) throw new Error('Client approval record missing.');
+  const row = (state.clientSignups || []).find(c => String(c.id || '') === String(id)) || {};
+  if (v402ClientSignupStatus(row) === 'approved') { toast('Client is already approved.', 'success'); return; }
+  await supabase.rpc('cp_approve_client_signup', { p_signup_id: id });
+  saveWorkflowActionLock('client-signup', id, { status: 'approved', finished_at: new Date().toISOString() });
+  await loadData();
+  state.view = 'client-approvals';
+  state.clientApprovalTab = 'pending';
+  state.selectedClientApprovalId = '';
+  render();
+  toast('Client approved and moved to active Clients.', 'success');
+}
+async function v402RejectClient(id = '') {
+  if (!id) throw new Error('Client approval record missing.');
+  const row = (state.clientSignups || []).find(c => String(c.id || '') === String(id)) || {};
+  if (v402ClientSignupStatus(row) === 'rejected') { toast('Client is already rejected.', 'success'); return; }
+  await supabase.rpc('cp_reject_client_signup', { p_signup_id: id });
+  saveWorkflowActionLock('client-signup', id, { status: 'rejected', finished_at: new Date().toISOString() });
+  await loadData();
+  state.view = 'client-approvals';
+  state.clientApprovalTab = 'rejected';
+  state.selectedClientApprovalId = id;
+  render();
+  toast('Client application rejected and locked.', 'success');
+}
+function renderRoleView() {
+  if (state.view === 'data-foundation') return dataFoundationView();
+  if (state.view === 'agency-approvals') return agencyApprovalsView();
+  if (state.view === 'client-approvals') return clientApprovalsCenterView();
+  if (state.view === 'marketplace-jobs') return marketplaceJobsView();
+  if (state.role === 'admin') {
+    if (state.view === 'dashboard') return isAgencyAdmin() ? marketplaceJobsView() : dataFoundationView();
+    if (state.view === 'dispatch-board') return dispatchBoardView();
+    if (state.view === 'live-gps') return dispatchLiveGpsView();
+    if (state.view === 'pending-dispatch') return pendingDispatchView();
+    if (state.view === 'scheduled-queue') return scheduledQueueView();
+    if (state.view === 'guards') return guardsCommandCenterView();
+    if (state.view === 'guard-approvals') return guardApprovalsCommandCenterView();
+    if (state.view === 'clients') return adminClientsCommandCenterView();
+    if (state.view === 'activity-log') return activityLogCommandCenterView();
+    if (state.view === 'proof-review') return proofReviewCommandCenterView();
+    if (state.view === 'report-builder') return reportBuilderCommandCenterView();
+    if (state.view === 'report-archive') return reportArchiveCommandCenterView();
+  }
+  if (state.role === 'guard') {
+    if (state.view === 'dashboard') return guardDashboardMockup302();
+    if (state.view === 'active-job') return guardActiveJobWorkflowView();
+    if (state.view === 'completed') return guardCompletedJobsView();
+    if (state.view === 'route-gps') return guardRouteGpsLiveView();
+    if (state.view === 'upload-proof') return proofUploadView();
+  }
+  if (state.role === 'client') {
+    if (state.view === 'dashboard') return clientDashboardView();
+    if (state.view === 'properties') return clientPropertiesView();
+    if (state.view === 'patrol-requests') return clientPatrolRequestsView();
+    if (state.view === 'reports') return clientReportsView();
+  }
+  if (state.view === 'messages') return messagesView();
+  if (state.view === 'notifications') return notificationsView();
+  if (state.view === 'settings') return settingsView();
+  return state.role === 'admin' ? adminDashboard() : compactDashboard(state.role);
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button');
+  if (!b || b.disabled || b.dataset.busy === '1') return;
+  try {
+    if (b.dataset.clientApprovalTabV402) { state.clientApprovalTab = b.dataset.clientApprovalTabV402 || 'pending'; state.selectedClientApprovalId = ''; render(); return; }
+    if (b.dataset.action === 'view-client-approval-v402') { state.selectedClientApprovalId = b.dataset.clientApprovalId || ''; render(); return; }
+    if (b.dataset.action === 'client-approvals-refresh-v402') { await loadData(); render(); toast('Client approvals refreshed.', 'success'); return; }
+    if (b.dataset.action === 'approve-client-v402') { setActionButtonBusy(b, 'Approving...'); await v402ApproveClient(b.dataset.clientApprovalId || ''); return; }
+    if (b.dataset.action === 'reject-client-v402') { setActionButtonBusy(b, 'Rejecting...'); await v402RejectClient(b.dataset.clientApprovalId || ''); return; }
+  } catch (err) { toast(friendly(err)); }
+  finally { if (b.dataset.action === 'approve-client-v402' || b.dataset.action === 'reject-client-v402') clearActionButtonBusy(b); }
+});
+document.addEventListener('input', e => {
+  const i = e.target;
+  if (i && i.hasAttribute('data-client-approval-search-v402')) { state.clientApprovalSearch = i.value || ''; state.selectedClientApprovalId = ''; render(); }
+});
+
+
+/* v4.0.3 Agency Dispatch + Client Location Fix */
+try {
+  state.agencyDispatchSearch = state.agencyDispatchSearch || '';
+  state.agencyDispatchTab = state.agencyDispatchTab || 'unassigned';
+  state.selectedAgencyDispatchJobId = state.selectedAgencyDispatchJobId || '';
+  state.agencyDispatchGuardSelections = state.agencyDispatchGuardSelections || {};
+} catch {}
+
+function v403ClientLocation(row = {}) {
+  const p = (state.properties || []).find(x => String(x.client_id || '') === String(row.client_id || row.id || '')) || {};
+  const line = row.address || row.address_line1 || row.service_address || p.address || p.address_line1 || '';
+  const city = row.city || p.city || '';
+  const st = row.state || p.state || '';
+  const zip = row.zip || row.zip_code || p.zip || p.zip_code || '';
+  return [line, [city, st, zip].filter(Boolean).join(', ')].filter(Boolean).join(' · ') || 'Service address missing';
+}
+function v403ClientLocationFields(row = {}) {
+  return {
+    label: row.property_label || row.property_name || row.business_name || row.company_name || row.name || 'Primary Service Location',
+    address: row.address || row.address_line1 || row.service_address || '',
+    city: row.city || '',
+    state: row.state || '',
+    zip: row.zip || row.zip_code || ''
+  };
+}
+
+async function submitClientSignup(form) {
+  const name = form.name.value.trim();
+  const email = form.email.value.trim().toLowerCase();
+  const password = form.password.value;
+  const phone = form.phone.value.trim();
+  const propertyLabel = form.property_label.value.trim();
+  const addressLine1 = form.address_line1.value.trim();
+  const city = form.city.value.trim();
+  const stateValue = form.state.value.trim().toUpperCase();
+  const zipCode = form.zip_code.value.trim();
+  const notes = form.notes.value.trim();
+  if (!addressLine1 || !city || !stateValue || !zipCode) throw new Error('Client service address, city, state, and ZIP are required.');
+  let uid = null;
+  try {
+    const result = await supabase.signUp(email, password, { role: 'client', display_name: name, phone, property_label: propertyLabel, address_line1: addressLine1, city, state: stateValue, zip_code: zipCode });
+    uid = result?.user?.id || result?.id || null;
+  } catch (err) {
+    const msg = String(err.message || '').toLowerCase();
+    if (!(msg.includes('already') || msg.includes('registered') || msg.includes('exists'))) throw err;
+  }
+  await supabase.rpc('cp_submit_client_signup', {
+    p_auth_user_id: uid,
+    p_name: name,
+    p_email: email,
+    p_phone: phone,
+    p_property_label: propertyLabel,
+    p_address_line1: addressLine1,
+    p_city: city,
+    p_state: stateValue,
+    p_zip_code: zipCode,
+    p_notes: notes
+  });
+  state.publicView = 'thanks';
+  state.thanks = { type: 'client', email };
+  render();
+}
+
+function v402ClientApprovalRow(c = {}) {
+  const status = v402ClientSignupStatus(c);
+  const pending = ['pending','new','requested','prospect',''].includes(status);
+  return `<div class="client-request-history-row ${String(state.selectedClientApprovalId || '') === String(c.id || '') ? 'selected' : ''}">
+    <span><strong>${esc(v402ClientApprovalName(c))}</strong><small>${esc(c.id || 'new client')}</small></span>
+    <span><strong>${esc(c.email || '')}</strong><small>${esc(c.phone || 'No phone listed')}</small></span>
+    <span><strong>${esc(c.property_label || c.property_name || 'Service Location')}</strong><small>${esc(v403ClientLocation(c))}</small></span>
+    <span>${v402ClientApprovalStatusChip(c)}</span>
+    <span>${esc(fmtDate(c.created_at || c.updated_at))}</span>
+    <span class="button-row"><button class="ghost-button" data-action="view-client-approval-v402" data-client-approval-id="${esc(c.id)}">View</button>${pending ? `<button class="primary-button" data-action="approve-client-v402" data-client-approval-id="${esc(c.id)}">Accept Client</button><button class="ghost-button" data-action="reject-client-v402" data-client-approval-id="${esc(c.id)}">Reject</button>` : `<button class="ghost-button" data-view="clients">Clients</button>`}</span>
+  </div>`;
+}
+function v402ClientApprovalDetail(row = null) {
+  if (!row) return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Client Detail</h2><p>Select a client application.</p></div></div><div class="empty">No client application selected.</div></section></aside>`;
+  const pending = ['pending','new','requested','prospect',''].includes(v402ClientSignupStatus(row));
+  const activeClient = (state.clients || []).find(c => String(c.email || '').toLowerCase() === String(row.email || '').toLowerCase());
+  const loc = v403ClientLocationFields(row);
+  return `<aside class="dashboard-right"><section class="panel panel-pad client-approval-detail"><div class="panel-head"><div><h2>Client Application</h2><p>Platform Admin approval gate</p></div>${v402ClientApprovalStatusChip(row)}</div>
+    <div class="detail-grid"><span>Name</span><strong>${esc(v402ClientApprovalName(row))}</strong><span>Email</span><strong>${esc(row.email || '—')}</strong><span>Phone</span><strong>${esc(row.phone || '—')}</strong><span>Submitted</span><strong>${esc(fmtDate(row.created_at || row.updated_at))}</strong><span>Active Client</span><strong>${esc(activeClient ? 'Yes' : 'Not yet')}</strong></div>
+    <div class="detail-grid"><span>Property</span><strong>${esc(loc.label)}</strong><span>Address</span><strong>${esc(loc.address || '—')}</strong><span>City / State</span><strong>${esc([loc.city, loc.state].filter(Boolean).join(', ') || '—')}</strong><span>ZIP</span><strong>${esc(loc.zip || '—')}</strong></div>
+    <div class="note-box"><strong>Client notes</strong><p>${esc(row.notes || 'No notes were submitted by this client.')}</p></div>
+    <div class="workflow-finished-panel blue"><strong>Location rule</strong><p>Client approval now creates the client account and a primary service property, so marketplace jobs have an address from the start.</p></div>
+    <div class="button-row">${pending ? `<button class="primary-button" data-action="approve-client-v402" data-client-approval-id="${esc(row.id)}">Accept Client</button><button class="ghost-button" data-action="reject-client-v402" data-client-approval-id="${esc(row.id)}">Reject Client</button>` : ''}<button class="ghost-button" data-view="clients">Open Active Clients</button></div>
+  </section></aside>`;
+}
+function clientApprovalsCenterView() {
+  const counts = v402ClientApprovalCounts();
+  const rows = v402ClientApprovalRows();
+  const selected = v402ClientApprovalSelected();
+  return `<div class="dashboard client-approval-center"><header class="dashboard-header"><div class="title-block"><h1>Client Approval Center</h1><p>Review client signups with their service location before they can enter the marketplace and create patrol jobs.</p></div><div class="header-actions"><span class="system-pill"><i></i>Platform Admin</span><button class="ghost-button" data-action="client-approvals-refresh-v402">Refresh</button></div></header>
+  <section class="kpi-row">${kpiCard('⏳','Pending Clients',counts.pending,'Need platform approval','#ffb53d')}${kpiCard('⌖','Locations Captured',(state.clientSignups || []).filter(c => c.address_line1 || c.address || c.city).length,'Address required at signup','#31c8ff')}${kpiCard('✓','Approved Signups',counts.approved,'Accepted applications','#37dc72')}${kpiCard('◌','Active Clients',counts.active,'Can create requests','#2f83ff')}</section>
+  <section class="dashboard-grid"><div class="dashboard-left"><section class="panel panel-pad"><div class="panel-head"><div><h2>Client Applications</h2><p>Accepting a client creates/activates the client record and saves their primary service location.</p></div></div>${v402ClientApprovalTabs()}<div class="filters-row"><input data-client-approval-search-v402 value="${esc(state.clientApprovalSearch || '')}" placeholder="Search name, email, phone, address, city, notes..." /></div><div class="client-request-history-table client-approval-table"><div class="client-request-history-head client-approval-head-v403"><span>Client</span><span>Contact</span><span>Location</span><span>Status</span><span>Submitted</span><span>Actions</span></div>${rows.length ? rows.map(v402ClientApprovalRow).join('') : '<div class="empty">No client applications match this view.</div>'}</div></section></div>${v402ClientApprovalDetail(selected)}</section></div>`;
+}
+
+function v403AgencyGuards() {
+  const agencyId = v401ActiveAgencyId();
+  return (state.guards || []).filter(g => !agencyId || String(g.agency_id || g.agencyId || '') === agencyId || isAgencyAdmin());
+}
+function v403AgencyDispatchJobs() {
+  const q = String(state.agencyDispatchSearch || '').trim().toLowerCase();
+  const tab = state.agencyDispatchTab || 'unassigned';
+  let rows = marketplaceJobRows().filter(j => v401Owner(j) === 'mine').map(j => ({ ...j, _status: marketplaceJobStatus(j) }));
+  if (tab === 'unassigned') rows = rows.filter(j => !j.assigned_guard_id && ['agency_accepted','accepted_by_agency'].includes(j._status));
+  if (tab === 'assigned') rows = rows.filter(j => j.assigned_guard_id || ['guard_assigned','assigned','accepted','in_progress'].includes(j._status));
+  if (tab === 'active') rows = rows.filter(j => ['accepted','in_progress','proof_uploaded'].includes(j._status));
+  if (tab === 'completed') rows = rows.filter(j => ['completed','report_published','published'].includes(j._status));
+  if (q) rows = rows.filter(j => v401SearchText(j).includes(q));
+  return rows.sort((a,b) => new Date(b.requested_at || b.created_at || 0) - new Date(a.requested_at || a.created_at || 0));
+}
+function v403DispatchCounts() {
+  const rows = marketplaceJobRows().filter(j => v401Owner(j) === 'mine').map(j => ({ ...j, _status: marketplaceJobStatus(j) }));
+  return {
+    total: rows.length,
+    unassigned: rows.filter(j => !j.assigned_guard_id && ['agency_accepted','accepted_by_agency'].includes(j._status)).length,
+    assigned: rows.filter(j => j.assigned_guard_id || ['guard_assigned','assigned','accepted','in_progress'].includes(j._status)).length,
+    active: rows.filter(j => ['accepted','in_progress','proof_uploaded'].includes(j._status)).length,
+    completed: rows.filter(j => ['completed','report_published','published'].includes(j._status)).length,
+    guards: v403AgencyGuards().length
+  };
+}
+function v403JobGuardName(job = {}) {
+  if (job.assigned_guard_name) return job.assigned_guard_name;
+  const guard = (state.guards || []).find(g => String(g.id || '') === String(job.assigned_guard_id || ''));
+  return guard?.name || guard?.display_name || guard?.email || '';
+}
+function v403GuardOptions(job = {}) {
+  const selected = state.agencyDispatchGuardSelections?.[job.id] || job.assigned_guard_id || '';
+  const guards = v403AgencyGuards();
+  return `<option value="">Select agency guard...</option>${guards.map(g => `<option value="${esc(g.id)}" ${String(selected) === String(g.id) ? 'selected' : ''}>${esc(guardDisplayName(g))}${g.email ? ` · ${esc(g.email)}` : ''}</option>`).join('')}`;
+}
+function v403AgencyDispatchRow(job = {}) {
+  const guardName = v403JobGuardName(job);
+  const canAssign = ['agency_accepted','accepted_by_agency','guard_assigned','assigned'].includes(marketplaceJobStatus(job));
+  return `<div class="client-request-history-row ${String(state.selectedAgencyDispatchJobId || '') === String(job.id || '') ? 'selected' : ''}">
+    <span><strong>${esc(job.job_number || job.id)}</strong><small>${esc(job.client_name || 'Client')}</small></span>
+    <span><strong>${esc(job.property_label || propertyLabel(job) || 'Property')}</strong><small>${esc(v401Address(job))}</small></span>
+    <span>${displayStatusChip(marketplaceJobStatus(job))}</span>
+    <span><strong>${esc(guardName || 'Unassigned')}</strong><small>${esc(guardName ? 'Agency guard' : 'Needs assignment')}</small></span>
+    <span class="button-row"><button class="ghost-button" data-action="view-agency-dispatch-job-v403" data-job-id="${esc(job.id)}">Manage</button></span>
+  </div>`;
+}
+function v403AgencyDispatchDetail(job = null) {
+  if (!job) return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Dispatch Detail</h2><p>Select an accepted job.</p></div></div><div class="empty">No accepted agency job selected.</div></section></aside>`;
+  const status = marketplaceJobStatus(job);
+  const guardName = v403JobGuardName(job) || 'Unassigned';
+  const assignable = ['agency_accepted','accepted_by_agency','guard_assigned','assigned'].includes(status);
+  return `<aside class="dashboard-right"><section class="panel panel-pad marketplace-job-detail agency-dispatch-detail"><div class="panel-head"><div><h2>Agency Dispatch Detail</h2><p>Accepted job owned by ${esc(v401ActiveAgencyRecord()?.agency_name || 'your agency')}</p></div>${displayStatusChip(status)}</div>
+    <div class="detail-grid"><span>Job Number</span><strong>${esc(job.job_number || job.id)}</strong><span>Property</span><strong>${esc(job.property_label || propertyLabel(job) || 'Property')}</strong><span>Address</span><strong>${esc(v401Address(job))}</strong><span>Client</span><strong>${esc(job.client_name || 'Client')}</strong><span>Service</span><strong>${esc(v401Service(job))}</strong><span>Assigned Guard</span><strong>${esc(guardName)}</strong></div>
+    <div class="note-box"><strong>Client request notes</strong><p>${esc(v401Notes(job))}</p></div>
+    ${assignable ? `<label>Assign Agency Guard${v403GuardOptions(job)}</label><div class="button-row"><button class="primary-button" data-action="agency-assign-guard-v403" data-job-id="${esc(job.id)}">Assign / Update Guard</button><button class="ghost-button" data-view="marketplace-jobs">Back To Job Board</button></div>` : `<div class="button-row"><button class="ghost-button" data-view="marketplace-jobs">Back To Job Board</button></div>`}
+    <div class="workflow-finished-panel blue"><strong>Lifecycle source</strong><p>Assigning here updates marketplace_jobs.assigned_guard_id and moves status to guard_assigned. The guard portal reads the same job record.</p></div>
+  </section></aside>`;
+}
+function agencyDispatchBoardView() {
+  const counts = v403DispatchCounts();
+  const rows = v403AgencyDispatchJobs();
+  const selected = rows.find(j => String(j.id || '') === String(state.selectedAgencyDispatchJobId || '')) || rows[0] || marketplaceJobRows().find(j => v401Owner(j) === 'mine') || null;
+  if (selected && String(state.selectedAgencyDispatchJobId || '') !== String(selected.id || '')) state.selectedAgencyDispatchJobId = selected.id || '';
+  const tabs = [['unassigned','Needs Guard',counts.unassigned],['assigned','Assigned',counts.assigned],['active','Active',counts.active],['completed','Completed',counts.completed],['all','All',counts.total]];
+  return `<div class="dashboard marketplace-jobs-view agency-dispatch-board-view"><header class="dashboard-header"><div class="title-block"><h1>Agency Dispatch</h1><p>Accepted marketplace jobs now move here so the licensed agency can assign its own guards.</p></div><div class="header-actions"><span class="system-pill"><i></i>${esc(v401ActiveAgencyRecord()?.agency_name || 'Agency')}</span><button class="ghost-button" data-action="agency-dispatch-refresh-v403">Refresh</button></div></header>
+  <section class="kpi-row">${kpiCard('▤','Accepted Jobs',counts.total,'Owned by your agency','#2f83ff')}${kpiCard('⏳','Needs Guard',counts.unassigned,'Waiting assignment','#ffb53d')}${kpiCard('◎','Agency Guards',counts.guards,'Available in this agency','#37dc72')}${kpiCard('✓','Assigned / Active',counts.assigned,'Visible to assigned guards','#b05cff')}</section>
+  ${!v401AgencyApproved() ? `<section class="workflow-finished-panel warning"><strong>Agency verification required</strong><p>Your agency must be approved before accepting and dispatching marketplace jobs.</p></section>` : ''}
+  <section class="dashboard-grid"><div class="dashboard-left"><section class="panel panel-pad"><div class="panel-head"><div><h2>Accepted Agency Jobs</h2><p>Only jobs accepted by this agency appear here. Open marketplace jobs stay on Available Jobs.</p></div></div><div class="button-row job-board-tabs">${tabs.map(t => `<button class="ghost-button ${state.agencyDispatchTab === t[0] ? 'active' : ''}" data-agency-dispatch-tab-v403="${esc(t[0])}">${esc(t[1])} <b>${esc(t[2])}</b></button>`).join('')}</div><div class="filters-row"><input data-agency-dispatch-search-v403 value="${esc(state.agencyDispatchSearch || '')}" placeholder="Search job number, property, city, client, guard..." /></div><div class="client-request-history-table agency-dispatch-table"><div class="client-request-history-head"><span>Job</span><span>Property / Address</span><span>Status</span><span>Guard</span><span>Action</span></div>${rows.length ? rows.map(v403AgencyDispatchRow).join('') : '<div class="empty">No accepted agency jobs match this view. Accept an open job from Available Jobs first.</div>'}</div></section></div>${v403AgencyDispatchDetail(selected)}</section></div>`;
+}
+async function v403AssignGuard(jobId = '') {
+  if (!jobId) throw new Error('Marketplace job missing.');
+  const select = document.querySelector(`select[data-agency-dispatch-guard-select-v403="${String(jobId).replace(/"/g, '&quot;')}"]`);
+  const guardId = state.agencyDispatchGuardSelections?.[jobId] || select?.value || '';
+  if (!guardId) throw new Error('Select an agency guard first.');
+  await supabase.rpc('cp_agency_assign_guard_to_job', { p_job_id: jobId, p_guard_id: guardId });
+  await loadData();
+  state.view = 'dispatch-board';
+  state.agencyDispatchTab = 'assigned';
+  state.selectedAgencyDispatchJobId = jobId;
+  render();
+  toast('Guard assigned. Job is now visible to that agency guard.', 'success');
+}
+
+function v401Detail(job){
+  if(!job||!job.id)return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Job Detail</h2><p>Select a job to review the full request before accepting.</p></div></div><div class="empty">No marketplace job selected.</div></section></aside>`;
+  const status=marketplaceJobStatus(job),owner=v401Owner(job),open=['open_marketplace','pending_marketplace','marketplace_open'].includes(status),declined=v401DeclinedSet().has(String(job.id||'')),canAccept=isAgencyAdmin()&&v401AgencyApproved()&&open&&owner==='open',canDecline=canAccept&&!declined,agency=job.accepted_agency_name||(owner==='mine'?v401ActiveAgencyRecord()?.agency_name:'')||'Not accepted yet',guard=v403JobGuardName(job)||'Unassigned';
+  return `<aside class="dashboard-right"><section class="panel panel-pad marketplace-job-detail"><div class="panel-head"><div><h2>Job Detail</h2><p>Source of truth: marketplace_jobs</p></div>${displayStatusChip(status)}</div><div class="detail-grid"><span>Job Number</span><strong>${esc(job.job_number||job.id)}</strong><span>Property</span><strong>${esc(job.property_label||propertyLabel(job)||'Property')}</strong><span>Address</span><strong>${esc(v401Address(job))}</strong><span>Service Type</span><strong>${esc(v401Service(job))}</strong><span>Urgency</span><strong>${esc(statusText(job.priority||'normal'))}</strong><span>Requested</span><strong>${esc(fmtDate(job.requested_at||job.created_at))}</strong><span>Accepted Agency</span><strong>${esc(agency)}</strong><span>Assigned Guard</span><strong>${esc(guard)}</strong></div><div class="note-box"><strong>Client request notes</strong><p>${esc(v401Notes(job))}</p></div><div class="button-row">${canAccept?`<button class="primary-button" data-action="agency-accept-job" data-job-id="${esc(job.id)}">Accept Job</button>`:''}${canDecline?`<button class="ghost-button" data-action="agency-decline-job-v401" data-job-id="${esc(job.id)}">Decline</button>`:''}${declined?`<span class="workflow-stage-chip red"><b>Declined By Your Agency</b><small>Hidden from available jobs</small></span>`:''}${owner==='other'?`<span class="workflow-stage-chip amber"><b>Locked</b><small>Accepted by another agency</small></span>`:''}${owner==='mine'?`<button class="ghost-button" data-view="dispatch-board">Open Dispatch</button>`:''}</div></section><section class="panel panel-pad"><div class="panel-head"><div><h2>Lifecycle Rule</h2><p>This board does not invent status. It reads marketplace_jobs.current_status.</p></div></div><div class="priority-list">${priorityRow('Client job request','Source',1,'#2f83ff','data-foundation')}${priorityRow('Agency accept locks ownership',owner==='mine'?'Mine':owner==='other'?'Locked':'Open',owner==='open'?0:1,'#37dc72','marketplace-jobs')}${priorityRow('Agency dispatch assigns guard',guard,'Unassigned'===guard?0:1,'#b05cff','dispatch-board')}</div></section></aside>`;
+}
+
+function renderRoleView() {
+  if (state.view === 'data-foundation') return dataFoundationView();
+  if (state.view === 'agency-approvals') return agencyApprovalsView();
+  if (state.view === 'client-approvals') return clientApprovalsCenterView();
+  if (state.view === 'marketplace-jobs') return marketplaceJobsView();
+  if (state.role === 'admin') {
+    if (state.view === 'dashboard') return isAgencyAdmin() ? marketplaceJobsView() : dataFoundationView();
+    if (state.view === 'dispatch-board') return isAgencyAdmin() ? agencyDispatchBoardView() : dispatchBoardView();
+    if (state.view === 'live-gps') return dispatchLiveGpsView();
+    if (state.view === 'pending-dispatch') return pendingDispatchView();
+    if (state.view === 'scheduled-queue') return scheduledQueueView();
+    if (state.view === 'guards') return guardsCommandCenterView();
+    if (state.view === 'guard-approvals') return guardApprovalsCommandCenterView();
+    if (state.view === 'clients') return adminClientsCommandCenterView();
+    if (state.view === 'activity-log') return activityLogCommandCenterView();
+    if (state.view === 'proof-review') return proofReviewCommandCenterView();
+    if (state.view === 'report-builder') return reportBuilderCommandCenterView();
+    if (state.view === 'report-archive') return reportArchiveCommandCenterView();
+  }
+  if (state.role === 'guard') {
+    if (state.view === 'dashboard') return guardDashboardMockup302();
+    if (state.view === 'active-job') return guardActiveJobWorkflowView();
+    if (state.view === 'completed') return guardCompletedJobsView();
+    if (state.view === 'route-gps') return guardRouteGpsLiveView();
+    if (state.view === 'upload-proof') return proofUploadView();
+  }
+  if (state.role === 'client') {
+    if (state.view === 'dashboard') return clientDashboardView();
+    if (state.view === 'properties') return clientPropertiesView();
+    if (state.view === 'patrol-requests') return clientPatrolRequestsView();
+    if (state.view === 'reports') return clientReportsView();
+  }
+  if (state.view === 'messages') return messagesView();
+  if (state.view === 'notifications') return notificationsView();
+  if (state.view === 'settings') return settingsView();
+  return state.role === 'admin' ? adminDashboard() : compactDashboard(state.role);
+}
+
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button');
+  if (!b || b.disabled || b.dataset.busy === '1') return;
+  try {
+    if (b.dataset.agencyDispatchTabV403) { state.agencyDispatchTab = b.dataset.agencyDispatchTabV403 || 'unassigned'; state.selectedAgencyDispatchJobId = ''; render(); return; }
+    if (b.dataset.action === 'view-agency-dispatch-job-v403') { state.selectedAgencyDispatchJobId = b.dataset.jobId || ''; render(); return; }
+    if (b.dataset.action === 'agency-dispatch-refresh-v403') { await loadData(); render(); toast('Agency dispatch refreshed.', 'success'); return; }
+    if (b.dataset.action === 'agency-assign-guard-v403') { setActionButtonBusy(b, 'Assigning...'); await v403AssignGuard(b.dataset.jobId || ''); return; }
+  } catch (err) { toast(friendly(err)); }
+  finally { if (b.dataset.action === 'agency-assign-guard-v403') clearActionButtonBusy(b); }
+});
+document.addEventListener('input', e => {
+  const i = e.target;
+  if (i && i.hasAttribute('data-agency-dispatch-search-v403')) { state.agencyDispatchSearch = i.value || ''; state.selectedAgencyDispatchJobId = ''; render(); }
+  if (i && i.hasAttribute('data-agency-dispatch-guard-select-v403')) {
+    const jobId = i.dataset.agencyDispatchGuardSelectV403 || '';
+    state.agencyDispatchGuardSelections = { ...(state.agencyDispatchGuardSelections || {}), [jobId]: i.value || '' };
+  }
+});
+
+
+/* v4.0.6 Marketplace Role Cleanup
+   The marketplace has no public Legacy Dispatch role.  Legacy admin rows are
+   normalized to Platform Admin in the UI for compatibility with older v3 tables. */
+const CP_MARKETPLACE_PLATFORM_NAV_V404 = [
+  ['dashboard', '⌂', 'Dashboard'],
+  ['data-foundation', '▦', 'Data Foundation'],
+  ['agency-approvals', '✓', 'Agency Approvals'],
+  ['client-approvals', '◌', 'Client Approvals'],
+  ['marketplace-jobs', '◈', 'Marketplace Jobs'],
+  ['messages', '☵', 'Messages'],
+  ['notifications', '♧', 'Notifications'],
+  ['heading', '', 'Marketplace Oversight'],
+  ['clients', '◌', 'Clients'],
+  ['activity-log', '▦', 'Activity Log'],
+  ['report-archive', '☰', 'Report Archive'],
+  ['heading', '', 'Account'],
+  ['settings', '⚙', 'Settings']
+];
+const CP_MARKETPLACE_AGENCY_NAV_V404 = [
+  ['dashboard', '⌂', 'Dashboard'],
+  ['marketplace-jobs', '◈', 'Available Jobs'],
+  ['dispatch-board', '▤', 'Agency Job Management'],
+  ['live-gps', '⌖', 'Live GPS'],
+  ['messages', '☵', 'Messages'],
+  ['notifications', '♧', 'Notifications'],
+  ['heading', '', 'Agency Ops'],
+  ['guards', '◎', 'Agency Guards'],
+  ['proof-review', '⬆', 'Proof Review'],
+  ['report-builder', '▣', 'Report Builder'],
+  ['report-archive', '☰', 'Report Archive'],
+  ['heading', '', 'Account'],
+  ['settings', '⚙', 'Settings']
+];
+NAV.platform_admin = CP_MARKETPLACE_PLATFORM_NAV_V404;
+NAV.admin = CP_MARKETPLACE_PLATFORM_NAV_V404;
+NAV.agency_admin = CP_MARKETPLACE_AGENCY_NAV_V404;
+
+function cp404RawMarketplaceRole() {
+  return String(state.marketplaceRole || state.profile?.marketplace_role || state.profile?.role || state.role || '').toLowerCase();
+}
+function cp404NormalizeMarketplaceRole(role = '') {
+  const r = String(role || '').toLowerCase();
+  if (['admin', 'dispatch', 'legacy_dispatch', 'legacy-dispatch'].includes(r)) return 'platform_admin';
+  return r;
+}
+function activeMarketplaceRole() { return cp404NormalizeMarketplaceRole(state.marketplaceRole || state.profile?.marketplace_role || state.profile?.role || state.role || ''); }
+function isPlatformAdmin() { return activeMarketplaceRole() === 'platform_admin'; }
+function isAgencyAdmin() { return activeMarketplaceRole() === 'agency_admin'; }
+function marketplaceRoleForInternal(role = '') {
+  const r = cp404NormalizeMarketplaceRole(role || '');
+  return ['platform_admin','agency_admin'].includes(r) ? 'admin' : String(role || '');
+}
+function roleLabel(role = '') {
+  const r = cp404NormalizeMarketplaceRole(role || '');
+  if (r === 'platform_admin') return 'Platform Admin';
+  if (r === 'agency_admin') return 'Agency Admin';
+  if (r === 'guard') return 'Guard';
+  if (r === 'client') return 'Client';
+  return 'User';
+}
+function cp404MarketplaceStatusLine() {
+  return 'Client jobs go to the open marketplace. Approved agencies accept work, then assign their own guards.';
+}
+
+function renderPublic() {
+  const tab = state.publicView;
+  let content = '';
+  if (tab === 'login') {
+    content = `<p class="eyebrow">Secure Marketplace Login</p><h2>Co Pilot Security Marketplace</h2><p class="auth-note">Login after your platform, agency, guard, or client account is approved.</p>
+      <form class="form-grid" data-form="login">
+        <label>Login As<select name="role" required><option value="client">Client</option><option value="agency_admin">Agency Admin</option><option value="guard">Guard</option><option value="platform_admin">Platform Admin</option></select></label>
+        <label>Email<input type="email" name="email" required placeholder="name@email.com"></label>
+        <label>Password<input type="password" name="password" required placeholder="Password"></label>
+        <div class="button-row"><button class="btn" type="submit">Continue Securely</button></div>
+      </form>`;
+  } else if (tab === 'guard-signup') {
+    content = `<p class="eyebrow">Guard Application</p><h2>Guard Sign Up</h2><p class="auth-note">Create a guard login. Guards work under an approved security agency; the agency assigns accepted marketplace jobs to its own guards.</p>
+      <form class="form-grid" data-form="guard-signup">
+        <label>Full Name<input name="name" required placeholder="Guard name"></label>
+        <label>Email<input name="email" type="email" required placeholder="guard@email.com"></label>
+        <label>Create Password<input name="password" type="password" minlength="6" required></label>
+        <label>Phone<input name="phone" placeholder="(702) 555-0000"></label>
+        <div class="form-row"><label>Vehicle<input name="vehicle" placeholder="Patrol unit"></label><label>License Plate<input name="license_plate" placeholder="Plate #"></label></div>
+        <label>Work Card<input name="work_card_number" placeholder="Optional"></label>
+        <div class="button-row"><button class="btn success" type="submit">Submit Guard Application</button></div>
+      </form>`;
+  } else if (tab === 'agency-signup') {
+    content = `<p class="eyebrow">Licensed Agency Application</p><h2>Agency Sign Up</h2><p class="auth-note">Licensed security companies apply here. Platform Admin verifies the agency before it can accept open marketplace jobs.</p>
+      <form class="form-grid" data-form="agency-signup">
+        <label>Agency / Company Name<input name="agency_name" required placeholder="Licensed Security Company"></label>
+        <label>Contact Person<input name="contact_name" required placeholder="Manager / Owner"></label>
+        <label>Email<input name="email" type="email" required placeholder="agency@email.com"></label>
+        <label>Create Password<input name="password" type="password" minlength="6" required></label>
+        <div class="form-row"><label>Phone<input name="phone" placeholder="(555) 555-0000"></label><label>License State<input name="license_state" value="FL" placeholder="FL"></label></div>
+        <label>Security Agency License #<input name="license_number" required placeholder="Class B license number"></label>
+        <div class="form-row"><label>Primary City<input name="primary_city" placeholder="Miami, Tampa, Orlando..."></label><label>Service Radius Miles<input name="service_radius_miles" type="number" min="1" value="25"></label></div>
+        <label>Service Notes<textarea name="service_notes" placeholder="Cities, counties, armed/unarmed coverage, patrol types, availability, insurance notes."></textarea></label>
+        <div class="button-row"><button class="btn success" type="submit">Submit Agency Application</button></div>
+      </form>`;
+  } else if (tab === 'client-signup') {
+    content = `<p class="eyebrow">Client Application</p><h2>Client Sign Up</h2><p class="auth-note">Create a client login and service location. After approval, your patrol requests go to the open marketplace for approved agencies.</p>
+      <form class="form-grid" data-form="client-signup">
+        <label>Full Name<input name="name" required placeholder="Client name"></label>
+        <label>Email<input name="email" type="email" required placeholder="client@email.com"></label>
+        <label>Create Password<input name="password" type="password" minlength="6" required></label>
+        <label>Phone<input name="phone" placeholder="(555) 555-0000"></label>
+        <label>Property / Business Name<input name="property_label" required placeholder="Example: Sunset Plaza, Unit 12, Main Office"></label>
+        <label>Service Address<input name="address_line1" required placeholder="Street address where patrol is needed"></label>
+        <div class="form-row"><label>City<input name="city" required placeholder="Miami"></label><label>State<input name="state" required value="FL" placeholder="FL"></label></div>
+        <label>ZIP Code<input name="zip_code" required placeholder="33101"></label>
+        <label>Notes<textarea name="notes" placeholder="Gate code, property type, security concern, preferred patrol notes."></textarea></label>
+        <div class="button-row"><button class="btn success" type="submit">Submit Client Application</button></div>
+      </form>`;
+  } else if (tab === 'owner-setup') {
+    content = `<p class="eyebrow">Platform Setup</p><h2>Create Platform Admin</h2><p class="auth-note">Use this for the initial Co Pilot marketplace owner/admin account.</p>
+      <form class="form-grid" data-form="owner-setup">
+        <label>Marketplace Name<input name="business" required placeholder="Co Pilot Security Marketplace"></label>
+        <label>Owner / Platform Name<input name="name" required placeholder="Platform Admin"></label>
+        <label>Email<input name="email" type="email" required placeholder="owner@email.com"></label>
+        <label>Create Password<input name="password" type="password" minlength="6" required></label>
+        <div class="button-row"><button class="btn success" type="submit">Create Platform Account</button></div>
+      </form>`;
+  } else {
+    const who = state.thanks?.type === 'agency' ? 'Platform Admin' : state.thanks?.type === 'client' ? 'Platform Admin' : 'the agency administrator';
+    content = `<p class="eyebrow">Application Received</p><h2>Submitted</h2><p class="auth-note">Your ${esc(state.thanks?.type || 'account')} application for ${esc(state.thanks?.email || '')} has been submitted. ${esc(who)} must approve your account.</p><div class="button-row"><button class="btn secondary" data-public-view="login">Back To Login</button></div>`;
+  }
+  app.innerHTML = `<div class="auth-shell">
+    <div class="auth-card">
+      <section class="auth-hero">
+        <div>
+          <div class="brand-row"><div class="logo-box">CP</div><div><strong>Co Pilot</strong><small>Security</small></div></div>
+          <h1>Uber-style security agency marketplace.</h1>
+          <p>${esc(cp404MarketplaceStatusLine())}</p>
+          <div class="auth-hero-grid">
+            <div class="auth-point"><i>01</i><div><strong>Open job marketplace</strong><span>Client requests are created as open marketplace jobs until a verified agency accepts them.</span></div></div>
+            <div class="auth-point"><i>02</i><div><strong>Licensed agency model</strong><span>Security companies accept jobs and assign their own guards. Co Pilot stays the platform layer.</span></div></div>
+            <div class="auth-point"><i>03</i><div><strong>No legacy dispatch role</strong><span>Platform Admin verifies agencies and clients; agencies manage their own accepted jobs.</span></div></div>
+          </div>
+        </div>
+        <span class="version-mini">${esc(BUILD.label)}</span>
+      </section>
+      <section class="auth-panel">
+        <div class="auth-tabs">
+          <button class="auth-tab ${tab === 'login' ? 'active' : ''}" data-public-view="login">Login</button>
+          <button class="auth-tab ${tab === 'agency-signup' ? 'active' : ''}" data-public-view="agency-signup">Agency Sign Up</button>
+          <button class="auth-tab ${tab === 'guard-signup' ? 'active' : ''}" data-public-view="guard-signup">Guard Sign Up</button>
+          <button class="auth-tab ${tab === 'client-signup' ? 'active' : ''}" data-public-view="client-signup">Client Sign Up</button>
+          <button class="auth-tab ${tab === 'owner-setup' ? 'active' : ''}" data-public-view="owner-setup">Create Platform</button>
+        </div>
+        <div class="auth-box">${content}</div>
+      </section>
+    </div>
+  </div>`;
+  ensureBadge();
+}
+
+async function login(form) {
+  const email = form.email.value.trim().toLowerCase();
+  const password = form.password.value;
+  const expected = cp404NormalizeMarketplaceRole(form.role.value);
+  await supabase.signIn(email, password);
+  await loadData();
+  if (state.role === 'guard') restoreGuardGpsPersistedState();
+  const actual = activeMarketplaceRole() || state.role;
+  if (actual !== expected) {
+    const actualLabel = roleLabel(actual);
+    await supabase.signOut();
+    state.profile = null;
+    state.role = null;
+    state.marketplaceRole = '';
+    throw new Error(`This account is approved as ${actualLabel}, not ${roleLabel(expected)}.`);
+  }
+  state.view = 'dashboard';
+  render();
+  toast(`Logged in as ${roleLabel(actual)}.`, 'success');
+}
+
+function navBadge(view) {
+  if (view === 'messages') return unreadMessagesCount();
+  if (view === 'notifications') return unreadNotificationsCount();
+  if (view === 'agency-approvals') return (state.agencyApplications || []).filter(a => String(a.approval_status || a.status || '').toLowerCase() === 'pending').length;
+  if (view === 'client-approvals') return v402ClientApprovalCounts ? v402ClientApprovalCounts().pending : '';
+  if (view === 'proof-review' && isAgencyAdmin()) return proofWaiting().length;
+  if (view === 'completed' && state.role === 'guard') return guardCompletedJobsForFilter('today').length;
+  return '';
+}
+
+function v404GuardAssignmentLabel() { return isAgencyAdmin() ? 'Agency Job Management' : 'Marketplace Jobs'; }
+function v404OpenOwnedJobText() { return 'Open Job Management'; }
+
+function agencyDispatchBoardView() {
+  const counts = v403DispatchCounts();
+  const rows = v403AgencyDispatchJobs();
+  const selected = rows.find(j => String(j.id || '') === String(state.selectedAgencyDispatchJobId || '')) || rows[0] || marketplaceJobRows().find(j => v401Owner(j) === 'mine') || null;
+  if (selected && String(state.selectedAgencyDispatchJobId || '') !== String(selected.id || '')) state.selectedAgencyDispatchJobId = selected.id || '';
+  const tabs = [['unassigned','Needs Guard',counts.unassigned],['assigned','Assigned',counts.assigned],['active','Active',counts.active],['completed','Completed',counts.completed],['all','All',counts.total]];
+  return `<div class="dashboard marketplace-jobs-view agency-dispatch-board-view"><header class="dashboard-header"><div class="title-block"><h1>Agency Job Management</h1><p>Only jobs accepted by this licensed agency appear here. Assign your own agency guards after accepting marketplace work.</p></div><div class="header-actions"><span class="system-pill"><i></i>${esc(v401ActiveAgencyRecord()?.agency_name || 'Agency')}</span><button class="ghost-button" data-action="agency-dispatch-refresh-v403">Refresh</button></div></header>
+  <section class="workflow-finished-panel success"><strong>Marketplace model</strong><p>Co Pilot does not dispatch guards. Client jobs stay open until an approved agency accepts; then that agency manages guard assignment here.</p></section>
+  <section class="kpi-row">${kpiCard('▤','Accepted Jobs',counts.total,'Owned by your agency','#2f83ff')}${kpiCard('⏳','Needs Guard',counts.unassigned,'Waiting assignment','#ffb53d')}${kpiCard('◎','Agency Guards',counts.guards,'Available in this agency','#37dc72')}${kpiCard('✓','Assigned / Active',counts.assigned,'Visible to assigned guards','#b05cff')}</section>
+  ${!v401AgencyApproved() ? `<section class="workflow-finished-panel warning"><strong>Agency verification required</strong><p>Your agency must be approved before accepting and managing marketplace jobs.</p></section>` : ''}
+  <section class="dashboard-grid"><div class="dashboard-left"><section class="panel panel-pad"><div class="panel-head"><div><h2>Accepted Agency Jobs</h2><p>Open marketplace jobs stay on Available Jobs. Accepted jobs lock to your agency and move here for guard assignment.</p></div></div><div class="button-row job-board-tabs">${tabs.map(t => `<button class="ghost-button ${state.agencyDispatchTab === t[0] ? 'active' : ''}" data-agency-dispatch-tab-v403="${esc(t[0])}">${esc(t[1])} <b>${esc(t[2])}</b></button>`).join('')}</div><div class="filters-row"><input data-agency-dispatch-search-v403 value="${esc(state.agencyDispatchSearch || '')}" placeholder="Search job number, property, city, client, guard..." /></div><div class="client-request-history-table agency-dispatch-table"><div class="client-request-history-head"><span>Job</span><span>Property / Address</span><span>Status</span><span>Guard</span><span>Action</span></div>${rows.length ? rows.map(v403AgencyDispatchRow).join('').replace(/Dispatch/g, 'Manage') : '<div class="empty">No accepted agency jobs match this view. Accept an open job from Available Jobs first.</div>'}</div></section></div>${v403AgencyDispatchDetail(selected)}</section></div>`;
+}
+
+function v403AgencyDispatchDetail(job = null) {
+  if (!job) return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Job Management Detail</h2><p>Select an accepted job.</p></div></div><div class="empty">No accepted agency job selected.</div></section></aside>`;
+  const status = marketplaceJobStatus(job);
+  const guardName = v403JobGuardName(job);
+  const assignable = ['agency_accepted','accepted_by_agency','pending_dispatch','guard_assigned','assigned'].includes(status);
+  const guards = v403AgencyGuards();
+  return `<aside class="dashboard-right"><section class="panel panel-pad marketplace-job-detail agency-dispatch-detail"><div class="panel-head"><div><h2>Agency Job Detail</h2><p>Accepted job owned by ${esc(v401ActiveAgencyRecord()?.agency_name || 'your agency')}</p></div>${displayStatusChip(status)}</div>
+    <div class="detail-grid"><span>Job</span><strong>${esc(job.job_number || job.id)}</strong><span>Property</span><strong>${esc(job.property_label || propertyLabel(job) || 'Property')}</strong><span>Address</span><strong>${esc(v401Address(job))}</strong><span>Service</span><strong>${esc(v401Service(job))}</strong><span>Client Notes</span><strong>${esc(v401Notes(job))}</strong><span>Assigned Guard</span><strong>${esc(guardName || 'Unassigned')}</strong></div>
+    <div class="note-box"><strong>One guard assignment control</strong><p>Select the guard here, then click Assign Guard. The table only opens this job detail so there is no duplicate assignment path.</p></div>
+    <label>Agency Guard<select data-agency-dispatch-guard-select-v403="${esc(job.id)}">${v403GuardOptions(job)}</select></label>
+    ${guards.length ? `<small class="muted-line">${esc(guards.length)} agency guard${guards.length === 1 ? '' : 's'} available for assignment.</small>` : `<div class="workflow-finished-panel warning"><strong>No active agency guards</strong><p>Add an active guard under Agency Guards before assigning this job.</p></div>`}
+    <div class="button-row">${assignable ? `<button class="primary-button" data-action="agency-assign-guard-v403" data-job-id="${esc(job.id)}" ${guards.length ? '' : 'disabled'}>Assign Guard</button>` : ''}<button class="ghost-button" data-view="marketplace-jobs">Back To Available Jobs</button></div>
+  </section><section class="panel panel-pad"><div class="panel-head"><div><h2>Lifecycle</h2><p>No Co Pilot dispatch step. The accepted agency manages the job.</p></div></div><div class="priority-list">${priorityRow('Client request','Open marketplace',1,'#2f83ff','marketplace-jobs')}${priorityRow('Agency accepted','Job locked',1,'#37dc72','marketplace-jobs')}${priorityRow('Agency assigns guard',guardName || 'Unassigned',guardName ? 1 : 0,'#b05cff','dispatch-board')}</div></section></aside>`;
+}
+
+function v401Detail(job){
+  if(!job||!job.id)return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Job Detail</h2><p>Select a job to review the full request before accepting.</p></div></div><div class="empty">No marketplace job selected.</div></section></aside>`;
+  const status=marketplaceJobStatus(job),owner=v401Owner(job),open=['open_marketplace','pending_marketplace','marketplace_open'].includes(status),declined=v401DeclinedSet().has(String(job.id||'')),canAccept=isAgencyAdmin()&&v401AgencyApproved()&&open&&owner==='open',canDecline=canAccept&&!declined,agency=job.accepted_agency_name||(owner==='mine'?v401ActiveAgencyRecord()?.agency_name:'')||'Not accepted yet',guard=(typeof v403JobGuardName==='function'?v403JobGuardName(job):'')||'Unassigned';
+  return `<aside class="dashboard-right"><section class="panel panel-pad marketplace-job-detail"><div class="panel-head"><div><h2>Job Detail</h2><p>Source of truth: marketplace_jobs</p></div>${displayStatusChip(status)}</div><div class="detail-grid"><span>Job Number</span><strong>${esc(job.job_number||job.id)}</strong><span>Property</span><strong>${esc(job.property_label||propertyLabel(job)||'Property')}</strong><span>Address</span><strong>${esc(v401Address(job))}</strong><span>Service Type</span><strong>${esc(v401Service(job))}</strong><span>Urgency</span><strong>${esc(statusText(job.priority||'normal'))}</strong><span>Requested</span><strong>${esc(fmtDate(job.requested_at||job.created_at))}</strong><span>Accepted Agency</span><strong>${esc(agency)}</strong><span>Assigned Guard</span><strong>${esc(guard)}</strong></div><div class="note-box"><strong>Client request notes</strong><p>${esc(v401Notes(job))}</p></div><div class="button-row">${canAccept?`<button class="primary-button" data-action="agency-accept-job" data-job-id="${esc(job.id)}">Accept Job</button>`:''}${canDecline?`<button class="ghost-button" data-action="agency-decline-job-v401" data-job-id="${esc(job.id)}">Decline</button>`:''}${declined?`<span class="workflow-stage-chip red"><b>Declined By Your Agency</b><small>Hidden from available jobs</small></span>`:''}${owner==='other'?`<span class="workflow-stage-chip amber"><b>Locked</b><small>Accepted by another agency</small></span>`:''}${owner==='mine'?`<button class="ghost-button" data-view="dispatch-board">${esc(v404OpenOwnedJobText())}</button>`:''}</div></section><section class="panel panel-pad"><div class="panel-head"><div><h2>Lifecycle Rule</h2><p>This board does not invent status. It reads marketplace_jobs.current_status.</p></div></div><div class="priority-list">${priorityRow('Client job request','Source',1,'#2f83ff','data-foundation')}${priorityRow('Agency accept locks ownership',owner==='mine'?'Mine':owner==='other'?'Locked':'Open',owner==='open'?0:1,'#37dc72','marketplace-jobs')}${priorityRow('Agency assigns guard',guard,'Unassigned'===guard?0:1,'#b05cff','dispatch-board')}</div></section></aside>`;
+}
+
+function renderRoleView() {
+  if (state.view === 'dispatch-board' && isPlatformAdmin() && !isAgencyAdmin()) state.view = 'marketplace-jobs';
+  if (['pending-dispatch','scheduled-queue','guard-approvals'].includes(state.view) && isPlatformAdmin() && !isAgencyAdmin()) state.view = 'marketplace-jobs';
+  if (state.view === 'data-foundation') return dataFoundationView();
+  if (state.view === 'agency-approvals') return agencyApprovalsView();
+  if (state.view === 'client-approvals') return clientApprovalsCenterView();
+  if (state.view === 'marketplace-jobs') return marketplaceJobsView();
+  if (state.role === 'admin') {
+    if (state.view === 'dashboard') return isAgencyAdmin() ? marketplaceJobsView() : dataFoundationView();
+    if (state.view === 'dispatch-board') return isAgencyAdmin() ? agencyDispatchBoardView() : marketplaceJobsView();
+    if (state.view === 'live-gps') return isAgencyAdmin() ? dispatchLiveGpsView() : marketplaceJobsView();
+    if (state.view === 'guards') return guardsCommandCenterView();
+    if (state.view === 'clients') return adminClientsCommandCenterView();
+    if (state.view === 'activity-log') return activityLogCommandCenterView();
+    if (state.view === 'proof-review') return isAgencyAdmin() ? proofReviewCommandCenterView() : marketplaceJobsView();
+    if (state.view === 'report-builder') return isAgencyAdmin() ? reportBuilderCommandCenterView() : marketplaceJobsView();
+    if (state.view === 'report-archive') return reportArchiveCommandCenterView();
+  }
+  if (state.role === 'guard') {
+    if (state.view === 'dashboard') return guardDashboardMockup302();
+    if (state.view === 'active-job') return guardActiveJobWorkflowView();
+    if (state.view === 'completed') return guardCompletedJobsView();
+    if (state.view === 'route-gps') return guardRouteGpsLiveView();
+    if (state.view === 'upload-proof') return proofUploadView();
+  }
+  if (state.role === 'client') {
+    if (state.view === 'dashboard') return clientDashboardView();
+    if (state.view === 'properties') return clientPropertiesView();
+    if (state.view === 'patrol-requests') return clientPatrolRequestsView();
+    if (state.view === 'reports') return clientReportsView();
+  }
+  if (state.view === 'messages') return messagesView();
+  if (state.view === 'notifications') return notificationsView();
+  if (state.view === 'settings') return settingsView();
+  return state.role === 'admin' ? (isAgencyAdmin() ? marketplaceJobsView() : dataFoundationView()) : compactDashboard(state.role);
+}
+
+
+/* v4.0.6 Agency Guard Direct Add
+   Guards do not publicly sign up or pick from a list of agencies. Agency Admins
+   create guard logins inside their private portal, then guards simply log in. */
+const CP_MARKETPLACE_AGENCY_NAV_V405 = [
+  ['dashboard', '⌂', 'Dashboard'],
+  ['marketplace-jobs', '◈', 'Available Jobs'],
+  ['dispatch-board', '▤', 'Agency Job Management'],
+  ['live-gps', '⌖', 'Live GPS'],
+  ['messages', '☵', 'Messages'],
+  ['notifications', '♧', 'Notifications'],
+  ['heading', '', 'Agency Ops'],
+  ['guards', '◎', 'Agency Guards'],
+  ['proof-review', '⬆', 'Proof Review'],
+  ['report-builder', '▣', 'Report Builder'],
+  ['report-archive', '☰', 'Report Archive'],
+  ['heading', '', 'Account'],
+  ['settings', '⚙', 'Settings']
+];
+NAV.agency_admin = CP_MARKETPLACE_AGENCY_NAV_V405;
+
+function cp405NoPublicGuardSignupMessage() {
+  return 'Guard accounts are created privately by an approved security agency. Use Guard Login after your agency adds your email/password.';
+}
+
+function renderPublic() {
+  const tab = state.publicView === 'guard-signup' ? 'login' : state.publicView;
+  let content = '';
+  if (tab === 'login') {
+    content = `<p class="eyebrow">Secure Marketplace Login</p><h2>Co Pilot Security Marketplace</h2><p class="auth-note">Clients request patrols. Approved agencies accept jobs and privately add their own guards. Guards log in after their agency creates the account.</p>
+      <form class="form-grid" data-form="login">
+        <label>Login As<select name="role" required><option value="client">Client</option><option value="agency_admin">Agency Admin</option><option value="guard">Guard</option><option value="platform_admin">Platform Admin</option></select></label>
+        <label>Email<input type="email" name="email" required placeholder="name@email.com"></label>
+        <label>Password<input type="password" name="password" required placeholder="Password"></label>
+        <div class="button-row"><button class="btn" type="submit">Continue Securely</button></div>
+      </form>
+      <div class="workflow-finished-panel blue" style="margin-top:14px;"><strong>No public guard signup</strong><p>${esc(cp405NoPublicGuardSignupMessage())}</p></div>`;
+  } else if (tab === 'agency-signup') {
+    content = `<p class="eyebrow">Licensed Agency Application</p><h2>Agency Sign Up</h2><p class="auth-note">Licensed security companies apply here. Platform Admin verifies the agency before it can accept open marketplace jobs.</p>
+      <form class="form-grid" data-form="agency-signup">
+        <label>Agency / Company Name<input name="agency_name" required placeholder="Licensed Security Company"></label>
+        <label>Contact Person<input name="contact_name" required placeholder="Manager / Owner"></label>
+        <label>Email<input name="email" type="email" required placeholder="agency@email.com"></label>
+        <label>Create Password<input name="password" type="password" minlength="6" required></label>
+        <div class="form-row"><label>Phone<input name="phone" placeholder="(555) 555-0000"></label><label>License State<input name="license_state" value="FL" placeholder="FL"></label></div>
+        <label>Security Agency License #<input name="license_number" required placeholder="Class B license number"></label>
+        <div class="form-row"><label>Primary City<input name="primary_city" placeholder="Miami, Tampa, Orlando..."></label><label>Service Radius Miles<input name="service_radius_miles" type="number" min="1" value="25"></label></div>
+        <label>Service Notes<textarea name="service_notes" placeholder="Cities, counties, armed/unarmed coverage, patrol types, availability, insurance notes."></textarea></label>
+        <div class="button-row"><button class="btn success" type="submit">Submit Agency Application</button></div>
+      </form>`;
+  } else if (tab === 'client-signup') {
+    content = `<p class="eyebrow">Client Application</p><h2>Client Sign Up</h2><p class="auth-note">Create a client login and service location. After approval, your patrol requests go to the open marketplace for approved agencies.</p>
+      <form class="form-grid" data-form="client-signup">
+        <label>Full Name<input name="name" required placeholder="Client name"></label>
+        <label>Email<input name="email" type="email" required placeholder="client@email.com"></label>
+        <label>Create Password<input name="password" type="password" minlength="6" required></label>
+        <label>Phone<input name="phone" placeholder="(555) 555-0000"></label>
+        <label>Property / Business Name<input name="property_label" required placeholder="Example: Sunset Plaza, Unit 12, Main Office"></label>
+        <label>Service Address<input name="address_line1" required placeholder="Street address where patrol is needed"></label>
+        <div class="form-row"><label>City<input name="city" required placeholder="Miami"></label><label>State<input name="state" required value="FL" placeholder="FL"></label></div>
+        <label>ZIP Code<input name="zip_code" required placeholder="33101"></label>
+        <label>Notes<textarea name="notes" placeholder="Gate code, property type, security concern, preferred patrol notes."></textarea></label>
+        <div class="button-row"><button class="btn success" type="submit">Submit Client Application</button></div>
+      </form>`;
+  } else if (tab === 'owner-setup') {
+    content = `<p class="eyebrow">Platform Setup</p><h2>Create Platform Admin</h2><p class="auth-note">Use this for the initial Co Pilot marketplace owner/admin account.</p>
+      <form class="form-grid" data-form="owner-setup">
+        <label>Marketplace Name<input name="business" required placeholder="Co Pilot Security Marketplace"></label>
+        <label>Owner / Platform Name<input name="name" required placeholder="Platform Admin"></label>
+        <label>Email<input name="email" type="email" required placeholder="owner@email.com"></label>
+        <label>Create Password<input name="password" type="password" minlength="6" required></label>
+        <div class="button-row"><button class="btn success" type="submit">Create Platform Account</button></div>
+      </form>`;
+  } else {
+    content = `<p class="eyebrow">Application Received</p><h2>Submitted</h2><p class="auth-note">Your ${esc(state.thanks?.type || 'account')} application for ${esc(state.thanks?.email || '')} has been submitted. Platform Admin must approve your account.</p><div class="button-row"><button class="btn secondary" data-public-view="login">Back To Login</button></div>`;
+  }
+
+  app.innerHTML = `<div class="auth-shell">
+    <div class="auth-card">
+      <section class="auth-hero">
+        <div>
+          <div class="brand-row"><div class="logo-box">CP</div><div><strong>Co Pilot</strong><small>Security</small></div></div>
+          <h1>Uber-style security agency marketplace.</h1>
+          <p>Clients request patrol jobs, approved licensed agencies accept them, and each agency privately manages its own guard roster inside the portal.</p>
+          <div class="auth-hero-grid">
+            <div class="auth-point"><i>01</i><div><strong>Open marketplace</strong><span>Client jobs start open until a licensed agency accepts and locks the work.</span></div></div>
+            <div class="auth-point"><i>02</i><div><strong>Private guard rosters</strong><span>No public agency dropdown. Agency Admins add guards directly by email and temporary password.</span></div></div>
+            <div class="auth-point"><i>03</i><div><strong>Agency-owned service</strong><span>Co Pilot is the platform layer. The licensed agency provides the guard service.</span></div></div>
+          </div>
+        </div>
+        <span class="version-mini">${esc(BUILD.label)}</span>
+      </section>
+      <section class="auth-panel">
+        <div class="auth-tabs">
+          <button class="auth-tab ${tab === 'login' ? 'active' : ''}" data-public-view="login">Login</button>
+          <button class="auth-tab ${tab === 'agency-signup' ? 'active' : ''}" data-public-view="agency-signup">Agency Sign Up</button>
+          <button class="auth-tab ${tab === 'client-signup' ? 'active' : ''}" data-public-view="client-signup">Client Sign Up</button>
+          <button class="auth-tab ${tab === 'owner-setup' ? 'active' : ''}" data-public-view="owner-setup">Create Platform</button>
+        </div>
+        <div class="auth-box">${content}</div>
+      </section>
+    </div>
+  </div>`;
+  ensureBadge();
+}
+
+function cp405GuardAgencyId(g = {}) { return String(g.agency_id || g.agencyId || g.accepted_agency_id || ''); }
+function adminAssignableGuards() {
+  const agencyId = v401ActiveAgencyId ? v401ActiveAgencyId() : '';
+  return (state.guards || []).filter(g => {
+    const status = String(g.status || 'active').toLowerCase();
+    if (['inactive', 'disabled', 'rejected', 'pending'].includes(status)) return false;
+    if (isAgencyAdmin() && agencyId) return cp405GuardAgencyId(g) === agencyId;
+    return true;
+  });
+}
+function v403AgencyGuards() { return adminAssignableGuards(); }
+
+function cp405AgencyGuardHeaderPanel() {
+  if (!isAgencyAdmin()) return '';
+  const agency = v401ActiveAgencyRecord ? v401ActiveAgencyRecord() : null;
+  return `<section class="workflow-finished-panel success"><strong>Private agency guard roster</strong><p>${esc(agency?.agency_name || 'Your agency')} adds guards here by email and temporary password. Guards do not sign up publicly and never choose from a list of companies.</p><div class="button-row" style="margin-top:12px;"><button class="primary-button" data-action="open-agency-add-guard-v405">Add Guard Login</button></div></section>`;
+}
+function guardsHeader() {
+  const title = isAgencyAdmin() ? 'Agency Guards' : 'Guards';
+  const subtitle = isAgencyAdmin() ? 'Private roster for your approved agency. Add guards directly, then assign them accepted marketplace jobs.' : 'Monitor guard status, assignments, ranks, GPS activity, and availability.';
+  return `<header class="dashboard-header guards-header">
+    <div class="title-block"><h1>${esc(title)}</h1><p>${esc(subtitle)}</p></div>
+    <div class="guards-header-actions"><span class="system-pill"><i></i>${esc(isAgencyAdmin() ? (v401ActiveAgencyRecord()?.agency_name || 'Agency') : 'System Operational')}</span><label class="guards-search"><input data-guards-search placeholder="Search guards..." value="${esc(state.guardsSearch || '')}"><b>⌕</b></label>${isAgencyAdmin() ? `<button type="button" data-action="open-agency-add-guard-v405">+ Add Guard</button>` : ''}<button type="button" data-action="guards-refresh">⟳ Refresh</button></div>
+  </header>`;
+}
+function guardsCommandCenterView() {
+  return `<div class="dashboard guards-shell">${guardsHeader()}${cp405AgencyGuardHeaderPanel()}${guardsKpiRow()}<section class="guards-layout"><main class="guards-main panel">${guardsFilterBar()}${guardsTable()}${guardsPagination()}</main>${guardDetailRail()}</section></div>`;
+}
+function guardDetailActions(guard = {}) {
+  const deactivate = isAgencyAdmin() ? `<button type="button" data-action="agency-deactivate-guard-v405" data-guard-id="${esc(guard.id)}">Deactivate</button>` : '';
+  return `<div class="guard-detail-actions"><button type="button" data-action="message-guard" data-guard-id="${esc(guard.id)}">Message</button><button type="button" data-action="view-guard-route" data-guard-id="${esc(guard.id)}">View Route</button><button type="button" data-action="assign-guard-patrol" data-guard-id="${esc(guard.id)}">Assign Patrol</button><button type="button" data-action="view-guard-profile" data-guard-id="${esc(guard.id)}">View Profile</button>${deactivate}</div>`;
+}
+
+function cp405AddGuardModal() {
+  const agency = v401ActiveAgencyRecord ? v401ActiveAgencyRecord() : null;
+  document.querySelectorAll('.cp405-modal').forEach(x => x.remove());
+  const wrap = document.createElement('div');
+  wrap.className = 'cp405-modal';
+  wrap.style.cssText = 'position:fixed;inset:0;z-index:999998;background:rgba(0,0,0,.58);display:grid;place-items:center;padding:18px;';
+  wrap.innerHTML = `<div class="panel panel-pad" style="width:min(680px,96vw);max-height:92vh;overflow:auto;box-shadow:0 24px 80px rgba(0,0,0,.48);">
+    <div class="panel-head"><div><h2>Add Guard Login</h2><p>Create a private guard account under ${esc(agency?.agency_name || 'your agency')}.</p></div><button class="ghost-button" data-action="close-agency-add-guard-v405">×</button></div>
+    <form class="form-grid" data-form="agency-add-guard-v405">
+      <label>Guard Full Name<input name="name" required placeholder="Guard name"></label>
+      <div class="form-row"><label>Email<input name="email" type="email" required placeholder="guard@email.com"></label><label>Phone<input name="phone" placeholder="(555) 555-0000"></label></div>
+      <div class="form-row"><label>Temporary Password<input name="password" type="password" minlength="6" required placeholder="Minimum 6 characters"></label><label>Rank<select name="rank"><option>Guard</option><option>Officer</option><option>Corporal</option><option>Sergeant</option><option>Supervisor</option></select></label></div>
+      <div class="form-row"><label>License / Guard Card #<input name="license_number" placeholder="Optional"></label><label>License State<input name="license_state" value="FL" placeholder="FL"></label></div>
+      <div class="form-row"><label>Vehicle<input name="vehicle" placeholder="Patrol unit"></label><label>License Plate<input name="license_plate" placeholder="Plate #"></label></div>
+      <label>Notes<textarea name="notes" placeholder="Internal notes, shift, coverage, certifications."></textarea></label>
+      <div class="workflow-finished-panel blue"><strong>Password handling</strong><p>The password is sent to Supabase Auth to create the login. It is not saved in a normal app table.</p></div>
+      <div class="button-row"><button class="btn success" type="submit">Create Guard Login</button><button class="btn secondary" type="button" data-action="close-agency-add-guard-v405">Cancel</button></div>
+    </form>
+  </div>`;
+  document.body.appendChild(wrap);
+}
+function cp405CloseGuardModal() { document.querySelectorAll('.cp405-modal').forEach(x => x.remove()); }
+
+async function cp405AgencyCreateGuard(form) {
+  if (!isAgencyAdmin()) throw new Error('Only Agency Admin can add guards.');
+  const name = form.name.value.trim();
+  const email = form.email.value.trim().toLowerCase();
+  const password = form.password.value;
+  const phone = form.phone.value.trim();
+  const rank = form.rank.value.trim() || 'Guard';
+  const licenseNumber = form.license_number.value.trim();
+  const licenseState = form.license_state.value.trim().toUpperCase() || 'FL';
+  const vehicle = form.vehicle.value.trim();
+  const licensePlate = form.license_plate.value.trim();
+  const notes = form.notes.value.trim();
+  if (!name || !email || !password) throw new Error('Guard name, email, and temporary password are required.');
+  let uid = null;
+  try {
+    const result = await supabase.signUpNoSession(email, password, { role: 'guard', marketplace_role: 'guard', display_name: name, phone, agency_id: v401ActiveAgencyId() });
+    uid = result?.user?.id || result?.id || null;
+  } catch (err) {
+    const msg = String(err?.message || err || '').toLowerCase();
+    if (!(msg.includes('already') || msg.includes('registered') || msg.includes('exists') || msg.includes('user_already_exists'))) throw err;
+  }
+  const result = await supabase.rpc('cp_agency_create_guard_account', {
+    p_auth_user_id: uid,
+    p_name: name,
+    p_email: email,
+    p_phone: phone,
+    p_rank: rank,
+    p_license_number: licenseNumber,
+    p_license_state: licenseState,
+    p_vehicle: vehicle,
+    p_license_plate: licensePlate,
+    p_notes: notes
+  });
+  if (result && result.ok === false) throw new Error(result.message || 'Guard account could not be created.');
+  cp405CloseGuardModal();
+  await loadData();
+  const guard = (state.guards || []).find(g => String(g.email || '').toLowerCase() === email);
+  if (guard) state.selectedGuardId = guard.id || '';
+  state.view = 'guards';
+  render();
+  toast('Guard login created under your agency. Guard can now log in with email and password.', 'success');
+}
+async function cp405DeactivateGuard(guardId = '') {
+  if (!guardId) throw new Error('Guard not selected.');
+  const result = await supabase.rpc('cp_agency_set_guard_status', { p_guard_id: guardId, p_status: 'inactive' });
+  if (result && result.ok === false) throw new Error(result.message || 'Guard status could not be changed.');
+  await loadData();
+  state.selectedGuardId = '';
+  render();
+  toast('Guard deactivated for this agency.', 'success');
+}
+
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button');
+  if (!b || b.disabled || b.dataset.busy === '1') return;
+  try {
+    if (b.dataset.action === 'open-agency-add-guard-v405') { cp405AddGuardModal(); return; }
+    if (b.dataset.action === 'close-agency-add-guard-v405') { cp405CloseGuardModal(); return; }
+    if (b.dataset.action === 'agency-deactivate-guard-v405') { setActionButtonBusy(b, 'Deactivating...'); await cp405DeactivateGuard(b.dataset.guardId || ''); return; }
+  } catch (err) { toast(friendly(err)); }
+  finally { if (b.dataset.action === 'agency-deactivate-guard-v405' && document.body.contains(b)) clearActionButtonBusy(b); }
+});
+
+document.addEventListener('submit', async e => {
+  const form = e.target;
+  if (!form?.dataset || form.dataset.form !== 'agency-add-guard-v405') return;
+  e.preventDefault();
+  const submitButton = form.querySelector('button[type="submit"], button:not([type])');
+  if (submitButton?.dataset.busy === '1') return;
+  setActionButtonBusy(submitButton, 'Creating...');
+  try { await cp405AgencyCreateGuard(form); }
+  catch (err) { toast(friendly(err)); }
+  finally { if (submitButton && document.body.contains(submitButton)) clearActionButtonBusy(submitButton); }
+});
+
+
+/* v4.0.6 Assignment select change support */
+document.addEventListener('change', e => {
+  const i = e.target;
+  if (i && i.hasAttribute('data-agency-dispatch-guard-select-v403')) {
+    const jobId = i.dataset.agencyDispatchGuardSelectV403 || '';
+    state.agencyDispatchGuardSelections = { ...(state.agencyDispatchGuardSelections || {}), [jobId]: i.value || '' };
+  }
+});
+
+
+
+/* v4.0.7 Agency Live GPS Route Visibility
+   Agency Admin sees all approved/active agency guards on Live GPS. Once a job is
+   assigned to an agency guard, that guard is linked to the accepted marketplace
+   job and the map draws a mandatory route to the assignment property when
+   coordinates are available. Address geocoding is cached locally so marketplace
+   jobs with service addresses can route even if the property table has no lat/lng. */
+BUILD.version = '4.0.7';
+BUILD.label = 'v4.0.7 AGENCY LIVE GPS ROUTE VISIBILITY';
+window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
+window.CP_DEV_CACHE_BUST = '2026-06-27T03-35-v407';
+
+function cp407IsAgencyLiveGps() {
+  return Boolean(isAgencyAdmin && isAgencyAdmin() && state.role === 'admin' && state.view === 'live-gps');
+}
+function cp407RouteEligibleStatus(status = '') {
+  return ['guard_assigned','assigned','accepted','guard_accepted','en_route','in_progress','active','proof_uploaded','completed'].includes(String(status || '').toLowerCase());
+}
+function cp407AgencyLiveJobs() {
+  const mine = (typeof marketplaceJobRows === 'function' ? marketplaceJobRows() : (state.marketplaceJobs || []))
+    .filter(job => typeof v401Owner === 'function' ? v401Owner(job) === 'mine' : String(job.accepted_agency_id || '') === String(state.activeAgencyId || ''));
+  return mine
+    .map(job => ({ ...job, _status: typeof marketplaceJobStatus === 'function' ? marketplaceJobStatus(job) : String(job.current_status || job.status || '') }))
+    .filter(job => ['agency_accepted','accepted_by_agency','guard_assigned','assigned','accepted','guard_accepted','en_route','in_progress','active','proof_uploaded','completed'].includes(job._status))
+    .sort((a,b) => new Date(b.assigned_at || b.accepted_at || b.requested_at || b.created_at || 0) - new Date(a.assigned_at || a.accepted_at || a.requested_at || a.created_at || 0));
+}
+function cp407AgencyLiveRouteJobs() {
+  return cp407AgencyLiveJobs().filter(job => job.assigned_guard_id && cp407RouteEligibleStatus(job._status));
+}
+function cp407AddressForJob(job = {}) {
+  const parts = [
+    job.property_address || job.address || job.address_line1 || job.service_address || '',
+    job.property_city || job.city || '',
+    job.property_state || job.state || '',
+    job.property_zip || job.zip_code || job.zip || ''
+  ].filter(Boolean);
+  if (parts.length) return parts.join(', ');
+  try { return typeof v401Address === 'function' ? v401Address(job) : ''; } catch { return ''; }
+}
+function cp407PropertyLabel(job = {}) {
+  return job.property_label || job.property_name || job.business_name || job.client_business_name || (typeof propertyLabel === 'function' ? propertyLabel(job) : '') || 'Assignment Property';
+}
+function cp407PropertyId(job = {}) {
+  return String(job.property_id || job.propertyId || job.location_id || job.id || '');
+}
+function cp407GeoCacheKey() { return 'cp407_agency_live_gps_geocode_cache_v1'; }
+function cp407ReadGeoCache() {
+  try { const x = JSON.parse(localStorage.getItem(cp407GeoCacheKey()) || '{}'); return x && typeof x === 'object' ? x : {}; } catch { return {}; }
+}
+function cp407WriteGeoCache(cache = {}) { try { localStorage.setItem(cp407GeoCacheKey(), JSON.stringify(cache)); } catch {} }
+function cp407DirectCoords(row = {}) {
+  const loc = row.location || row.current_location || row.property_location || row.coords || {};
+  const lat = dispatchNumberValue(
+    row.property_latitude, row.latitude, row.lat, row.geo_lat, row.location_lat,
+    row.property_lat, row.service_latitude, row.address_latitude, loc.latitude, loc.lat
+  );
+  const lng = dispatchNumberValue(
+    row.property_longitude, row.longitude, row.lng, row.lon, row.geo_lng, row.location_lng,
+    row.property_lng, row.service_longitude, row.address_longitude, loc.longitude, loc.lng, loc.lon
+  );
+  if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng, source: 'direct' };
+  return null;
+}
+const cp407BaseGetPropertyCoords = typeof getPropertyCoords === 'function' ? getPropertyCoords : null;
+function getPropertyCoords(req = {}) {
+  const direct = cp407DirectCoords(req);
+  if (direct) return { lat: direct.lat, lng: direct.lng };
+  const p = propertyById ? propertyById(req?.property_id) : null;
+  const pDirect = p ? cp407DirectCoords(p) : null;
+  if (pDirect) return { lat: pDirect.lat, lng: pDirect.lng };
+  const cache = cp407ReadGeoCache();
+  const keys = [req?.id, req?.job_id, req?.marketplace_job_id, req?.property_id, cp407AddressForJob(req)].filter(Boolean).map(String);
+  for (const key of keys) {
+    const hit = cache[key];
+    if (hit && Number.isFinite(Number(hit.lat)) && Number.isFinite(Number(hit.lng))) return { lat: Number(hit.lat), lng: Number(hit.lng) };
+  }
+  if (cp407BaseGetPropertyCoords) {
+    try { return cp407BaseGetPropertyCoords(req); } catch {}
+  }
+  return null;
+}
+async function cp407GeocodeJobAddress(job = {}) {
+  const address = cp407AddressForJob(job);
+  if (!address || !job?.id) return null;
+  const cache = cp407ReadGeoCache();
+  const keys = [job.id, job.property_id, address].filter(Boolean).map(String);
+  for (const key of keys) {
+    const hit = cache[key];
+    if (hit && Number.isFinite(Number(hit.lat)) && Number.isFinite(Number(hit.lng))) return hit;
+  }
+  if (cache[`busy:${job.id}`]) return null;
+  cache[`busy:${job.id}`] = new Date().toISOString();
+  cp407WriteGeoCache(cache);
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(address)}`, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error('Address geocode failed');
+    const rows = await res.json();
+    const item = Array.isArray(rows) ? rows[0] : null;
+    const lat = Number(item?.lat), lng = Number(item?.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) throw new Error('Address not found');
+    const next = cp407ReadGeoCache();
+    const val = { lat, lng, address, updated_at: new Date().toISOString() };
+    keys.forEach(k => { next[k] = val; });
+    delete next[`busy:${job.id}`];
+    cp407WriteGeoCache(next);
+    return val;
+  } catch (err) {
+    const next = cp407ReadGeoCache();
+    delete next[`busy:${job.id}`];
+    next[`failed:${job.id}`] = { address, message: String(err?.message || err), updated_at: new Date().toISOString() };
+    cp407WriteGeoCache(next);
+    return null;
+  }
+}
+function cp407ScheduleAgencyGeoPrep() {
+  if (!cp407IsAgencyLiveGps()) return;
+  const jobs = cp407AgencyLiveJobs().filter(job => !getPropertyCoords(job)).slice(0, 5);
+  if (!jobs.length) return;
+  setTimeout(async () => {
+    let changed = false;
+    for (const job of jobs) {
+      const got = await cp407GeocodeJobAddress(job);
+      if (got) changed = true;
+    }
+    if (changed && cp407IsAgencyLiveGps()) { try { render(); } catch {} }
+  }, 250);
+}
+function cp407JobForGuard(guard = {}) {
+  const guardKeys = dispatchGuardIdentityKeys ? dispatchGuardIdentityKeys(guard) : [guard.id, guard.email].filter(Boolean).map(v => String(v).toLowerCase());
+  return cp407AgencyLiveRouteJobs().find(job => {
+    const assigned = [job.assigned_guard_id, job.guard_id, job.assigned_guard_auth_user_id, job.assigned_guard_email, job.guard_email]
+      .filter(Boolean).map(v => String(v).trim().toLowerCase());
+    return assigned.some(x => guardKeys.includes(x));
+  }) || null;
+}
+function cp407GuardApprovedForAgency(guard = {}) {
+  const status = String(guard.status || guard.approval_status || 'active').toLowerCase();
+  if (['inactive','disabled','rejected','pending','denied'].includes(status)) return false;
+  return true;
+}
+function cp407AgencyGuardRowsAll() {
+  return (typeof adminAssignableGuards === 'function' ? adminAssignableGuards() : (state.guards || [])).filter(cp407GuardApprovedForAgency);
+}
+function dispatchMapOnlineGuards() {
+  const guards = cp407IsAgencyLiveGps() ? cp407AgencyGuardRowsAll() : (typeof adminAssignableGuards === 'function' ? adminAssignableGuards() : (state.guards || []));
+  return guards.map((guard, idx) => {
+    const linkedReq = cp407IsAgencyLiveGps()
+      ? cp407JobForGuard(guard)
+      : (typeof activeRequests === 'function' ? activeRequests().find(req => String(req.guard_id || req.assigned_guard_id) === String(guard.id)) : null);
+    const coords = dispatchGuardCoords(guard, idx, linkedReq);
+    return { guard, request: linkedReq || null, coords, positionSource: coords?.source || 'unknown' };
+  }).filter(entry => cp407IsAgencyLiveGps() ? Boolean(entry.coords) : dispatchGuardIsOnlineForMap(entry.guard, entry.coords));
+}
+function dispatchMapPropertyEntries() {
+  if (cp407IsAgencyLiveGps()) {
+    const jobEntries = cp407AgencyLiveJobs().map(job => {
+      const coords = getPropertyCoords(job);
+      if (!coords) return null;
+      return {
+        property: {
+          id: cp407PropertyId(job),
+          label: cp407PropertyLabel(job),
+          name: cp407PropertyLabel(job),
+          address: job.property_address || job.address || job.address_line1 || job.service_address || '',
+          city: job.property_city || job.city || '',
+          state: job.property_state || job.state || '',
+          zip_code: job.property_zip || job.zip_code || job.zip || '',
+          owner_name: job.client_name || job.client_email || 'Marketplace Client',
+          latitude: coords.lat,
+          longitude: coords.lng,
+          marketplace_job_id: job.id
+        },
+        coords,
+        activeReq: job,
+        isActive: Boolean(job.assigned_guard_id)
+      };
+    }).filter(Boolean);
+    const seen = new Set();
+    return jobEntries.filter(entry => {
+      const key = `${entry.property.id}:${entry.coords.lat.toFixed(5)},${entry.coords.lng.toFixed(5)}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+  return (state.properties || []).map(property => {
+    const coords = dispatchPropertyCoords(property);
+    const activeReq = activeRequests().find(req => String(req.property_id) === String(property.id)) || null;
+    return { property, coords, activeReq, isActive: Boolean(activeReq) };
+  }).filter(entry => entry.coords);
+}
+function cp407AssignedJobCount() { return cp407AgencyLiveRouteJobs().length; }
+function dispatchLiveGpsKpiRow() {
+  const guards = cp407AgencyGuardRowsAll();
+  const online = dispatchMapOnlineGuards();
+  const active = cp407IsAgencyLiveGps() ? cp407AgencyLiveJobs() : (typeof activeRequests === 'function' ? activeRequests() : []);
+  const routeJobs = cp407IsAgencyLiveGps() ? cp407AgencyLiveRouteJobs() : active;
+  const properties = dispatchMapPropertyEntries();
+  const alerts = activeAlertCount ? activeAlertCount() : 0;
+  const onlineSub = cp407IsAgencyLiveGps() ? `${online.length} / ${Math.max(guards.length, online.length)} agency guards showing GPS` : `${online.length} / ${Math.max(guards.length, online.length)} guards online`;
+  const activeSub = cp407IsAgencyLiveGps() ? `${routeJobs.length} assigned route${routeJobs.length === 1 ? '' : 's'} of ${active.length} accepted jobs` : `${active.length} active requests`;
+  const propertySub = cp407IsAgencyLiveGps() ? `${properties.length} job locations mapped` : `${properties.length} properties mapped`;
+  const alertSub = alerts ? 'Require attention' : 'All clear';
+  return `<section class="live-gps-kpi-row">
+    ${liveGpsKpi('⌖', 'Agency Guards GPS', online.length, onlineSub, 'blue')}
+    ${liveGpsKpi('⟶', 'Assigned Routes', routeJobs.length, activeSub, 'green')}
+    ${liveGpsKpi('▥', 'Job Locations', properties.length, propertySub, 'purple')}
+    ${liveGpsKpi('⚠', 'Alerts', alerts, alertSub, 'red')}
+  </section>`;
+}
+function liveGpsOnlineGuardRoster() {
+  const mapRows = dispatchMapOnlineGuards();
+  const mapIds = new Set(mapRows.map(e => String(e.guard.id || '')));
+  const rows = cp407IsAgencyLiveGps()
+    ? cp407AgencyGuardRowsAll().map((guard, idx) => mapRows.find(e => String(e.guard.id || '') === String(guard.id || '')) || { guard, request: cp407JobForGuard(guard), coords: null, positionSource: 'no-gps' })
+    : mapRows;
+  return `<section class="panel panel-pad live-guard-roster-panel">
+    <div class="panel-head"><div><h2>${cp407IsAgencyLiveGps() ? 'Agency Guard Roster' : 'Online Guard Roster'}</h2></div><button type="button" data-view="guards">View all</button></div>
+    <div class="live-guard-roster-list">${rows.length ? rows.map(entry => {
+      const g = entry.guard;
+      const name = g.name || g.display_name || g.email || 'Guard';
+      const selected = String(liveGps.dispatchSelectedGuardId || '') === String(g.id);
+      const hasGps = Boolean(entry.coords);
+      const req = entry.request || null;
+      return `<button type="button" class="${selected ? 'selected' : ''}" data-action="select-live-gps-guard" data-guard-id="${esc(g.id)}">
+        ${avatar(name, g.photo_url || g.avatar_url || g.image_url || '')}
+        <span><strong>${esc(name)}</strong><small>${esc(req ? 'Assigned: ' + cp407PropertyLabel(req) : (hasGps ? 'Available / GPS on' : 'Approved / no GPS yet'))}</small></span>
+        <em>${hasGps ? esc(liveGpsGuardSpeed(entry)) + ' mph<br>' + esc(liveGpsGuardCity(entry)) : 'No GPS<br>Waiting'}</em>
+      </button>`;
+    }).join('') : '<div class="empty">No agency guards have been added yet.</div>'}</div>
+  </section>`;
+}
+function buildLiveGpsEvents() {
+  const now = Date.now();
+  const guardEntries = dispatchMapOnlineGuards();
+  const routeEvents = cp407IsAgencyLiveGps() ? cp407AgencyLiveRouteJobs().map((job, idx) => {
+    const guard = (state.guards || []).find(g => String(g.id) === String(job.assigned_guard_id)) || {};
+    const name = guard.name || guard.display_name || job.assigned_guard_name || job.assigned_guard_email || 'Assigned guard';
+    const entry = guardEntries.find(e => String(e.guard.id) === String(guard.id || job.assigned_guard_id));
+    const route = entry ? dispatchRouteForRequestAndGuard(job, entry) : null;
+    return {
+      id: `cp407-route-${job.id}`,
+      created_at: job.assigned_at || job.accepted_at || job.updated_at || new Date(now - idx * 90000).toISOString(),
+      guardName: name,
+      event: cp407RouteEligibleStatus(job._status) ? 'route linked to assignment' : 'assignment waiting',
+      location: cp407PropertyLabel(job),
+      status: job._status || job.current_status || 'assigned',
+      eta: route?.etaMin ? `${route.etaMin} min` : 'Route required'
+    };
+  }) : [];
+  const guardEvents = guardEntries.map((entry, idx) => {
+    const name = entry.guard.name || entry.guard.display_name || entry.guard.email || 'Guard';
+    const req = entry.request;
+    const route = req ? dispatchRouteForRequestAndGuard(req, entry) : null;
+    return {
+      id: `guard-${entry.guard.id}`,
+      created_at: liveGps.lastUpdate || new Date(now - idx * 90000).toISOString(),
+      guardName: name,
+      event: req ? 'en route to assignment' : 'showing agency GPS',
+      location: req ? cp407PropertyLabel(req) : dispatchGuardGpsAddress(entry),
+      status: req ? String(req._status || req.status || req.current_status || 'assigned') : 'online',
+      eta: req && route?.etaMin ? `${route.etaMin} min` : (req ? 'Route required' : 'Live')
+    };
+  });
+  const activityEvents = (state.patrolActivity || []).slice(0, 6).map((item, idx) => {
+    const req = requestById ? requestById(item.request_id) || {} : {};
+    return { id: item.id || `activity-${idx}`, created_at: item.created_at || new Date(now - idx * 240000).toISOString(), guardName: requestGuardName ? requestGuardName(req) : 'System', event: item.title || item.event_type || 'Route event', location: item.details || item.message || (propertyLabel ? propertyLabel(req) : 'Live GPS'), status: String(req.status || item.status || 'completed'), eta: fmtTime(item.created_at) };
+  });
+  return [...routeEvents, ...guardEvents, ...activityEvents].sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0, 12);
+}
+function dispatchLiveGpsView() {
+  cp407ScheduleAgencyGeoPrep();
+  const agency = typeof v401ActiveAgencyRecord === 'function' ? v401ActiveAgencyRecord() : null;
+  return `<div class="dashboard live-gps-shell">
+    <header class="dashboard-header live-gps-header">
+      <div class="title-block"><h1><i>⌖</i> ${cp407IsAgencyLiveGps() ? 'Agency Live GPS' : 'Live GPS'}</h1><p>${cp407IsAgencyLiveGps() ? 'Agency Admin sees every approved agency guard. Assigned guards must show a route to the accepted job location.' : 'Real-time live tracking of online guards, active patrols, and property locations.'}</p></div>
+      <div class="header-actions"><span class="system-pill"><i></i>${esc(cp407IsAgencyLiveGps() ? (agency?.agency_name || 'Agency GPS') : 'System Operational')}</span><button class="header-button" data-action="live-gps-search">⌕</button><button class="header-button" data-view="settings">⚙</button><button class="header-button" data-view="notifications">🔔${unreadNotificationsCount() ? `<b>${esc(unreadNotificationsCount())}</b>` : ''}</button><button class="header-button" data-view="dispatch-board">☰</button></div>
+    </header>
+    ${cp407IsAgencyLiveGps() ? `<section class="workflow-finished-panel success"><strong>Agency-owned GPS visibility</strong><p>Co Pilot does not dispatch the job. Once your agency accepts work, this page shows your approved guards and draws the assigned guard route to the client location.</p></section>` : ''}
+    ${dispatchLiveGpsKpiRow()}
+    <section class="live-gps-layout">
+      <main class="live-gps-main">
+        ${liveGpsMapPanel()}
+        ${liveGpsRouteEventsTable()}
+      </main>
+      <aside class="live-gps-rail">
+        ${liveGpsOnlineGuardRoster()}
+        ${liveGpsSelectedPropertyPanel()}
+        ${liveGpsFeedPanel()}
+      </aside>
+    </section>
+  </div>`;
+}
+const cp407BaseScheduleDispatchRoutePrep = typeof scheduleDispatchRoutePrep === 'function' ? scheduleDispatchRoutePrep : null;
+function scheduleDispatchRoutePrep() {
+  if (cp407IsAgencyLiveGps()) cp407ScheduleAgencyGeoPrep();
+  if (cp407BaseScheduleDispatchRoutePrep) return cp407BaseScheduleDispatchRoutePrep();
+}
+
 initialize();

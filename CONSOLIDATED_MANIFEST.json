@@ -1,26 +1,19 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.0",
-  "buildName": "MARKETPLACE DATA FOUNDATION",
-  "type": "marketplace-data-foundation",
-  "sql_required": true,
+  "version": "4.0.7",
+  "buildName": "AGENCY LIVE GPS ROUTE VISIBILITY",
+  "type": "agency-live-gps-route-visibility",
+  "sql_required": false,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Converted v3 app into a separate v4 marketplace foundation package using the new Supabase project",
-    "Added platform_admin and agency_admin marketplace roles while preserving client and guard roles",
-    "Added agency signup flow for licensed/certified security agencies",
-    "Added Platform Admin Agency Verification Center UI",
-    "Added Marketplace Jobs board UI for global open/accepted jobs",
-    "Added Marketplace Data Foundation dashboard to explain and verify the global backbone",
-    "Added marketplace_jobs table as the main source of truth for client request, agency acceptance, guard assignment, proof, reports, and future payments",
-    "Added job_events table as the global audit/timeline trail",
-    "Added agencies, agency_members, agency_service_areas, and marketplace_job_claims tables",
-    "Added indexes for job status, agency ownership, client, property, guard, proof, reports, and audit events",
-    "Added RPCs for platform admin bootstrap, agency signup, agency approval/rejection, client marketplace request creation, agency job acceptance, agency guard assignment, and global app data loading",
-    "Preserved v3.0.77 Recent Reports thumbnail fix, v3.0.76 Recent Reports polish, v3.0.75 audit trail UI, and v3.0.74 dashboard/report/proof sync"
+    "Agency Admin Live GPS view focused on agency-owned jobs and guards",
+    "Agency guard roster displayed without public company dropdowns",
+    "Assigned guard route linked from accepted marketplace_jobs to job location",
+    "Job address geocode/cache support for route drawing when coordinates are missing",
+    "Live GPS KPIs updated for agency guards, assigned routes, and job locations",
+    "Maintains Uber-style model: agency accepts job and manages its own guard route visibility"
   ],
   "sql_files": [
-    "RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql",
-    "RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql"
+    "RUN_AFTER_V407_AGENCY_LIVE_GPS_ROUTE_VISIBILITY.sql"
   ]
 }

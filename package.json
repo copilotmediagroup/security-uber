@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-data-foundation",
-  "version": "4.0.0",
+  "name": "co-pilot-security-marketplace-agency-live-gps-route-visibility",
+  "version": "4.0.7",
   "private": true,
-  "description": "Co Pilot Security Marketplace foundation with licensed-agency onboarding, global marketplace_jobs backbone, job_events audit trail, and new Supabase config.",
+  "description": "Co Pilot Security Marketplace v4.0.7 with agency Live GPS route visibility for accepted and assigned marketplace jobs.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",
