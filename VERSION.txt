@@ -1,15 +1,14 @@
 Co Pilot Security Marketplace
-Version: 4.0.37
-Build Name: PRIORITY RESPONSE CARD CLEANUP + NO PRICING
-Package: GITHUB READY / LESS THAN 20 FILES
+Version: 4.0.38
+Build Name: STARTUP RECOVERY + PRIORITY CARD STABILITY
+Package: GITHUB READY LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Tightens the Priority Response card layout on the Agency Job Board.
-- Removes client price, agency payout, and premium payout language from Priority Response screens for now.
-- Keeps Priority Response pinned and visually distinct without showing pricing.
-- Keeps the 911 safety language, marketplace job flow, priority map markers, and guard/admin/agency visibility.
-- Preserves v4.0.35 final portal QA lock and all previous map/sidebar fixes.
+- Emergency recovery build after v4.0.37 could stay stuck on Preparing app.
+- Removes aggressive Priority Response DOM observer/scrubber and replaces it with lightweight render-time cleanup.
+- Adds hard startup recovery so the app cannot stay trapped on the loading screen.
+- Keeps Priority Response marketplace flow, no-pricing cleanup, compact company activity, universal map cards, sidebar stack fix, and map header cleanup.
 
 Badge:
-v4.0.37 PRIORITY RESPONSE CARD CLEANUP + NO PRICING
+v4.0.38 STARTUP RECOVERY + PRIORITY CARD STABILITY

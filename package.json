@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v437-priority-response-card-cleanup-no-pricing",
-  "version": "4.0.37",
+  "name": "co-pilot-security-marketplace-v438-startup-recovery-priority-card-stability",
+  "version": "4.0.38",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.37 tightens Priority Response marketplace cards and removes all pricing/payout language until pricing is finalized.",
+  "description": "Co Pilot Security Marketplace v4.0.38 startup recovery fix with stable Priority Response no-pricing card cleanup.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

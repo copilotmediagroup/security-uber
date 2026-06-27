@@ -5,7 +5,7 @@ We are building **Co Pilot Security Marketplace**, the Uber-style marketplace ve
 Current repo: **security-uber**
 
 Current latest working package:
-**v4.0.37 PRIORITY RESPONSE CARD CLEANUP + NO PRICING**
+**v4.0.38 STARTUP RECOVERY + PRIORITY CARD STABILITY
 
 Supabase:
 `https://nmfvxozbptcvyaenvkxl.supabase.co`
@@ -26,7 +26,7 @@ Latest additions:
 - Agency Job Board pins/highlights Priority Response jobs with premium payout language.
 - Platform Admin sees Priority Response alert counts and priority map markers.
 - Guard Active Job shows Priority Response assignment badge.
-- No new SQL required for v4.0.37.
+- No new SQL required for v4.0.38 STARTUP RECOVERY + PRIORITY CARD STABILITY
 
 Preserved from previous builds:
 - v4.0.35 final portal QA lock.
@@ -40,10 +40,16 @@ Preserved from previous builds:
 - Client marketplace status tracker.
 
 Next likely build:
-**v4.0.37 MARKETPLACE PRICING + PLATFORM FEE DISPLAY**
+**v4.0.38 STARTUP RECOVERY + PRIORITY CARD STABILITY
 
 That should formalize client price, agency payout, and Co Pilot platform fee across standard and Priority Response jobs.
 
 
-## v4.0.37 note
+## v4.0.38 STARTUP RECOVERY + PRIORITY CARD STABILITY
 Priority Response cards were tightened and all pricing/payout language was removed until pricing, platform fees, and agency payouts are finalized. No new SQL required.
+
+
+## v4.0.38 update
+v4.0.38 STARTUP RECOVERY + PRIORITY CARD STABILITY
+
+This emergency build removes the aggressive v4.0.37 DOM watcher that could leave Bolt stuck on Preparing app, adds startup recovery, keeps Priority Response no-pricing cleanup, and does not require new SQL.
