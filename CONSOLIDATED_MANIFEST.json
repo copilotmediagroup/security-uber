@@ -1,8 +1,8 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.4",
-  "buildName": "MARKETPLACE ROLE CLEANUP",
-  "type": "marketplace-role-cleanup",
+  "version": "4.0.5",
+  "buildName": "AGENCY GUARD DIRECT ADD",
+  "type": "agency-guard-direct-add",
   "sql_required": true,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
@@ -14,7 +14,13 @@
     "Platform Admin no longer sees legacy dispatch-board or pending-dispatch navigation",
     "Accepted marketplace jobs remain locked to the accepting agency",
     "Agency assigns its own guards after accepting open marketplace jobs",
-    "Preserves v4.0.3 client service-location capture and agency guard assignment"
+    "Preserves v4.0.3 client service-location capture and agency guard assignment",
+    "Removed public guard signup from the marketplace front page",
+    "Added Agency Admin direct Add Guard flow inside Agency Guards",
+    "Agency Admin can create a guard login with name, email, phone, and temporary password through Supabase Auth",
+    "Added SQL RPC to link guard profile, guard record, and agency_members privately to the agency",
+    "Guard logs in from the normal front page without choosing a security company",
+    "Agency guard roster remains private; no public agency dropdown is exposed"
   ],
   "sql_files": [
     "RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql",
@@ -22,6 +28,7 @@
     "RUN_AFTER_V401_AGENCY_JOB_BOARD.sql",
     "RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql",
     "RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql",
-    "RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql"
+    "RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql",
+    "RUN_AFTER_V405_AGENCY_GUARD_DIRECT_ADD.sql"
   ]
 }

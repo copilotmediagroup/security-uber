@@ -1,31 +1,21 @@
 Co Pilot Security Marketplace
-Version: 4.0.4
-Build Name: MARKETPLACE ROLE CLEANUP
+Version: 4.0.5
+Build Name: AGENCY GUARD DIRECT ADD
 Date: 2026-06-27
 
 Summary:
-- Builds on v4.0.3 Agency Dispatch + Client Location Fix.
-- Removes the public Legacy Dispatch login option.
-- Normalizes legacy v3 admin/dispatch accounts to Platform Admin in the v4 marketplace UI.
-- Platform Admin is now the Co Pilot marketplace owner/operator role.
-- Agency Admin is the licensed security company role.
-- Agency Dispatch is renamed in the UI to Agency Job Management.
-- Accepted marketplace jobs remain locked to the accepting agency.
-- The accepting agency assigns one of its own guards.
-- Platform Admin no longer sees old dispatch-board/pending-dispatch navigation.
-- Co Pilot Security remains the platform/software layer, not the licensed guard provider.
+- Removed public Guard Sign Up from the front page.
+- Guards no longer choose from a public agency/company dropdown.
+- Agency Admin adds guards privately inside Agency Guards.
+- Agency Admin enters guard name, email, phone, temporary password, rank, license info, and vehicle info.
+- Password is sent to Supabase Auth; it is not stored in an app table.
+- SQL links the auth user/profile/guard record to the agency through agency_members.
+- Guard simply logs in from the public Login page using email/password.
+- Guard only sees jobs assigned by that agency.
 
 Badge:
-v4.0.4 MARKETPLACE ROLE CLEANUP
+v4.0.5 AGENCY GUARD DIRECT ADD
 
 SQL:
-For a brand-new Supabase project, run:
-1. RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql
-2. RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql
-3. RUN_AFTER_V401_AGENCY_JOB_BOARD.sql
-4. RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql
-5. RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql
-6. RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql
-
-If v4.0.0 through v4.0.3 SQL were already run, only run:
-RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql
+If v4.0.0 through v4.0.4 SQL has already been run, run only:
+RUN_AFTER_V405_AGENCY_GUARD_DIRECT_ADD.sql

@@ -1,8 +1,8 @@
 
-const CP_DEV_CACHE_BUST = '2026-06-27T03-40-v404-marketplace-role-cleanup';
+const CP_DEV_CACHE_BUST = '2026-06-27T03-45-v405-agency-guard-direct-add';
 const BUILD = {
-  version: '4.0.4',
-  label: 'v4.0.4 MARKETPLACE ROLE CLEANUP'
+  version: '4.0.5',
+  label: 'v4.0.5 AGENCY GUARD DIRECT ADD'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -11712,7 +11712,7 @@ document.addEventListener('change', event => {
 });
 
 setInterval(ensureBadge, 1000);
-initialize();
+/* initialize moved to end after v4 marketplace overrides */
 
 
 /* v4.0.1 Agency Job Board override */
@@ -12159,7 +12159,7 @@ document.addEventListener('input', e => {
 });
 
 
-/* v4.0.4 Marketplace Role Cleanup
+/* v4.0.5 Marketplace Role Cleanup
    The marketplace has no public Legacy Dispatch role.  Legacy admin rows are
    normalized to Platform Admin in the UI for compatibility with older v3 tables. */
 const CP_MARKETPLACE_PLATFORM_NAV_V404 = [
@@ -12417,3 +12417,242 @@ function renderRoleView() {
   if (state.view === 'settings') return settingsView();
   return state.role === 'admin' ? (isAgencyAdmin() ? marketplaceJobsView() : dataFoundationView()) : compactDashboard(state.role);
 }
+
+
+/* v4.0.5 Agency Guard Direct Add
+   Guards do not publicly sign up or pick from a list of agencies. Agency Admins
+   create guard logins inside their private portal, then guards simply log in. */
+const CP_MARKETPLACE_AGENCY_NAV_V405 = [
+  ['dashboard', '⌂', 'Dashboard'],
+  ['marketplace-jobs', '◈', 'Available Jobs'],
+  ['dispatch-board', '▤', 'Agency Job Management'],
+  ['live-gps', '⌖', 'Live GPS'],
+  ['messages', '☵', 'Messages'],
+  ['notifications', '♧', 'Notifications'],
+  ['heading', '', 'Agency Ops'],
+  ['guards', '◎', 'Agency Guards'],
+  ['proof-review', '⬆', 'Proof Review'],
+  ['report-builder', '▣', 'Report Builder'],
+  ['report-archive', '☰', 'Report Archive'],
+  ['heading', '', 'Account'],
+  ['settings', '⚙', 'Settings']
+];
+NAV.agency_admin = CP_MARKETPLACE_AGENCY_NAV_V405;
+
+function cp405NoPublicGuardSignupMessage() {
+  return 'Guard accounts are created privately by an approved security agency. Use Guard Login after your agency adds your email/password.';
+}
+
+function renderPublic() {
+  const tab = state.publicView === 'guard-signup' ? 'login' : state.publicView;
+  let content = '';
+  if (tab === 'login') {
+    content = `<p class="eyebrow">Secure Marketplace Login</p><h2>Co Pilot Security Marketplace</h2><p class="auth-note">Clients request patrols. Approved agencies accept jobs and privately add their own guards. Guards log in after their agency creates the account.</p>
+      <form class="form-grid" data-form="login">
+        <label>Login As<select name="role" required><option value="client">Client</option><option value="agency_admin">Agency Admin</option><option value="guard">Guard</option><option value="platform_admin">Platform Admin</option></select></label>
+        <label>Email<input type="email" name="email" required placeholder="name@email.com"></label>
+        <label>Password<input type="password" name="password" required placeholder="Password"></label>
+        <div class="button-row"><button class="btn" type="submit">Continue Securely</button></div>
+      </form>
+      <div class="workflow-finished-panel blue" style="margin-top:14px;"><strong>No public guard signup</strong><p>${esc(cp405NoPublicGuardSignupMessage())}</p></div>`;
+  } else if (tab === 'agency-signup') {
+    content = `<p class="eyebrow">Licensed Agency Application</p><h2>Agency Sign Up</h2><p class="auth-note">Licensed security companies apply here. Platform Admin verifies the agency before it can accept open marketplace jobs.</p>
+      <form class="form-grid" data-form="agency-signup">
+        <label>Agency / Company Name<input name="agency_name" required placeholder="Licensed Security Company"></label>
+        <label>Contact Person<input name="contact_name" required placeholder="Manager / Owner"></label>
+        <label>Email<input name="email" type="email" required placeholder="agency@email.com"></label>
+        <label>Create Password<input name="password" type="password" minlength="6" required></label>
+        <div class="form-row"><label>Phone<input name="phone" placeholder="(555) 555-0000"></label><label>License State<input name="license_state" value="FL" placeholder="FL"></label></div>
+        <label>Security Agency License #<input name="license_number" required placeholder="Class B license number"></label>
+        <div class="form-row"><label>Primary City<input name="primary_city" placeholder="Miami, Tampa, Orlando..."></label><label>Service Radius Miles<input name="service_radius_miles" type="number" min="1" value="25"></label></div>
+        <label>Service Notes<textarea name="service_notes" placeholder="Cities, counties, armed/unarmed coverage, patrol types, availability, insurance notes."></textarea></label>
+        <div class="button-row"><button class="btn success" type="submit">Submit Agency Application</button></div>
+      </form>`;
+  } else if (tab === 'client-signup') {
+    content = `<p class="eyebrow">Client Application</p><h2>Client Sign Up</h2><p class="auth-note">Create a client login and service location. After approval, your patrol requests go to the open marketplace for approved agencies.</p>
+      <form class="form-grid" data-form="client-signup">
+        <label>Full Name<input name="name" required placeholder="Client name"></label>
+        <label>Email<input name="email" type="email" required placeholder="client@email.com"></label>
+        <label>Create Password<input name="password" type="password" minlength="6" required></label>
+        <label>Phone<input name="phone" placeholder="(555) 555-0000"></label>
+        <label>Property / Business Name<input name="property_label" required placeholder="Example: Sunset Plaza, Unit 12, Main Office"></label>
+        <label>Service Address<input name="address_line1" required placeholder="Street address where patrol is needed"></label>
+        <div class="form-row"><label>City<input name="city" required placeholder="Miami"></label><label>State<input name="state" required value="FL" placeholder="FL"></label></div>
+        <label>ZIP Code<input name="zip_code" required placeholder="33101"></label>
+        <label>Notes<textarea name="notes" placeholder="Gate code, property type, security concern, preferred patrol notes."></textarea></label>
+        <div class="button-row"><button class="btn success" type="submit">Submit Client Application</button></div>
+      </form>`;
+  } else if (tab === 'owner-setup') {
+    content = `<p class="eyebrow">Platform Setup</p><h2>Create Platform Admin</h2><p class="auth-note">Use this for the initial Co Pilot marketplace owner/admin account.</p>
+      <form class="form-grid" data-form="owner-setup">
+        <label>Marketplace Name<input name="business" required placeholder="Co Pilot Security Marketplace"></label>
+        <label>Owner / Platform Name<input name="name" required placeholder="Platform Admin"></label>
+        <label>Email<input name="email" type="email" required placeholder="owner@email.com"></label>
+        <label>Create Password<input name="password" type="password" minlength="6" required></label>
+        <div class="button-row"><button class="btn success" type="submit">Create Platform Account</button></div>
+      </form>`;
+  } else {
+    content = `<p class="eyebrow">Application Received</p><h2>Submitted</h2><p class="auth-note">Your ${esc(state.thanks?.type || 'account')} application for ${esc(state.thanks?.email || '')} has been submitted. Platform Admin must approve your account.</p><div class="button-row"><button class="btn secondary" data-public-view="login">Back To Login</button></div>`;
+  }
+
+  app.innerHTML = `<div class="auth-shell">
+    <div class="auth-card">
+      <section class="auth-hero">
+        <div>
+          <div class="brand-row"><div class="logo-box">CP</div><div><strong>Co Pilot</strong><small>Security</small></div></div>
+          <h1>Uber-style security agency marketplace.</h1>
+          <p>Clients request patrol jobs, approved licensed agencies accept them, and each agency privately manages its own guard roster inside the portal.</p>
+          <div class="auth-hero-grid">
+            <div class="auth-point"><i>01</i><div><strong>Open marketplace</strong><span>Client jobs start open until a licensed agency accepts and locks the work.</span></div></div>
+            <div class="auth-point"><i>02</i><div><strong>Private guard rosters</strong><span>No public agency dropdown. Agency Admins add guards directly by email and temporary password.</span></div></div>
+            <div class="auth-point"><i>03</i><div><strong>Agency-owned service</strong><span>Co Pilot is the platform layer. The licensed agency provides the guard service.</span></div></div>
+          </div>
+        </div>
+        <span class="version-mini">${esc(BUILD.label)}</span>
+      </section>
+      <section class="auth-panel">
+        <div class="auth-tabs">
+          <button class="auth-tab ${tab === 'login' ? 'active' : ''}" data-public-view="login">Login</button>
+          <button class="auth-tab ${tab === 'agency-signup' ? 'active' : ''}" data-public-view="agency-signup">Agency Sign Up</button>
+          <button class="auth-tab ${tab === 'client-signup' ? 'active' : ''}" data-public-view="client-signup">Client Sign Up</button>
+          <button class="auth-tab ${tab === 'owner-setup' ? 'active' : ''}" data-public-view="owner-setup">Create Platform</button>
+        </div>
+        <div class="auth-box">${content}</div>
+      </section>
+    </div>
+  </div>`;
+  ensureBadge();
+}
+
+function cp405GuardAgencyId(g = {}) { return String(g.agency_id || g.agencyId || g.accepted_agency_id || ''); }
+function adminAssignableGuards() {
+  const agencyId = v401ActiveAgencyId ? v401ActiveAgencyId() : '';
+  return (state.guards || []).filter(g => {
+    const status = String(g.status || 'active').toLowerCase();
+    if (['inactive', 'disabled', 'rejected', 'pending'].includes(status)) return false;
+    if (isAgencyAdmin() && agencyId) return cp405GuardAgencyId(g) === agencyId;
+    return true;
+  });
+}
+function v403AgencyGuards() { return adminAssignableGuards(); }
+
+function cp405AgencyGuardHeaderPanel() {
+  if (!isAgencyAdmin()) return '';
+  const agency = v401ActiveAgencyRecord ? v401ActiveAgencyRecord() : null;
+  return `<section class="workflow-finished-panel success"><strong>Private agency guard roster</strong><p>${esc(agency?.agency_name || 'Your agency')} adds guards here by email and temporary password. Guards do not sign up publicly and never choose from a list of companies.</p><div class="button-row" style="margin-top:12px;"><button class="primary-button" data-action="open-agency-add-guard-v405">Add Guard Login</button></div></section>`;
+}
+function guardsHeader() {
+  const title = isAgencyAdmin() ? 'Agency Guards' : 'Guards';
+  const subtitle = isAgencyAdmin() ? 'Private roster for your approved agency. Add guards directly, then assign them accepted marketplace jobs.' : 'Monitor guard status, assignments, ranks, GPS activity, and availability.';
+  return `<header class="dashboard-header guards-header">
+    <div class="title-block"><h1>${esc(title)}</h1><p>${esc(subtitle)}</p></div>
+    <div class="guards-header-actions"><span class="system-pill"><i></i>${esc(isAgencyAdmin() ? (v401ActiveAgencyRecord()?.agency_name || 'Agency') : 'System Operational')}</span><label class="guards-search"><input data-guards-search placeholder="Search guards..." value="${esc(state.guardsSearch || '')}"><b>⌕</b></label>${isAgencyAdmin() ? `<button type="button" data-action="open-agency-add-guard-v405">+ Add Guard</button>` : ''}<button type="button" data-action="guards-refresh">⟳ Refresh</button></div>
+  </header>`;
+}
+function guardsCommandCenterView() {
+  return `<div class="dashboard guards-shell">${guardsHeader()}${cp405AgencyGuardHeaderPanel()}${guardsKpiRow()}<section class="guards-layout"><main class="guards-main panel">${guardsFilterBar()}${guardsTable()}${guardsPagination()}</main>${guardDetailRail()}</section></div>`;
+}
+function guardDetailActions(guard = {}) {
+  const deactivate = isAgencyAdmin() ? `<button type="button" data-action="agency-deactivate-guard-v405" data-guard-id="${esc(guard.id)}">Deactivate</button>` : '';
+  return `<div class="guard-detail-actions"><button type="button" data-action="message-guard" data-guard-id="${esc(guard.id)}">Message</button><button type="button" data-action="view-guard-route" data-guard-id="${esc(guard.id)}">View Route</button><button type="button" data-action="assign-guard-patrol" data-guard-id="${esc(guard.id)}">Assign Patrol</button><button type="button" data-action="view-guard-profile" data-guard-id="${esc(guard.id)}">View Profile</button>${deactivate}</div>`;
+}
+
+function cp405AddGuardModal() {
+  const agency = v401ActiveAgencyRecord ? v401ActiveAgencyRecord() : null;
+  document.querySelectorAll('.cp405-modal').forEach(x => x.remove());
+  const wrap = document.createElement('div');
+  wrap.className = 'cp405-modal';
+  wrap.style.cssText = 'position:fixed;inset:0;z-index:999998;background:rgba(0,0,0,.58);display:grid;place-items:center;padding:18px;';
+  wrap.innerHTML = `<div class="panel panel-pad" style="width:min(680px,96vw);max-height:92vh;overflow:auto;box-shadow:0 24px 80px rgba(0,0,0,.48);">
+    <div class="panel-head"><div><h2>Add Guard Login</h2><p>Create a private guard account under ${esc(agency?.agency_name || 'your agency')}.</p></div><button class="ghost-button" data-action="close-agency-add-guard-v405">×</button></div>
+    <form class="form-grid" data-form="agency-add-guard-v405">
+      <label>Guard Full Name<input name="name" required placeholder="Guard name"></label>
+      <div class="form-row"><label>Email<input name="email" type="email" required placeholder="guard@email.com"></label><label>Phone<input name="phone" placeholder="(555) 555-0000"></label></div>
+      <div class="form-row"><label>Temporary Password<input name="password" type="password" minlength="6" required placeholder="Minimum 6 characters"></label><label>Rank<select name="rank"><option>Guard</option><option>Officer</option><option>Corporal</option><option>Sergeant</option><option>Supervisor</option></select></label></div>
+      <div class="form-row"><label>License / Guard Card #<input name="license_number" placeholder="Optional"></label><label>License State<input name="license_state" value="FL" placeholder="FL"></label></div>
+      <div class="form-row"><label>Vehicle<input name="vehicle" placeholder="Patrol unit"></label><label>License Plate<input name="license_plate" placeholder="Plate #"></label></div>
+      <label>Notes<textarea name="notes" placeholder="Internal notes, shift, coverage, certifications."></textarea></label>
+      <div class="workflow-finished-panel blue"><strong>Password handling</strong><p>The password is sent to Supabase Auth to create the login. It is not saved in a normal app table.</p></div>
+      <div class="button-row"><button class="btn success" type="submit">Create Guard Login</button><button class="btn secondary" type="button" data-action="close-agency-add-guard-v405">Cancel</button></div>
+    </form>
+  </div>`;
+  document.body.appendChild(wrap);
+}
+function cp405CloseGuardModal() { document.querySelectorAll('.cp405-modal').forEach(x => x.remove()); }
+
+async function cp405AgencyCreateGuard(form) {
+  if (!isAgencyAdmin()) throw new Error('Only Agency Admin can add guards.');
+  const name = form.name.value.trim();
+  const email = form.email.value.trim().toLowerCase();
+  const password = form.password.value;
+  const phone = form.phone.value.trim();
+  const rank = form.rank.value.trim() || 'Guard';
+  const licenseNumber = form.license_number.value.trim();
+  const licenseState = form.license_state.value.trim().toUpperCase() || 'FL';
+  const vehicle = form.vehicle.value.trim();
+  const licensePlate = form.license_plate.value.trim();
+  const notes = form.notes.value.trim();
+  if (!name || !email || !password) throw new Error('Guard name, email, and temporary password are required.');
+  let uid = null;
+  try {
+    const result = await supabase.signUpNoSession(email, password, { role: 'guard', marketplace_role: 'guard', display_name: name, phone, agency_id: v401ActiveAgencyId() });
+    uid = result?.user?.id || result?.id || null;
+  } catch (err) {
+    const msg = String(err?.message || err || '').toLowerCase();
+    if (!(msg.includes('already') || msg.includes('registered') || msg.includes('exists') || msg.includes('user_already_exists'))) throw err;
+  }
+  const result = await supabase.rpc('cp_agency_create_guard_account', {
+    p_auth_user_id: uid,
+    p_name: name,
+    p_email: email,
+    p_phone: phone,
+    p_rank: rank,
+    p_license_number: licenseNumber,
+    p_license_state: licenseState,
+    p_vehicle: vehicle,
+    p_license_plate: licensePlate,
+    p_notes: notes
+  });
+  if (result && result.ok === false) throw new Error(result.message || 'Guard account could not be created.');
+  cp405CloseGuardModal();
+  await loadData();
+  const guard = (state.guards || []).find(g => String(g.email || '').toLowerCase() === email);
+  if (guard) state.selectedGuardId = guard.id || '';
+  state.view = 'guards';
+  render();
+  toast('Guard login created under your agency. Guard can now log in with email and password.', 'success');
+}
+async function cp405DeactivateGuard(guardId = '') {
+  if (!guardId) throw new Error('Guard not selected.');
+  const result = await supabase.rpc('cp_agency_set_guard_status', { p_guard_id: guardId, p_status: 'inactive' });
+  if (result && result.ok === false) throw new Error(result.message || 'Guard status could not be changed.');
+  await loadData();
+  state.selectedGuardId = '';
+  render();
+  toast('Guard deactivated for this agency.', 'success');
+}
+
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button');
+  if (!b || b.disabled || b.dataset.busy === '1') return;
+  try {
+    if (b.dataset.action === 'open-agency-add-guard-v405') { cp405AddGuardModal(); return; }
+    if (b.dataset.action === 'close-agency-add-guard-v405') { cp405CloseGuardModal(); return; }
+    if (b.dataset.action === 'agency-deactivate-guard-v405') { setActionButtonBusy(b, 'Deactivating...'); await cp405DeactivateGuard(b.dataset.guardId || ''); return; }
+  } catch (err) { toast(friendly(err)); }
+  finally { if (b.dataset.action === 'agency-deactivate-guard-v405' && document.body.contains(b)) clearActionButtonBusy(b); }
+});
+
+document.addEventListener('submit', async e => {
+  const form = e.target;
+  if (!form?.dataset || form.dataset.form !== 'agency-add-guard-v405') return;
+  e.preventDefault();
+  const submitButton = form.querySelector('button[type="submit"], button:not([type])');
+  if (submitButton?.dataset.busy === '1') return;
+  setActionButtonBusy(submitButton, 'Creating...');
+  try { await cp405AgencyCreateGuard(form); }
+  catch (err) { toast(friendly(err)); }
+  finally { if (submitButton && document.body.contains(submitButton)) clearActionButtonBusy(submitButton); }
+});
+
+initialize();

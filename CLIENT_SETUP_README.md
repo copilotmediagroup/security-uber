@@ -1,49 +1,32 @@
-# Co Pilot Security Marketplace v4.0.4 — Marketplace Role Cleanup
+# Co Pilot Security Marketplace v4.0.5 — Agency Guard Direct Add
 
-This is the standalone Uber-style marketplace version, not the old v3 single-company app.
+This build removes public guard signup and keeps agency rosters private.
 
-## New Supabase
-Use only:
+## Main rule
+Guards do **not** sign up publicly and do **not** choose from a list of security companies.
 
-- `https://nmfvxozbptcvyaenvkxl.supabase.co`
+Agency Admin adds guards inside the agency portal:
 
-The publishable key is already configured in `config.js`.
+1. Login as Agency Admin.
+2. Open **Agency Guards**.
+3. Click **Add Guard**.
+4. Enter guard name, email, phone, temporary password, rank/license/vehicle info.
+5. Guard logs in from the normal front page using that email/password.
 
-## What changed in v4.0.4
+The password goes to Supabase Auth. It is not saved in a normal app database table.
 
-- Removed the public **Legacy Dispatch** login option.
-- Old v3 `admin` / dispatch accounts are normalized to **Platform Admin** for marketplace compatibility.
-- Platform Admin is the Co Pilot marketplace owner/operator role.
-- Agency Admin is the licensed security company role.
-- Agency Dispatch wording is renamed to **Agency Job Management**.
-- Platform Admin no longer sees old dispatch-board / pending-dispatch navigation.
-- Client jobs still flow to the open marketplace.
-- The accepting agency assigns its own guards after accepting the job.
+## SQL
+If you already ran v4.0.0 through v4.0.4 SQL, run only:
 
-## Correct marketplace flow
+`RUN_AFTER_V405_AGENCY_GUARD_DIRECT_ADD.sql`
 
-Client submits job → job appears in open marketplace → approved agency accepts → job locks to that agency → agency assigns its own guard → guard completes job → proof/report returns to client through the platform.
+Do not rerun the old foundation SQL unless Supabase reports a missing-table error.
 
-## SQL order
-
-If you already ran v4.0.0 through v4.0.3 SQL, run only:
-
-1. `RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql`
-
-For a fresh Supabase, run all SQL in this order:
-
-1. `RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql`
-2. `RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql`
-3. `RUN_AFTER_V401_AGENCY_JOB_BOARD.sql`
-4. `RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql`
-5. `RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql`
-6. `RUN_AFTER_V404_MARKETPLACE_ROLE_CLEANUP.sql`
-
-## Not added yet
-
-- No payments
-- No Stripe
-- No subscriptions
-- No bidding
-- No rankings
-- No closest-agency auto-matching
+## Marketplace model
+- Client requests job.
+- Job enters open marketplace.
+- Approved agency accepts job.
+- Job locks to that agency.
+- Agency adds/manages its own guards.
+- Agency assigns one of its guards.
+- Guard logs in and sees only assigned agency jobs.

@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-role-cleanup",
-  "version": "4.0.4",
+  "name": "co-pilot-security-marketplace-agency-guard-direct-add",
+  "version": "4.0.5",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.4 removes the public Legacy Dispatch login, normalizes legacy admin users to Platform Admin, and clarifies the agency-owned job-management flow.",
+  "description": "Co Pilot Security Marketplace v4.0.5 with private agency guard direct add, Supabase Auth guard login creation, and agency roster linkage.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",
