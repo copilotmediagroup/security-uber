@@ -1,19 +1,20 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.34",
-  "buildName": "SIDEBAR NAV STACK FIX",
+  "version": "4.0.35",
+  "buildName": "MARKETPLACE UI CONSISTENCY + FINAL PORTAL QA LOCK",
   "packageType": "github-ready-less-than-20-files",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v434.js",
+  "entry": "index.html loads script-v435.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
-  "optionalSql": "RUN_ONCE_V432_AGENCY_LOGO_VISIBILITY_FIX.sql",
+  "sql": "No new SQL required. Keep existing consolidated SQL and optional v422/v433 patches only if needed.",
   "latestImportantFixes": [
-    "Left sidebar profile and navigation stacking fixed globally for Platform Admin, Agency Admin, Guard, Client, and Legacy Admin portals",
-    "Removed unwanted Platform Admin map header paragraph text",
-    "Company Activity card is compact for the side rail, not oversized",
-    "Agency logo/profile photo can persist into agency record for Platform Admin visibility",
-    "Universal map popup card system reasserted across Admin, Agency, Guard, and Client maps"
+    "One badge source locked to v4.0.35 across stacked patches",
+    "Sidebar profile/nav/footer stacking hardened on every portal",
+    "Platform Admin map explanatory header text removed and kept removed after render",
+    "Compact Company Activity card retained for side rail",
+    "Universal map card classes reasserted after render for admin, agency, guard, and client maps",
+    "Route visibility remains tied to active movement statuses only"
   ]
 }

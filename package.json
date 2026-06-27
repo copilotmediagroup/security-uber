@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-v434-sidebar-nav-stack-fix",
-  "version": "4.0.34",
+  "name": "co-pilot-security-marketplace-v435-marketplace-ui-consistency-final-portal-qa-lock",
+  "version": "4.0.35",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.34 fixes left sidebar profile/nav stacking so navigation starts below the user card on every portal.",
+  "description": "Co Pilot Security Marketplace v4.0.35 final portal QA lock for badge, sidebar, map header, compact company card, and universal map-card consistency before pricing.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

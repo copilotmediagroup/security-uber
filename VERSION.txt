@@ -1,13 +1,16 @@
 Co Pilot Security Marketplace
-Version: 4.0.34
-Build Name: SIDEBAR NAV STACK FIX
-Package: GITHUB READY
+Version: 4.0.35
+Build Name: MARKETPLACE UI CONSISTENCY + FINAL PORTAL QA LOCK
+Package: GITHUB READY / LESS THAN 20 FILES
 Date: 2026-06-27
 
 Summary:
-- Fixes left sidebar profile/nav overlap globally across Platform Admin, Agency Admin, Guard, Client, and Legacy Admin portals.
-- Navigation now starts below the user card, with a hard reserved profile zone.
-- Preserves v4.0.33 map header text removal and agency logo SQL hotfix.
+- Final portal QA lock before pricing/platform fee work.
+- Locks badge to one source.
+- Hardens sidebar stacking across all portals.
+- Keeps Platform Admin map header text removed.
+- Keeps Company Activity compact.
+- Reasserts universal map card classes globally.
 
 Badge:
-v4.0.34 SIDEBAR NAV STACK FIX
+v4.0.35 MARKETPLACE UI CONSISTENCY + FINAL PORTAL QA LOCK

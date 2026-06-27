@@ -14810,3 +14810,110 @@ button.is-busy {
     max-height: 82px !important;
   }
 }
+
+
+/* -----------------------------------------------------------------------------
+   v4.0.35 MARKETPLACE UI CONSISTENCY + FINAL PORTAL QA LOCK
+----------------------------------------------------------------------------- */
+.platform-command-map-panel .platform-command-toolbar small,
+.platform-command-map-panel .platform-command-toolbar p,
+.platform-command-map-panel small:has(+ .platform-command-leaflet-map),
+.platform-command-map-panel p:has(+ .platform-command-leaflet-map) {
+  display: none !important;
+}
+.platform-command-map-panel .platform-command-toolbar {
+  align-items: center !important;
+}
+.platform-command-map-panel .platform-command-toolbar > div:first-child {
+  min-width: 0 !important;
+}
+.platform-command-map-panel .platform-command-toolbar > div:first-child h2,
+.platform-command-map-panel .platform-command-toolbar > div:first-child h3 {
+  margin-bottom: 0 !important;
+}
+.sidebar.global-sidebar-redesign,
+.sidebar.global-sidebar-redesign.sidebar-platform_admin,
+.sidebar.global-sidebar-redesign.sidebar-agency_admin,
+.sidebar.global-sidebar-redesign.sidebar-guard,
+.sidebar.global-sidebar-redesign.sidebar-client,
+.sidebar.global-sidebar-redesign.sidebar-admin {
+  grid-template-rows: auto 116px minmax(0, 1fr) auto !important;
+  gap: 12px !important;
+}
+.sidebar.global-sidebar-redesign .profile-zone,
+.sidebar.global-sidebar-redesign .admin-profile-zone {
+  height: 116px !important;
+  min-height: 116px !important;
+  max-height: 116px !important;
+  padding-bottom: 18px !important;
+  overflow: visible !important;
+}
+.sidebar.global-sidebar-redesign .profile-card {
+  height: 90px !important;
+  min-height: 90px !important;
+  max-height: 90px !important;
+  overflow: hidden !important;
+}
+.sidebar.global-sidebar-redesign .nav-scroll {
+  margin-top: 0 !important;
+  padding-top: 4px !important;
+  isolation: isolate !important;
+}
+.cp435-company-card,
+.cp430-company-activity-card.cp435-company-card,
+.cp431-company-compact-card.cp435-company-card,
+.cp432-company-compact-card.cp435-company-card {
+  min-height: 74px !important;
+  max-height: 96px !important;
+  padding: 8px !important;
+  grid-template-columns: 58px minmax(0,1fr) !important;
+  gap: 8px !important;
+  align-items: center !important;
+  overflow: hidden !important;
+}
+.cp435-company-logo-col,
+.cp430-company-logo-col.cp435-company-logo-col,
+.cp431-company-logo-col.cp435-company-logo-col,
+.cp432-company-logo-col.cp435-company-logo-col {
+  width: 58px !important;
+  min-width: 58px !important;
+  max-width: 58px !important;
+  height: 68px !important;
+  min-height: 68px !important;
+  padding: 0 !important;
+  border-right: 1px solid rgba(113,169,232,.18) !important;
+}
+.cp435-company-logo-frame,
+.cp430-company-logo-frame.cp435-company-logo-frame,
+.cp431-company-logo-frame.cp435-company-logo-frame,
+.cp432-company-logo-frame.cp435-company-logo-frame {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  border-radius: 12px !important;
+}
+.cp435-company-logo-frame img { width: 100% !important; height: 100% !important; object-fit: cover !important; }
+.cp435-company-logo-col small { font-size: 7px !important; letter-spacing: .12em !important; max-width: 54px !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+.cp435-map-card,
+.cp430-map-card.cp435-map-card,
+.cp431-map-card.cp435-map-card,
+.cp432-map-card.cp435-map-card {
+  width: min(292px, calc(100vw - 42px)) !important;
+  grid-template-columns: 56px minmax(0,1fr) !important;
+  gap: 10px !important;
+  padding: 10px !important;
+  border-radius: 14px !important;
+}
+.cp435-map-media,
+.cp430-map-media.cp435-map-media,
+.cp431-map-media.cp435-map-media,
+.cp432-map-media.cp435-map-media {
+  width: 54px !important;
+  height: 54px !important;
+  min-width: 54px !important;
+  min-height: 54px !important;
+}
+.cp435-map-media img { width: 100% !important; height: 100% !important; object-fit: cover !important; }
+.cp435-map-copy strong { white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+.cp435-map-copy p { display: -webkit-box !important; -webkit-line-clamp: 2 !important; -webkit-box-orient: vertical !important; overflow: hidden !important; }

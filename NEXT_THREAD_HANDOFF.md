@@ -1,32 +1,31 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-Current latest working package:
-**v4.0.34 SIDEBAR NAV STACK FIX**
+Current latest build:
 
-Repo:
-**security-uber**
+**v4.0.35 MARKETPLACE UI CONSISTENCY + FINAL PORTAL QA LOCK**
+
+Repo: `security-uber`
 
 Supabase:
 `https://nmfvxozbptcvyaenvkxl.supabase.co`
 
-Important instruction:
-Do not suggest Bolt AI prompts. Future changes should be complete GitHub-ready ZIP replacement packages.
+Do not suggest Bolt AI prompts. Future work must be complete GitHub-ready ZIP replacement packages.
 
-v4.0.34 fixes:
-- Left sidebar profile/navigation stacking is now locked globally.
-- Command Center and other first nav items no longer overlap the user card.
-- The sidebar now reserves a fixed user-card zone before the nav scroll begins.
-- Applied to Platform Admin, Agency Admin, Guard, Client, and Legacy Admin sidebars.
+## What v4.0.35 locked
 
-Preserved from prior builds:
-- v4.0.33 removed Platform Admin map header explanatory text and included safe agency logo SQL.
-- v4.0.32 compact company card/logo cleanup.
-- v4.0.31 compact company activity card.
-- v4.0.30 universal map card data fix.
-- v4.0.29 single source badge lock.
-- v4.0.28 universal map card system.
-- v4.0.27 live GPS roster/property visibility.
-- v4.0.26 global job state/map route enforcement.
+- Badge is locked to one source so old stacked patches stop jumping the displayed version.
+- Sidebar profile/nav/footer stacking is hardened across Platform Admin, Agency Admin, Guard, Client, and legacy Admin.
+- Platform Admin map header copy is removed and kept removed after render.
+- Company Activity card remains compact for the side panel.
+- Universal map card classes are reasserted across Admin, Agency, Guard, and Client maps.
+- Completed, proof uploaded, checking, arrived, and report published jobs do not show live movement route lines.
 
-Next suggested test:
-Login as each role and confirm the first nav item starts under the profile card with no overlap.
+## Current status
+
+The app is in marketplace foundation QA mode. Next feature after this should be pricing/platform fee logic.
+
+Recommended next build:
+
+**v4.0.36 MARKETPLACE PRICING + PLATFORM FEE DISPLAY**
+
+Add client job price, agency payout, Co Pilot platform fee, platform revenue view, and job value shown before agency accepts.

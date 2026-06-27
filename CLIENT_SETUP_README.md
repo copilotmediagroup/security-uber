@@ -1,28 +1,27 @@
-# Co Pilot Security Marketplace v4.0.34
+# Co Pilot Security Marketplace v4.0.35
 
-**v4.0.34 SIDEBAR NAV STACK FIX**
+**v4.0.35 MARKETPLACE UI CONSISTENCY + FINAL PORTAL QA LOCK**
 
-This build fixes the left sidebar overlap issue. The navigation now starts below the logo/name/user profile card on every portal.
+This package is a GitHub-ready replacement build for repo `security-uber`.
 
-## Fixed
+## What this build does
 
-- Platform Admin sidebar: Command Center no longer overlaps the user/profile card.
-- Agency Admin sidebar: Available Jobs/Dispatch nav starts below the user card.
-- Guard sidebar: Dashboard/Active Job nav starts below the user card.
-- Client sidebar: Dashboard/Properties nav starts below the user card.
-- Legacy Admin sidebar remains protected by the same stack rule.
-
-## Preserved
-
-- v4.0.33 map header text removal.
-- Compact Company Activity card.
-- Universal map card styling.
-- Agency logo safe SQL hotfix file remains included.
+- Locks the build badge to one canonical v4.0.35 label.
+- Hardens the left sidebar stack so profile cards and first nav items do not overlap on any portal.
+- Keeps the Platform Admin map-header explanatory text removed.
+- Keeps Company Activity compact in the right-side rail.
+- Reasserts universal map card styling and image/detail card classes after every render.
+- Keeps route lines limited to active movement job states only.
 
 ## SQL
 
-No new SQL required for the sidebar fix. Use `RUN_ONCE_V433_AGENCY_LOGO_VISIBILITY_SAFE_FIX.sql` only for the agency logo visibility issue.
+No new SQL is required for v4.0.35.
+
+Existing optional patches remain included:
+
+- `RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql` only if proof upload still hits Storage RLS.
+- `RUN_ONCE_V433_AGENCY_LOGO_VISIBILITY_SAFE_FIX.sql` only if agency logos still do not show.
 
 Expected badge:
 
-`v4.0.34 SIDEBAR NAV STACK FIX`
+`v4.0.35 MARKETPLACE UI CONSISTENCY + FINAL PORTAL QA LOCK`
