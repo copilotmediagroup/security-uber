@@ -1,21 +1,22 @@
 Co Pilot Security Marketplace
-Version: 4.0.2
-Build Name: CLIENT APPROVAL CENTER
+Version: 4.0.3
+Build Name: AGENCY DISPATCH + CLIENT LOCATION FIX
 Date: 2026-06-27
 
 Summary:
-- Builds on v4.0.1 Agency Job Board.
-- Adds a Platform Admin Client Approval Center.
-- Platform Admin can see pending, approved, rejected, and all client signups.
-- Platform Admin can accept client applications and move them into active Clients.
-- Platform Admin can reject client applications and lock them as rejected.
-- Client approval uses the v4 marketplace role model and sets approved clients to marketplace_role = client.
-- Active Clients remain separate from pending client applications.
-- Keeps the marketplace job lifecycle tied to marketplace_jobs after clients are approved and create requests.
+- Builds on v4.0.2 Client Approval Center.
+- Fixes the missing client service-location issue: client signup now requires property/business name, service address, city, state, and ZIP.
+- Platform Admin Client Approval Center now shows the submitted client service location before approval.
+- Client approval now creates/updates the active client record and a primary service property record.
+- Adds Agency Dispatch board for accepted marketplace jobs.
+- Agency Admin can assign one of its own agency guards to accepted jobs.
+- Assignment updates marketplace_jobs.assigned_guard_id and current_status = guard_assigned.
+- Guard portal continues to read assigned work from the same marketplace job/patrol request backbone.
+- Platform Admin marketplace job detail shows accepted agency and assigned guard.
 - No payments, Stripe, subscriptions, bidding, rankings, or closest-agency auto-matching added.
 
 Badge:
-v4.0.2 CLIENT APPROVAL CENTER
+v4.0.3 AGENCY DISPATCH + CLIENT LOCATION FIX
 
 SQL:
 For a brand-new Supabase project, run:
@@ -23,6 +24,7 @@ For a brand-new Supabase project, run:
 2. RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql
 3. RUN_AFTER_V401_AGENCY_JOB_BOARD.sql
 4. RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql
+5. RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql
 
-If v4.0.0 and v4.0.1 SQL were already run, only run:
-RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql
+If v4.0.0, v4.0.1, and v4.0.2 SQL were already run, only run:
+RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql

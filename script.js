@@ -1,8 +1,8 @@
 
-const CP_DEV_CACHE_BUST = '2026-06-27T02-10-v4010';
+const CP_DEV_CACHE_BUST = '2026-06-27T03-10-v403-agency-dispatch-location';
 const BUILD = {
-  version: '4.0.2',
-  label: 'v4.0.2 CLIENT APPROVAL CENTER'
+  version: '4.0.3',
+  label: 'v4.0.3 AGENCY DISPATCH + CLIENT LOCATION FIX'
 };
 window.CP_ACTIVE_BUILD_LABEL = BUILD.label;
 window.CP_DEV_CACHE_BUST = CP_DEV_CACHE_BUST;
@@ -34,6 +34,10 @@ const state = {
   clientApprovalSearch: '',
   clientApprovalTab: 'pending',
   selectedClientApprovalId: '',
+  agencyDispatchSearch: '',
+  agencyDispatchTab: 'unassigned',
+  selectedAgencyDispatchJobId: '',
+  agencyDispatchGuardSelections: {},
   properties: [],
   patrolRequests: [],
   proofItems: [],
@@ -2190,13 +2194,17 @@ function renderPublic() {
         <div class="button-row"><button class="btn success" type="submit">Submit Agency Application</button></div>
       </form>`;
   } else if (tab === 'client-signup') {
-    content = `<p class="eyebrow">Client Application</p><h2>Client Sign Up</h2><p class="auth-note">Create a client login. Dispatch approves the account before access.</p>
+    content = `<p class="eyebrow">Client Application</p><h2>Client Sign Up</h2><p class="auth-note">Create a client login and service location. Platform Admin approves the account before marketplace access.</p>
       <form class="form-grid" data-form="client-signup">
         <label>Full Name<input name="name" required placeholder="Client name"></label>
         <label>Email<input name="email" type="email" required placeholder="client@email.com"></label>
         <label>Create Password<input name="password" type="password" minlength="6" required></label>
-        <label>Phone<input name="phone" placeholder="(702) 555-0000"></label>
-        <label>Notes<textarea name="notes" placeholder="Optional notes for Dispatch"></textarea></label>
+        <label>Phone<input name="phone" placeholder="(555) 555-0000"></label>
+        <label>Property / Business Name<input name="property_label" required placeholder="Example: Sunset Plaza, Unit 12, Main Office"></label>
+        <label>Service Address<input name="address_line1" required placeholder="Street address where patrol is needed"></label>
+        <div class="form-row"><label>City<input name="city" required placeholder="Miami"></label><label>State<input name="state" required value="FL" placeholder="FL"></label></div>
+        <label>ZIP Code<input name="zip_code" required placeholder="33101"></label>
+        <label>Notes<textarea name="notes" placeholder="Gate code, property type, security concern, preferred patrol notes."></textarea></label>
         <div class="button-row"><button class="btn success" type="submit">Submit Client Application</button></div>
       </form>`;
   } else if (tab === 'owner-setup') {
@@ -11728,7 +11736,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('button');i
 document.addEventListener('input',e=>{const i=e.target;if(i&&i.hasAttribute('data-agency-job-search-v401')){state.agencyJobBoardSearch=i.value||'';state.selectedMarketplaceJobId='';render();}});
 
 
-/* v4.0.2 Client Approval Center override */
+/* v4.0.3 Client Approval Center override */
 try {
   [['platform_admin','agency-approvals'], ['admin','guard-approvals']].forEach(([role, after]) => {
     const nav = NAV[role] || [];
@@ -11902,4 +11910,250 @@ document.addEventListener('click', async e => {
 document.addEventListener('input', e => {
   const i = e.target;
   if (i && i.hasAttribute('data-client-approval-search-v402')) { state.clientApprovalSearch = i.value || ''; state.selectedClientApprovalId = ''; render(); }
+});
+
+
+/* v4.0.3 Agency Dispatch + Client Location Fix */
+try {
+  state.agencyDispatchSearch = state.agencyDispatchSearch || '';
+  state.agencyDispatchTab = state.agencyDispatchTab || 'unassigned';
+  state.selectedAgencyDispatchJobId = state.selectedAgencyDispatchJobId || '';
+  state.agencyDispatchGuardSelections = state.agencyDispatchGuardSelections || {};
+} catch {}
+
+function v403ClientLocation(row = {}) {
+  const p = (state.properties || []).find(x => String(x.client_id || '') === String(row.client_id || row.id || '')) || {};
+  const line = row.address || row.address_line1 || row.service_address || p.address || p.address_line1 || '';
+  const city = row.city || p.city || '';
+  const st = row.state || p.state || '';
+  const zip = row.zip || row.zip_code || p.zip || p.zip_code || '';
+  return [line, [city, st, zip].filter(Boolean).join(', ')].filter(Boolean).join(' · ') || 'Service address missing';
+}
+function v403ClientLocationFields(row = {}) {
+  return {
+    label: row.property_label || row.property_name || row.business_name || row.company_name || row.name || 'Primary Service Location',
+    address: row.address || row.address_line1 || row.service_address || '',
+    city: row.city || '',
+    state: row.state || '',
+    zip: row.zip || row.zip_code || ''
+  };
+}
+
+async function submitClientSignup(form) {
+  const name = form.name.value.trim();
+  const email = form.email.value.trim().toLowerCase();
+  const password = form.password.value;
+  const phone = form.phone.value.trim();
+  const propertyLabel = form.property_label.value.trim();
+  const addressLine1 = form.address_line1.value.trim();
+  const city = form.city.value.trim();
+  const stateValue = form.state.value.trim().toUpperCase();
+  const zipCode = form.zip_code.value.trim();
+  const notes = form.notes.value.trim();
+  if (!addressLine1 || !city || !stateValue || !zipCode) throw new Error('Client service address, city, state, and ZIP are required.');
+  let uid = null;
+  try {
+    const result = await supabase.signUp(email, password, { role: 'client', display_name: name, phone, property_label: propertyLabel, address_line1: addressLine1, city, state: stateValue, zip_code: zipCode });
+    uid = result?.user?.id || result?.id || null;
+  } catch (err) {
+    const msg = String(err.message || '').toLowerCase();
+    if (!(msg.includes('already') || msg.includes('registered') || msg.includes('exists'))) throw err;
+  }
+  await supabase.rpc('cp_submit_client_signup', {
+    p_auth_user_id: uid,
+    p_name: name,
+    p_email: email,
+    p_phone: phone,
+    p_property_label: propertyLabel,
+    p_address_line1: addressLine1,
+    p_city: city,
+    p_state: stateValue,
+    p_zip_code: zipCode,
+    p_notes: notes
+  });
+  state.publicView = 'thanks';
+  state.thanks = { type: 'client', email };
+  render();
+}
+
+function v402ClientApprovalRow(c = {}) {
+  const status = v402ClientSignupStatus(c);
+  const pending = ['pending','new','requested','prospect',''].includes(status);
+  return `<div class="client-request-history-row ${String(state.selectedClientApprovalId || '') === String(c.id || '') ? 'selected' : ''}">
+    <span><strong>${esc(v402ClientApprovalName(c))}</strong><small>${esc(c.id || 'new client')}</small></span>
+    <span><strong>${esc(c.email || '')}</strong><small>${esc(c.phone || 'No phone listed')}</small></span>
+    <span><strong>${esc(c.property_label || c.property_name || 'Service Location')}</strong><small>${esc(v403ClientLocation(c))}</small></span>
+    <span>${v402ClientApprovalStatusChip(c)}</span>
+    <span>${esc(fmtDate(c.created_at || c.updated_at))}</span>
+    <span class="button-row"><button class="ghost-button" data-action="view-client-approval-v402" data-client-approval-id="${esc(c.id)}">View</button>${pending ? `<button class="primary-button" data-action="approve-client-v402" data-client-approval-id="${esc(c.id)}">Accept Client</button><button class="ghost-button" data-action="reject-client-v402" data-client-approval-id="${esc(c.id)}">Reject</button>` : `<button class="ghost-button" data-view="clients">Clients</button>`}</span>
+  </div>`;
+}
+function v402ClientApprovalDetail(row = null) {
+  if (!row) return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Client Detail</h2><p>Select a client application.</p></div></div><div class="empty">No client application selected.</div></section></aside>`;
+  const pending = ['pending','new','requested','prospect',''].includes(v402ClientSignupStatus(row));
+  const activeClient = (state.clients || []).find(c => String(c.email || '').toLowerCase() === String(row.email || '').toLowerCase());
+  const loc = v403ClientLocationFields(row);
+  return `<aside class="dashboard-right"><section class="panel panel-pad client-approval-detail"><div class="panel-head"><div><h2>Client Application</h2><p>Platform Admin approval gate</p></div>${v402ClientApprovalStatusChip(row)}</div>
+    <div class="detail-grid"><span>Name</span><strong>${esc(v402ClientApprovalName(row))}</strong><span>Email</span><strong>${esc(row.email || '—')}</strong><span>Phone</span><strong>${esc(row.phone || '—')}</strong><span>Submitted</span><strong>${esc(fmtDate(row.created_at || row.updated_at))}</strong><span>Active Client</span><strong>${esc(activeClient ? 'Yes' : 'Not yet')}</strong></div>
+    <div class="detail-grid"><span>Property</span><strong>${esc(loc.label)}</strong><span>Address</span><strong>${esc(loc.address || '—')}</strong><span>City / State</span><strong>${esc([loc.city, loc.state].filter(Boolean).join(', ') || '—')}</strong><span>ZIP</span><strong>${esc(loc.zip || '—')}</strong></div>
+    <div class="note-box"><strong>Client notes</strong><p>${esc(row.notes || 'No notes were submitted by this client.')}</p></div>
+    <div class="workflow-finished-panel blue"><strong>Location rule</strong><p>Client approval now creates the client account and a primary service property, so marketplace jobs have an address from the start.</p></div>
+    <div class="button-row">${pending ? `<button class="primary-button" data-action="approve-client-v402" data-client-approval-id="${esc(row.id)}">Accept Client</button><button class="ghost-button" data-action="reject-client-v402" data-client-approval-id="${esc(row.id)}">Reject Client</button>` : ''}<button class="ghost-button" data-view="clients">Open Active Clients</button></div>
+  </section></aside>`;
+}
+function clientApprovalsCenterView() {
+  const counts = v402ClientApprovalCounts();
+  const rows = v402ClientApprovalRows();
+  const selected = v402ClientApprovalSelected();
+  return `<div class="dashboard client-approval-center"><header class="dashboard-header"><div class="title-block"><h1>Client Approval Center</h1><p>Review client signups with their service location before they can enter the marketplace and create patrol jobs.</p></div><div class="header-actions"><span class="system-pill"><i></i>Platform Admin</span><button class="ghost-button" data-action="client-approvals-refresh-v402">Refresh</button></div></header>
+  <section class="kpi-row">${kpiCard('⏳','Pending Clients',counts.pending,'Need platform approval','#ffb53d')}${kpiCard('⌖','Locations Captured',(state.clientSignups || []).filter(c => c.address_line1 || c.address || c.city).length,'Address required at signup','#31c8ff')}${kpiCard('✓','Approved Signups',counts.approved,'Accepted applications','#37dc72')}${kpiCard('◌','Active Clients',counts.active,'Can create requests','#2f83ff')}</section>
+  <section class="dashboard-grid"><div class="dashboard-left"><section class="panel panel-pad"><div class="panel-head"><div><h2>Client Applications</h2><p>Accepting a client creates/activates the client record and saves their primary service location.</p></div></div>${v402ClientApprovalTabs()}<div class="filters-row"><input data-client-approval-search-v402 value="${esc(state.clientApprovalSearch || '')}" placeholder="Search name, email, phone, address, city, notes..." /></div><div class="client-request-history-table client-approval-table"><div class="client-request-history-head client-approval-head-v403"><span>Client</span><span>Contact</span><span>Location</span><span>Status</span><span>Submitted</span><span>Actions</span></div>${rows.length ? rows.map(v402ClientApprovalRow).join('') : '<div class="empty">No client applications match this view.</div>'}</div></section></div>${v402ClientApprovalDetail(selected)}</section></div>`;
+}
+
+function v403AgencyGuards() {
+  const agencyId = v401ActiveAgencyId();
+  return (state.guards || []).filter(g => !agencyId || String(g.agency_id || g.agencyId || '') === agencyId || isAgencyAdmin());
+}
+function v403AgencyDispatchJobs() {
+  const q = String(state.agencyDispatchSearch || '').trim().toLowerCase();
+  const tab = state.agencyDispatchTab || 'unassigned';
+  let rows = marketplaceJobRows().filter(j => v401Owner(j) === 'mine').map(j => ({ ...j, _status: marketplaceJobStatus(j) }));
+  if (tab === 'unassigned') rows = rows.filter(j => !j.assigned_guard_id && ['agency_accepted','accepted_by_agency'].includes(j._status));
+  if (tab === 'assigned') rows = rows.filter(j => j.assigned_guard_id || ['guard_assigned','assigned','accepted','in_progress'].includes(j._status));
+  if (tab === 'active') rows = rows.filter(j => ['accepted','in_progress','proof_uploaded'].includes(j._status));
+  if (tab === 'completed') rows = rows.filter(j => ['completed','report_published','published'].includes(j._status));
+  if (q) rows = rows.filter(j => v401SearchText(j).includes(q));
+  return rows.sort((a,b) => new Date(b.requested_at || b.created_at || 0) - new Date(a.requested_at || a.created_at || 0));
+}
+function v403DispatchCounts() {
+  const rows = marketplaceJobRows().filter(j => v401Owner(j) === 'mine').map(j => ({ ...j, _status: marketplaceJobStatus(j) }));
+  return {
+    total: rows.length,
+    unassigned: rows.filter(j => !j.assigned_guard_id && ['agency_accepted','accepted_by_agency'].includes(j._status)).length,
+    assigned: rows.filter(j => j.assigned_guard_id || ['guard_assigned','assigned','accepted','in_progress'].includes(j._status)).length,
+    active: rows.filter(j => ['accepted','in_progress','proof_uploaded'].includes(j._status)).length,
+    completed: rows.filter(j => ['completed','report_published','published'].includes(j._status)).length,
+    guards: v403AgencyGuards().length
+  };
+}
+function v403JobGuardName(job = {}) {
+  if (job.assigned_guard_name) return job.assigned_guard_name;
+  const guard = (state.guards || []).find(g => String(g.id || '') === String(job.assigned_guard_id || ''));
+  return guard?.name || guard?.display_name || guard?.email || '';
+}
+function v403GuardOptions(job = {}) {
+  const selected = state.agencyDispatchGuardSelections?.[job.id] || job.assigned_guard_id || '';
+  const guards = v403AgencyGuards();
+  return `<select data-agency-dispatch-guard-select-v403="${esc(job.id)}"><option value="">Select agency guard...</option>${guards.map(g => `<option value="${esc(g.id)}" ${String(selected) === String(g.id) ? 'selected' : ''}>${esc(guardDisplayName(g))}${g.email ? ` · ${esc(g.email)}` : ''}</option>`).join('')}</select>`;
+}
+function v403AgencyDispatchRow(job = {}) {
+  const guardName = v403JobGuardName(job);
+  const canAssign = ['agency_accepted','accepted_by_agency','guard_assigned','assigned'].includes(marketplaceJobStatus(job));
+  return `<div class="client-request-history-row ${String(state.selectedAgencyDispatchJobId || '') === String(job.id || '') ? 'selected' : ''}">
+    <span><strong>${esc(job.job_number || job.id)}</strong><small>${esc(job.client_name || 'Client')}</small></span>
+    <span><strong>${esc(job.property_label || propertyLabel(job) || 'Property')}</strong><small>${esc(v401Address(job))}</small></span>
+    <span>${displayStatusChip(marketplaceJobStatus(job))}</span>
+    <span><strong>${esc(guardName || 'Unassigned')}</strong><small>${esc(guardName ? 'Agency guard' : 'Needs assignment')}</small></span>
+    <span class="button-row"><button class="ghost-button" data-action="view-agency-dispatch-job-v403" data-job-id="${esc(job.id)}">View</button>${canAssign ? `<button class="primary-button" data-action="agency-assign-guard-v403" data-job-id="${esc(job.id)}">Assign Guard</button>` : ''}</span>
+  </div>`;
+}
+function v403AgencyDispatchDetail(job = null) {
+  if (!job) return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Dispatch Detail</h2><p>Select an accepted job.</p></div></div><div class="empty">No accepted agency job selected.</div></section></aside>`;
+  const status = marketplaceJobStatus(job);
+  const guardName = v403JobGuardName(job) || 'Unassigned';
+  const assignable = ['agency_accepted','accepted_by_agency','guard_assigned','assigned'].includes(status);
+  return `<aside class="dashboard-right"><section class="panel panel-pad marketplace-job-detail agency-dispatch-detail"><div class="panel-head"><div><h2>Agency Dispatch Detail</h2><p>Accepted job owned by ${esc(v401ActiveAgencyRecord()?.agency_name || 'your agency')}</p></div>${displayStatusChip(status)}</div>
+    <div class="detail-grid"><span>Job Number</span><strong>${esc(job.job_number || job.id)}</strong><span>Property</span><strong>${esc(job.property_label || propertyLabel(job) || 'Property')}</strong><span>Address</span><strong>${esc(v401Address(job))}</strong><span>Client</span><strong>${esc(job.client_name || 'Client')}</strong><span>Service</span><strong>${esc(v401Service(job))}</strong><span>Assigned Guard</span><strong>${esc(guardName)}</strong></div>
+    <div class="note-box"><strong>Client request notes</strong><p>${esc(v401Notes(job))}</p></div>
+    ${assignable ? `<label>Assign Agency Guard${v403GuardOptions(job)}</label><div class="button-row"><button class="primary-button" data-action="agency-assign-guard-v403" data-job-id="${esc(job.id)}">Assign / Update Guard</button><button class="ghost-button" data-view="marketplace-jobs">Back To Job Board</button></div>` : `<div class="button-row"><button class="ghost-button" data-view="marketplace-jobs">Back To Job Board</button></div>`}
+    <div class="workflow-finished-panel blue"><strong>Lifecycle source</strong><p>Assigning here updates marketplace_jobs.assigned_guard_id and moves status to guard_assigned. The guard portal reads the same job record.</p></div>
+  </section></aside>`;
+}
+function agencyDispatchBoardView() {
+  const counts = v403DispatchCounts();
+  const rows = v403AgencyDispatchJobs();
+  const selected = rows.find(j => String(j.id || '') === String(state.selectedAgencyDispatchJobId || '')) || rows[0] || marketplaceJobRows().find(j => v401Owner(j) === 'mine') || null;
+  if (selected && String(state.selectedAgencyDispatchJobId || '') !== String(selected.id || '')) state.selectedAgencyDispatchJobId = selected.id || '';
+  const tabs = [['unassigned','Needs Guard',counts.unassigned],['assigned','Assigned',counts.assigned],['active','Active',counts.active],['completed','Completed',counts.completed],['all','All',counts.total]];
+  return `<div class="dashboard marketplace-jobs-view agency-dispatch-board-view"><header class="dashboard-header"><div class="title-block"><h1>Agency Dispatch</h1><p>Accepted marketplace jobs now move here so the licensed agency can assign its own guards.</p></div><div class="header-actions"><span class="system-pill"><i></i>${esc(v401ActiveAgencyRecord()?.agency_name || 'Agency')}</span><button class="ghost-button" data-action="agency-dispatch-refresh-v403">Refresh</button></div></header>
+  <section class="kpi-row">${kpiCard('▤','Accepted Jobs',counts.total,'Owned by your agency','#2f83ff')}${kpiCard('⏳','Needs Guard',counts.unassigned,'Waiting assignment','#ffb53d')}${kpiCard('◎','Agency Guards',counts.guards,'Available in this agency','#37dc72')}${kpiCard('✓','Assigned / Active',counts.assigned,'Visible to assigned guards','#b05cff')}</section>
+  ${!v401AgencyApproved() ? `<section class="workflow-finished-panel warning"><strong>Agency verification required</strong><p>Your agency must be approved before accepting and dispatching marketplace jobs.</p></section>` : ''}
+  <section class="dashboard-grid"><div class="dashboard-left"><section class="panel panel-pad"><div class="panel-head"><div><h2>Accepted Agency Jobs</h2><p>Only jobs accepted by this agency appear here. Open marketplace jobs stay on Available Jobs.</p></div></div><div class="button-row job-board-tabs">${tabs.map(t => `<button class="ghost-button ${state.agencyDispatchTab === t[0] ? 'active' : ''}" data-agency-dispatch-tab-v403="${esc(t[0])}">${esc(t[1])} <b>${esc(t[2])}</b></button>`).join('')}</div><div class="filters-row"><input data-agency-dispatch-search-v403 value="${esc(state.agencyDispatchSearch || '')}" placeholder="Search job number, property, city, client, guard..." /></div><div class="client-request-history-table agency-dispatch-table"><div class="client-request-history-head"><span>Job</span><span>Property / Address</span><span>Status</span><span>Guard</span><span>Action</span></div>${rows.length ? rows.map(v403AgencyDispatchRow).join('') : '<div class="empty">No accepted agency jobs match this view. Accept an open job from Available Jobs first.</div>'}</div></section></div>${v403AgencyDispatchDetail(selected)}</section></div>`;
+}
+async function v403AssignGuard(jobId = '') {
+  if (!jobId) throw new Error('Marketplace job missing.');
+  const select = document.querySelector(`select[data-agency-dispatch-guard-select-v403="${String(jobId).replace(/"/g, '&quot;')}"]`);
+  const guardId = state.agencyDispatchGuardSelections?.[jobId] || select?.value || '';
+  if (!guardId) throw new Error('Select an agency guard first.');
+  await supabase.rpc('cp_agency_assign_guard_to_job', { p_job_id: jobId, p_guard_id: guardId });
+  await loadData();
+  state.view = 'dispatch-board';
+  state.agencyDispatchTab = 'assigned';
+  state.selectedAgencyDispatchJobId = jobId;
+  render();
+  toast('Guard assigned. Job is now visible to that agency guard.', 'success');
+}
+
+function v401Detail(job){
+  if(!job||!job.id)return `<aside class="dashboard-right"><section class="panel panel-pad"><div class="panel-head"><div><h2>Job Detail</h2><p>Select a job to review the full request before accepting.</p></div></div><div class="empty">No marketplace job selected.</div></section></aside>`;
+  const status=marketplaceJobStatus(job),owner=v401Owner(job),open=['open_marketplace','pending_marketplace','marketplace_open'].includes(status),declined=v401DeclinedSet().has(String(job.id||'')),canAccept=isAgencyAdmin()&&v401AgencyApproved()&&open&&owner==='open',canDecline=canAccept&&!declined,agency=job.accepted_agency_name||(owner==='mine'?v401ActiveAgencyRecord()?.agency_name:'')||'Not accepted yet',guard=v403JobGuardName(job)||'Unassigned';
+  return `<aside class="dashboard-right"><section class="panel panel-pad marketplace-job-detail"><div class="panel-head"><div><h2>Job Detail</h2><p>Source of truth: marketplace_jobs</p></div>${displayStatusChip(status)}</div><div class="detail-grid"><span>Job Number</span><strong>${esc(job.job_number||job.id)}</strong><span>Property</span><strong>${esc(job.property_label||propertyLabel(job)||'Property')}</strong><span>Address</span><strong>${esc(v401Address(job))}</strong><span>Service Type</span><strong>${esc(v401Service(job))}</strong><span>Urgency</span><strong>${esc(statusText(job.priority||'normal'))}</strong><span>Requested</span><strong>${esc(fmtDate(job.requested_at||job.created_at))}</strong><span>Accepted Agency</span><strong>${esc(agency)}</strong><span>Assigned Guard</span><strong>${esc(guard)}</strong></div><div class="note-box"><strong>Client request notes</strong><p>${esc(v401Notes(job))}</p></div><div class="button-row">${canAccept?`<button class="primary-button" data-action="agency-accept-job" data-job-id="${esc(job.id)}">Accept Job</button>`:''}${canDecline?`<button class="ghost-button" data-action="agency-decline-job-v401" data-job-id="${esc(job.id)}">Decline</button>`:''}${declined?`<span class="workflow-stage-chip red"><b>Declined By Your Agency</b><small>Hidden from available jobs</small></span>`:''}${owner==='other'?`<span class="workflow-stage-chip amber"><b>Locked</b><small>Accepted by another agency</small></span>`:''}${owner==='mine'?`<button class="ghost-button" data-view="dispatch-board">Open Dispatch</button>`:''}</div></section><section class="panel panel-pad"><div class="panel-head"><div><h2>Lifecycle Rule</h2><p>This board does not invent status. It reads marketplace_jobs.current_status.</p></div></div><div class="priority-list">${priorityRow('Client job request','Source',1,'#2f83ff','data-foundation')}${priorityRow('Agency accept locks ownership',owner==='mine'?'Mine':owner==='other'?'Locked':'Open',owner==='open'?0:1,'#37dc72','marketplace-jobs')}${priorityRow('Agency dispatch assigns guard',guard,'Unassigned'===guard?0:1,'#b05cff','dispatch-board')}</div></section></aside>`;
+}
+
+function renderRoleView() {
+  if (state.view === 'data-foundation') return dataFoundationView();
+  if (state.view === 'agency-approvals') return agencyApprovalsView();
+  if (state.view === 'client-approvals') return clientApprovalsCenterView();
+  if (state.view === 'marketplace-jobs') return marketplaceJobsView();
+  if (state.role === 'admin') {
+    if (state.view === 'dashboard') return isAgencyAdmin() ? marketplaceJobsView() : dataFoundationView();
+    if (state.view === 'dispatch-board') return isAgencyAdmin() ? agencyDispatchBoardView() : dispatchBoardView();
+    if (state.view === 'live-gps') return dispatchLiveGpsView();
+    if (state.view === 'pending-dispatch') return pendingDispatchView();
+    if (state.view === 'scheduled-queue') return scheduledQueueView();
+    if (state.view === 'guards') return guardsCommandCenterView();
+    if (state.view === 'guard-approvals') return guardApprovalsCommandCenterView();
+    if (state.view === 'clients') return adminClientsCommandCenterView();
+    if (state.view === 'activity-log') return activityLogCommandCenterView();
+    if (state.view === 'proof-review') return proofReviewCommandCenterView();
+    if (state.view === 'report-builder') return reportBuilderCommandCenterView();
+    if (state.view === 'report-archive') return reportArchiveCommandCenterView();
+  }
+  if (state.role === 'guard') {
+    if (state.view === 'dashboard') return guardDashboardMockup302();
+    if (state.view === 'active-job') return guardActiveJobWorkflowView();
+    if (state.view === 'completed') return guardCompletedJobsView();
+    if (state.view === 'route-gps') return guardRouteGpsLiveView();
+    if (state.view === 'upload-proof') return proofUploadView();
+  }
+  if (state.role === 'client') {
+    if (state.view === 'dashboard') return clientDashboardView();
+    if (state.view === 'properties') return clientPropertiesView();
+    if (state.view === 'patrol-requests') return clientPatrolRequestsView();
+    if (state.view === 'reports') return clientReportsView();
+  }
+  if (state.view === 'messages') return messagesView();
+  if (state.view === 'notifications') return notificationsView();
+  if (state.view === 'settings') return settingsView();
+  return state.role === 'admin' ? adminDashboard() : compactDashboard(state.role);
+}
+
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button');
+  if (!b || b.disabled || b.dataset.busy === '1') return;
+  try {
+    if (b.dataset.agencyDispatchTabV403) { state.agencyDispatchTab = b.dataset.agencyDispatchTabV403 || 'unassigned'; state.selectedAgencyDispatchJobId = ''; render(); return; }
+    if (b.dataset.action === 'view-agency-dispatch-job-v403') { state.selectedAgencyDispatchJobId = b.dataset.jobId || ''; render(); return; }
+    if (b.dataset.action === 'agency-dispatch-refresh-v403') { await loadData(); render(); toast('Agency dispatch refreshed.', 'success'); return; }
+    if (b.dataset.action === 'agency-assign-guard-v403') { setActionButtonBusy(b, 'Assigning...'); await v403AssignGuard(b.dataset.jobId || ''); return; }
+  } catch (err) { toast(friendly(err)); }
+  finally { if (b.dataset.action === 'agency-assign-guard-v403') clearActionButtonBusy(b); }
+});
+document.addEventListener('input', e => {
+  const i = e.target;
+  if (i && i.hasAttribute('data-agency-dispatch-search-v403')) { state.agencyDispatchSearch = i.value || ''; state.selectedAgencyDispatchJobId = ''; render(); }
+  if (i && i.hasAttribute('data-agency-dispatch-guard-select-v403')) {
+    const jobId = i.dataset.agencyDispatchGuardSelectV403 || '';
+    state.agencyDispatchGuardSelections = { ...(state.agencyDispatchGuardSelections || {}), [jobId]: i.value || '' };
+  }
 });

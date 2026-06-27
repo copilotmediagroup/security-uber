@@ -1,8 +1,8 @@
 {
-  "name": "co-pilot-security-marketplace-client-approval-center",
-  "version": "4.0.2",
+  "name": "co-pilot-security-marketplace-agency-dispatch-client-location",
+  "version": "4.0.3",
   "private": true,
-  "description": "Co Pilot Security Marketplace v4.0.2 client approval center with Platform Admin client review, accept/reject workflow, and active client unlock.",
+  "description": "Co Pilot Security Marketplace v4.0.3 with agency dispatch guard assignment and required client service-location capture at signup.",
   "scripts": {
     "dev": "node server.cjs",
     "start": "node server.cjs",

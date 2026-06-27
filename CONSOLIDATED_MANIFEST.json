@@ -1,28 +1,26 @@
 {
   "project": "Co Pilot Security Marketplace",
-  "version": "4.0.2",
-  "buildName": "CLIENT APPROVAL CENTER",
-  "type": "marketplace-client-approval-center",
+  "version": "4.0.3",
+  "buildName": "AGENCY DISPATCH + CLIENT LOCATION FIX",
+  "type": "agency-dispatch-client-location",
   "sql_required": true,
   "supabase_project": "https://nmfvxozbptcvyaenvkxl.supabase.co",
   "features": [
-    "Built on v4.0.1 Agency Job Board and the separate v4 marketplace foundation",
-    "Added Platform Admin Client Approval Center sidebar tab",
-    "Added pending, approved, rejected, and all client application tabs",
-    "Added client application detail rail with contact info, notes, submitted date, and active-client state",
-    "Added Accept Client and Reject Client actions for Platform Admin",
-    "Accept Client activates/creates the client record and unlocks client portal login",
-    "Client approval sets role and marketplace_role to client so v4 marketplace routing is clear",
-    "Client approvals no longer hide only inside the legacy Clients page",
-    "Kept marketplace_jobs as the source of truth for future client patrol requests",
-    "No payments, Stripe, subscriptions, bidding, rankings, or auto-matching added",
-    "Preserved v4.0.1 agency available/accepted/declined job board flow",
-    "Preserved v4.0.0 marketplace data foundation"
+    "Required client service location at client signup",
+    "Client signup captures property/business name, service address, city, state, and ZIP",
+    "Client Approval Center displays submitted service location before approval",
+    "Client approval creates/updates active client and primary service property records",
+    "Agency Dispatch board for agency-accepted marketplace jobs",
+    "Agency Admin can assign agency guards to accepted jobs",
+    "Guard assignment updates marketplace_jobs.assigned_guard_id and current_status",
+    "Platform Admin job detail shows accepted agency and assigned guard",
+    "Preserves v4.0.1 Agency Job Board and v4.0.2 Client Approval Center"
   ],
   "sql_files": [
     "RUN_IF_NEEDED_CONSOLIDATED_SQL_V1383.sql",
     "RUN_AFTER_BASE_MARKETPLACE_DATA_FOUNDATION_V400.sql",
     "RUN_AFTER_V401_AGENCY_JOB_BOARD.sql",
-    "RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql"
+    "RUN_AFTER_V402_CLIENT_APPROVAL_CENTER.sql",
+    "RUN_AFTER_V403_AGENCY_DISPATCH_CLIENT_LOCATION.sql"
   ]
 }
