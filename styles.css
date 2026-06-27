@@ -13500,3 +13500,20 @@ button.is-busy {
   .cp412-jobs-table .client-request-history-head,
   .cp412-jobs-table .client-request-history-row { grid-template-columns: 1fr; }
 }
+
+
+/* v4.0.14 Marketplace Activity Guard Status Feed */
+.cp414-feed-panel .panel-head p { max-width: 290px; }
+.cp414-feed-row { border-left: 3px solid rgba(49, 200, 255, .7); }
+.cp414-feed-row i { box-shadow: 0 0 0 5px rgba(49, 200, 255, .14); }
+.cp414-feed-agency_accepted i,
+.cp414-feed-guard_assigned i { background: var(--amber); box-shadow: 0 0 0 5px rgba(255,181,61,.15); }
+.cp414-feed-guard_accepted i,
+.cp414-feed-en_route i,
+.cp414-feed-arrived i,
+.cp414-feed-in_progress i { background: var(--cyan); box-shadow: 0 0 0 5px rgba(49,200,255,.15); }
+.cp414-feed-proof_uploaded i { background: var(--purple); box-shadow: 0 0 0 5px rgba(176,92,255,.15); }
+.cp414-feed-completed i,
+.cp414-feed-report_published i { background: var(--green); box-shadow: 0 0 0 5px rgba(55,220,114,.15); }
+.cp414-feed-row p { text-transform: none; letter-spacing: 0; }
+.cp414-feed-row small { line-height: 1.35; }

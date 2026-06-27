@@ -1,18 +1,20 @@
-# Co Pilot Security Marketplace v4.0.13 — Build Label Lock Fix
+# Co Pilot Security Marketplace v4.0.14 — Marketplace Activity Guard Status Feed
 
-This package fixes the issue where GitHub showed v4.0.12 but Bolt still displayed the v4.0.10 badge.
+This build keeps the Uber-style security agency marketplace model and improves Platform Admin visibility.
 
-## Root cause
-Old module-level code inside `script.js` still reset the active build label to v4.0.10 and v4.0.11 after the file started loading. If a later lifecycle patch hit an error or initialized late, the visible badge could stay downgraded even though the repo had the new files.
-
-## Fix
-- Removed the stale v4.0.10 build-label override.
-- Removed the stale v4.0.11 build-label override.
-- Added a final v4.0.13 build-label lock.
-- Kept the v4.0.12 Platform Lifecycle Sync Fix.
+## What changed
+- Platform Command Center Marketplace Activity now shows guard lifecycle updates.
+- Admin can see: Guard Accepted, En Route, Arrived On Site, Checking Property, Proof Uploaded, Completed, and Report Published.
+- The feed reads from `job_events`, `marketplace_jobs` lifecycle timestamps, and proof rows so the activity panel updates even if one source is sparse.
+- v4.0.13 build-label lock remains in place.
 
 ## SQL
-No real schema change required.
-Optional only:
+No real schema change required. Optional cache refresh file:
 
-`RUN_AFTER_V413_BUILD_LABEL_LOCK_FIX.sql`
+`RUN_AFTER_V414_MARKETPLACE_ACTIVITY_GUARD_STATUS_FEED.sql`
+
+## Test
+1. Login as guard.
+2. Move assigned job through Accept, En Route, Arrived, Start Patrol, Upload Proof, Complete.
+3. Login as Platform Admin.
+4. Command Center → Marketplace Activity should show those guard lifecycle statuses.

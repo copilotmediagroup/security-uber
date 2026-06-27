@@ -1,18 +1,23 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-Latest package: **v4.0.13 BUILD LABEL LOCK FIX**
+Latest package:
+v4.0.14 MARKETPLACE ACTIVITY GUARD STATUS FEED
 
-The user is building through GitHub-ready ZIP replacement packages only. Do not suggest Bolt AI prompts.
+Important instruction:
+The user has no Bolt tokens. Do not suggest Bolt AI prompts. Build complete GitHub-ready ZIP replacement packages only.
 
-Current issue fixed:
-- GitHub root `script.js` showed v4.0.12, but Bolt preview still showed v4.0.10.
-- Root cause was stale mid-file build-label overrides from v4.0.10/v4.0.11 inside `script.js`.
-- v4.0.13 removes those stale overrides and locks the current badge label at the end of the script.
+Project model:
+Co Pilot Security Marketplace is an Uber-style marketplace for licensed/certified security agencies. Clients request jobs. Approved agencies accept jobs. Agency Admin assigns its own guard. Co Pilot is platform oversight, not dispatch.
 
-v4 retained behavior:
-- v4.0.11 Guard Marketplace Job Flow.
-- v4.0.12 Platform Lifecycle Sync Fix.
-- Platform Admin Command Center should sync guard lifecycle updates from `marketplace_jobs.current_status`, `job_events`, and proof records.
+What v4.0.14 fixed:
+- Platform Command Center Marketplace Activity now shows guard lifecycle status updates.
+- Activity feed now includes Guard Accepted, En Route, Arrived On Site, Checking Property, Proof Uploaded, Completed, and Report Published.
+- Feed merges `job_events`, `marketplace_jobs` lifecycle timestamps, and proof records.
+- Keeps v4.0.13 build-label lock and v4.0.12 platform lifecycle sync.
 
-Next direction:
-- After confirming the badge reads v4.0.13 and lifecycle sync works, continue with client marketplace status tracker.
+SQL:
+No real schema change. Optional cache refresh only:
+RUN_AFTER_V414_MARKETPLACE_ACTIVITY_GUARD_STATUS_FEED.sql
+
+Recommended next build:
+v4.0.15 CLIENT MARKETPLACE STATUS TRACKER — client sees the same lifecycle: open marketplace, agency accepted, guard assigned, accepted, en route, arrived, checking property, proof uploaded, completed, report published.

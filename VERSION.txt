@@ -1,18 +1,17 @@
 Co Pilot Security Marketplace
-Version: 4.0.13
-Build Name: BUILD LABEL LOCK FIX
+Version: 4.0.14
+Build Name: MARKETPLACE ACTIVITY GUARD STATUS FEED
 Date: 2026-06-27
 
 Summary:
-- Fixes stale badge/version downgrade caused by old v4.0.10/v4.0.11 build-label overrides still inside script.js.
-- Keeps v4.0.12 Platform Lifecycle Sync Fix behavior.
-- Platform Command Center continues to sync with marketplace_jobs.current_status, job_events, and proof records.
-- Guard lifecycle flow remains active.
-- No database schema change required.
+- Platform Command Center Marketplace Activity now shows live guard lifecycle statuses.
+- Activity feed displays Guard Accepted, En Route, Arrived On Site, Checking Property, Proof Uploaded, Completed, and Report Published.
+- Feed reads from job_events, marketplace_jobs lifecycle timestamps, and proof records so admin sees updates even if one source is sparse.
+- Keeps v4.0.13 badge lock and v4.0.12 lifecycle sync behavior.
 
 Badge:
-v4.0.13 BUILD LABEL LOCK FIX
+v4.0.14 MARKETPLACE ACTIVITY GUARD STATUS FEED
 
 SQL:
-No real SQL change. Optional cache refresh only:
-RUN_AFTER_V413_BUILD_LABEL_LOCK_FIX.sql
+No real SQL schema change. Optional cache refresh only:
+RUN_AFTER_V414_MARKETPLACE_ACTIVITY_GUARD_STATUS_FEED.sql
