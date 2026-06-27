@@ -1,19 +1,20 @@
 {
   "project": "Co Pilot Security Marketplace",
   "repo": "security-uber",
-  "version": "4.0.27",
-  "buildName": "LIVE GPS ROSTER + PROPERTY VISIBILITY FIX",
-  "packageType": "github-ready-less-than-20-files",
+  "version": "4.0.28",
+  "buildName": "UNIVERSAL MAP CARD SYSTEM",
+  "packageType": "github-ready",
   "fileCountTarget": "under 20 files at zip root",
   "supabaseProject": "https://nmfvxozbptcvyaenvkxl.supabase.co",
-  "entry": "index.html loads script-v427.js",
+  "entry": "index.html loads script-v428.js",
   "serverBehavior": "server.cjs serves root app files and does not prefer stale dist/index.html",
-  "sql": "No new SQL required for v4.0.27. Keep RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql only if proof upload RLS is missing.",
+  "sql": "No new SQL required for v4.0.28. Existing v4.0.22 proof upload RLS SQL remains included if needed.",
   "latestImportantFixes": [
-    "Agency Live GPS now shows the agency guard roster independent of active jobs",
-    "Agency map shows GPS-visible agency guards and active movement routes only",
-    "Platform Admin map visibility now includes all guard records with coordinates and all mapped client properties",
-    "Route lines remain lifecycle-controlled and disappear after arrived/checking/proof/completed/report stages",
-    "Compact professional map cards preserved for guard and client/property markers"
+    "Agency Admin compact map card is now the universal map card style",
+    "Guard map cards show company name, guard name, and current address",
+    "Client/property map cards show client name, property name, and property address",
+    "Platform Admin, Agency Admin, Guard, and Client maps share the same card structure",
+    "v4.0.27 Live GPS roster/property visibility is preserved",
+    "v4.0.26 global map flow route enforcement is preserved"
   ]
 }

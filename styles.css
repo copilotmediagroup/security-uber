@@ -13836,3 +13836,112 @@ button.is-busy {
 .cp426-client-card em { color: #8ff0ba; background: rgba(55, 220, 114, .12); border-color: rgba(55, 220, 114, .25); }
 .cp426-flow-map-card .guard302-map-stats strong:empty::before { content: '—'; }
 .cp426-flow-map-card .guard302-live:not(.on) { color: #9db3ca; }
+
+
+/* v4.0.28 Universal compact map card system
+   The Agency Admin card is now the master card for every map. */
+.guard302-live-card.cp428-map-card,
+.cp428-map-card {
+  top: 10px !important;
+  left: 10px !important;
+  right: auto !important;
+  width: min(315px, calc(100% - 20px)) !important;
+  max-width: 315px !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-columns: 40px minmax(0,1fr) !important;
+  gap: 10px !important;
+  padding: 10px 38px 10px 10px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(126,190,255,.30) !important;
+  background: linear-gradient(180deg, rgba(7,23,40,.97), rgba(3,12,23,.97)) !important;
+  box-shadow: 0 18px 42px rgba(0,0,0,.36), 0 0 0 1px rgba(255,255,255,.035) inset !important;
+  backdrop-filter: blur(10px) !important;
+  z-index: 950 !important;
+}
+.guard302-live-card.cp428-map-card .avatar,
+.guard302-live-card.cp428-map-card .avatar img,
+.cp428-map-card .avatar,
+.cp428-map-card .avatar img {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 11px !important;
+  object-fit: cover !important;
+}
+.cp428-map-card .cp426-card-label {
+  display: block !important;
+  margin: 0 0 3px !important;
+  color: #73c7ff !important;
+  font-size: 9px !important;
+  font-weight: 1000 !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+}
+.cp428-map-card strong {
+  display: block !important;
+  max-width: 210px !important;
+  color: #f5fbff !important;
+  font-size: 14px !important;
+  line-height: 1.15 !important;
+  letter-spacing: -.015em !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.cp428-map-card small {
+  display: block !important;
+  max-width: 220px !important;
+  margin-top: 3px !important;
+  color: #9fb7d1 !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.cp428-map-card p {
+  margin: 6px 0 0 !important;
+  max-height: 32px !important;
+  color: #d9ecff !important;
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+  overflow: hidden !important;
+}
+.cp428-map-card em {
+  display: inline-flex !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  margin-top: 7px !important;
+  padding: 4px 7px !important;
+  border-radius: 999px !important;
+  background: rgba(46,125,255,.14) !important;
+  border: 1px solid rgba(102,175,255,.22) !important;
+  color: #8fd0ff !important;
+  font-size: 10px !important;
+  font-style: normal !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .06em !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.cp428-map-card .guard302-card-close,
+.guard302-live-card.cp428-map-card .guard302-card-close {
+  top: 7px !important;
+  right: 7px !important;
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 15px !important;
+}
+.active-mini-map .cp428-map-card,
+.client-property-detail-map-wrap .cp428-map-card,
+.client-live-map-card .cp428-map-card,
+.guard302-route-panel .cp428-map-card,
+.guard302-map-card .cp428-map-card {
+  top: 10px !important;
+  left: 10px !important;
+  right: auto !important;
+  bottom: auto !important;
+}

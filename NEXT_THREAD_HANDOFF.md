@@ -1,65 +1,58 @@
 # NEXT THREAD HANDOFF — CO PILOT SECURITY MARKETPLACE
 
-We are building **Co Pilot Security Marketplace**, the Uber-style marketplace version of the security patrol app.
+We are building **Co Pilot Security Marketplace**, the Uber-style marketplace version of the security patrol app. Do not suggest Bolt AI prompts because the user does not have Bolt tokens. All future changes must be complete GitHub-ready ZIP replacement packages.
 
-Do **not** suggest Bolt AI prompts. The user has no Bolt tokens. All future changes must be complete **GitHub-ready ZIP replacement packages**.
+Current latest package:
+**v4.0.28 UNIVERSAL MAP CARD SYSTEM**
 
-This is separate from the old v3 single-company app called **Co Pilot Security OS**.
+Repo:
+**security-uber**
 
-## Current repo
-`security-uber`
-
-## Supabase
+Supabase:
 `https://nmfvxozbptcvyaenvkxl.supabase.co`
 
-Publishable key is already inside `config.js`.
+Publishable key is already in `config.js`.
 
-## Current latest build
-**v4.0.27 LIVE GPS ROSTER + PROPERTY VISIBILITY FIX**
+## Business model
+Co Pilot Security is the platform/software marketplace layer, not the licensed security provider. Clients request patrol jobs. Approved licensed/certified agencies accept jobs. One agency locks the job, assigns its own guard, and manages proof/report delivery. Platform Admin sees everything but does not dispatch for agencies.
 
-## Current marketplace model
+## Latest v4.0.28 fix
+The user said the cards used on the Agency Admin map are the cards that need to be used universally, globally on every map.
 
-Co Pilot Security is the platform/software marketplace layer, not the licensed security provider.
+This build makes the Agency Admin compact professional map card the master card system across:
+- Platform Admin maps
+- Agency Admin maps
+- Guard Route/GPS maps
+- Guard Active Job mini maps
+- Client maps
+- Client property maps
 
-Client requests patrol job → open marketplace → approved licensed agency accepts → job locks to that agency → agency assigns its own guard → guard works lifecycle → agency reviews proof and publishes report → client sees tracker/report → platform admin audits marketplace.
+Universal card rules:
+- Guard card shows company name, guard name, and guard current address.
+- Client/property card shows client name, property name, and property address.
+- Cards are compact and professional, with one shared style/class system.
 
-## Important latest fix
-
-v4.0.27 fixed the Live GPS visibility model:
-
-- Agency Admin Live GPS is now roster-based, not job-only.
-- Agency Admin sees every approved guard signed up under that agency in the roster.
-- Online/GPS-visible agency guards appear on the map.
-- Agency routes appear only for active movement jobs.
-- Completed/arrived/checking/proof/report stages do not keep stale guard-to-property route lines.
-- Platform Admin visibility now includes all active guard records with coordinates and all mapped client properties.
-- Compact professional map cards remain:
-  - Guard card: company name, guard name, guard current address.
-  - Client/property card: client name, property name, address.
-
-## Preserved fixes
-
-- v4.0.26 global job state + map flow enforcement
-- v4.0.25 agency proof review + client report delivery
-- v4.0.24 guard job flow icon sync
-- v4.0.23 badge lock
-- v4.0.22 proof upload RLS app fix
-- v4.0.21 profile photo save
-- v4.0.20 client marketplace status tracker
-- v4.0.19 quiet admin sync/no page reload
+## Preserved important fixes
+- v4.0.27: Agency Live GPS shows all agency guards and Platform Admin sees all guards/properties.
+- v4.0.26: Routes only show during active movement, not after arrived/checking/proof/completed/report published.
+- v4.0.25: Agency proof review + client report delivery.
+- v4.0.24: Guard job-flow icon sync.
+- v4.0.23: Badge lock.
+- v4.0.22: Proof upload RLS app support.
+- v4.0.21: Profile photo save.
+- v4.0.20: Client Marketplace Status Tracker.
+- v4.0.19: Quiet admin sync/no page reload.
 
 ## SQL
-
-No new SQL is required for v4.0.27.
-
-Only run `RUN_ONCE_V422_PROOF_UPLOAD_RLS_FIX.sql` if proof uploads still show a Supabase RLS error.
+No new SQL is required for v4.0.28.
+Do not rerun SQL unless Supabase reports a missing table/RPC/storage policy.
 
 ## Next likely direction
+Test every map card:
+- Platform Admin Live GPS / Command Center
+- Agency Admin Live GPS
+- Guard Route/GPS
+- Guard Active Job map
+- Client tracker/property map
 
-After testing v4.0.27:
-
-1. Confirm Agency Live GPS shows agency guard roster even before active jobs.
-2. Confirm online guards appear on Agency map.
-3. Confirm routes only show while a guard is actually moving toward a job.
-4. Confirm Platform Admin sees all mapped guards and all mapped client properties.
-5. Then build marketplace pricing/platform fee logic and agency earnings dashboard.
+After this, the next build should move into marketplace pricing, platform fee display, agency payout/earnings, or any remaining map/card bugs found during testing.

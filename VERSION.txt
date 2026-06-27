@@ -1,15 +1,14 @@
 Co Pilot Security Marketplace
-Version: 4.0.27
-Build Name: LIVE GPS ROSTER + PROPERTY VISIBILITY FIX
-Package: GITHUB READY
+Version: 4.0.28
+Build Name: UNIVERSAL MAP CARD SYSTEM
+Package: GITHUB READY ZIP
 Date: 2026-06-27
 
 Summary:
-- Fixes Agency Admin Live GPS so it is roster-based, not job-only.
-- Agency Live GPS shows the agency private guard roster and online GPS-visible guards.
-- Agency job routes only appear for active movement jobs.
-- Platform Admin visibility now uses all active guard records and all client properties that have/resolved coordinates.
-- Preserves v4.0.26 global lifecycle map route rules and compact professional map cards.
+- Makes the Agency Admin compact map cards the universal card system across every map.
+- Guard cards show company name, guard name, and guard current address.
+- Client/property cards show client name, property name, and property address.
+- Preserves v4.0.27 Live GPS roster/property visibility and all prior marketplace fixes.
 
 Badge:
-v4.0.27 LIVE GPS ROSTER + PROPERTY VISIBILITY FIX
+v4.0.28 UNIVERSAL MAP CARD SYSTEM
